@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>나만의 규칙 만들기 발표! [2수02-02] (1학년 1반)</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Jua & Noto Sans KR -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@700;900&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      touch-action: manipulation;
+    }
+
+    body {
+      font-family: 'Jua', 'Noto Sans KR', sans-serif;
+      background-color: #FFFDF7;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.84); opacity: 0; }
+      70% { transform: scale(1.04); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes shakeWrong {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-10px); }
+      40% { transform: translateX(10px); }
+      60% { transform: translateX(-7px); }
+      80% { transform: translateX(7px); }
+    }
+
+    @keyframes pulseCursor {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.25; }
+    }
+
+    .animate-pop {
+      animation: popIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .animate-shake {
+      animation: shakeWrong 0.38s ease-in-out;
+    }
+
+    .cursor-blink {
+      animation: pulseCursor 0.9s infinite;
+    }
+
+    .keypad-btn {
+      transition: transform 0.05s ease, filter 0.08s ease;
+    }
+    .keypad-btn:active, .keypad-btn.pressed {
+      transform: scale(0.94) translateY(2px);
+      filter: brightness(0.94);
+    }
+
+    .num-tile {
+      font-variant-numeric: tabular-nums;
+    }
+  </style>
+</head>
+<body class="flex flex-col h-screen w-screen bg-[#FFFDF7] text-slate-800">
+
+  <!-- ==================== 상단 발표 헤더 ==================== -->
+  <header class="relative z-20 flex items-center justify-between px-4 sm:px-8 py-2.5 bg-white border-b-4 border-amber-200 shadow-sm shrink-0">
+    <div class="flex items-center gap-3">
+      <span class="px-3.5 py-1 rounded-2xl bg-amber-100 text-amber-900 border-2 border-amber-300 text-base sm:text-xl">
+        🏫 1학년 1반 수학 [2수02-02]
+      </span>
+      <span class="hidden md:inline text-xl sm:text-2xl text-slate-700">나만의 숫자 규칙 발표하기</span>
+    </div>
+
+    <div class="flex items-center gap-2 sm:gap-3">
+      <div class="flex items-center gap-2 bg-indigo-600 text-white px-4 py-1.5 rounded-2xl border-b-4 border-indigo-800 shadow">
+        <span class="text-base sm:text-xl">⭐ 성공한 규칙</span>
+        <span id="solved-count" class="bg-white text-indigo-700 px-3 py-0.5 rounded-xl text-xl sm:text-3xl">0개</span>
+      </div>
+
+      <button id="open-gallery-btn" type="button" class="px-3.5 sm:px-5 py-2 rounded-2xl bg-emerald-100 hover:bg-emerald-200 active:scale-95 text-emerald-950 border-2 border-emerald-400 text-base sm:text-xl transition cursor-pointer">
+        📋 발표한 규칙 모아보기
+      </button>
+      <button id="reset-btn" type="button" class="px-3.5 sm:px-4 py-2 rounded-2xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 border-2 border-slate-300 text-base sm:text-xl transition cursor-pointer">
+        ⚙️ 처음부터
+      </button>
+    </div>
+  </header>
+
+  <!-- ==================== 메인 단독 발표 영역 ==================== -->
+  <main class="relative flex-1 flex flex-col justify-between w-full max-w-6xl mx-auto px-4 sm:px-8 pt-3 pb-5 sm:pb-7 overflow-hidden">
+
+    <!-- 상단 안내 / 오답 피드백 배너 -->
+    <div id="feedback-box" class="w-full py-2.5 px-5 rounded-2xl bg-white text-indigo-950 border-4 border-indigo-200 text-lg sm:text-2xl md:text-3xl shadow-sm text-center shrink-0">
+      ✨ 6칸에 나만의 숫자 규칙을 넣고, 친구들에게 설명한 뒤 <b>[규칙 완성 ✔]</b>을 눌러주세요!
+    </div>
+
+    <!-- 중단 대형 6칸 숫자 배열 보드 -->
+    <div class="relative flex-1 flex flex-col items-center justify-center my-2">
+      <!-- 성공 축하 오버레이 (다음 친구 발표 버튼 포함) -->
+      <div id="success-overlay" class="hidden absolute inset-0 z-20 flex flex-col items-center justify-center bg-amber-50/95 backdrop-blur-sm rounded-3xl border-4 border-emerald-400 p-4 text-center shadow-xl">
+        <div class="text-5xl sm:text-6xl mb-2 animate-pop">🎉</div>
+        <div id="rule-result-title" class="bg-emerald-500 text-white px-6 sm:px-10 py-3 sm:py-4 rounded-3xl border-4 border-white shadow-xl text-2xl sm:text-4xl md:text-5xl mb-3 animate-pop">
+          ⭕ 성공! 멋진 규칙이에요!
+        </div>
+        <div id="rule-result-numbers" class="flex items-center justify-center gap-2 sm:gap-3 mb-5 flex-wrap"></div>
+        <button id="next-student-btn" type="button" class="px-8 sm:px-12 py-3.5 sm:py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-2xl sm:text-3xl border-b-8 border-indigo-900 shadow-xl transition cursor-pointer">
+          🏃‍♂️ 다음 친구 발표하기
+        </button>
+      </div>
+
+      <!-- 6칸 숫자 타일 -->
+      <div id="sequence-board" class="w-full flex items-center justify-center gap-2 sm:gap-4 flex-nowrap py-2">
+        <!-- JS 동적 생성 -->
+      </div>
+
+      <!-- 하단 발표 순서 안내 -->
+      <p id="guide-text" class="mt-3 text-base sm:text-xl text-slate-600 text-center">
+        1️⃣ 숫자 6개를 모두 채워요 &nbsp;➡&nbsp; 2️⃣ 어떤 규칙인지 친구들에게 말해요 &nbsp;➡&nbsp; 3️⃣ <span class="text-emerald-700 font-bold">[규칙 완성 ✔]</span> 터치!
+      </p>
+    </div>
+
+    <!-- 하단 대형 숫자 키패드 -->
+    <div class="bg-white rounded-3xl p-3 sm:p-4 border-4 border-indigo-200 shadow-lg shrink-0">
+      <div class="grid grid-cols-5 gap-2 sm:gap-3">
+        <!-- 1행: 1 ~ 5 -->
+        <button type="button" data-key="1" class="keypad-btn h-14 sm:h-16 md:h-20 rounded-2xl bg-indigo-50 hover:bg-indigo-100 border-b-4 border-indigo-300 text-3xl sm:text-4xl text-indigo-950 shadow-sm cursor-pointer">1</button>
+        <button type="button" data-key="2" class="keypad-btn h-14 sm:h-16 md:h-20 rounded-2xl bg-indigo-50 hover:bg-indigo-100 border-b-4 border-indigo-300 text-3xl sm:text-4xl text-indigo-950 shadow-sm cursor-pointer">2</button>
+        <button type="button" data-key="3" class="keypad-btn h-14 sm:h-16 md:h-20 rounded-2xl bg-indigo-50 hover:bg-indigo-100 border-b-4 border-indigo-300 text-3xl sm:text-4xl text-indigo-950 shadow-sm cursor-pointer">3</button>
+        <button type="button" data-key="4" class="keypad-btn h-14 sm:h-16 md:h-20 rounded-2xl bg-indigo-50 hover:bg-indigo-100 border-b-4 border-indigo-300 text-3xl sm:text-4xl text-indigo-950 shadow-sm cursor-pointer">4</button>
+        <button type="button" data-key="5" class="keypad-btn h-14 sm:h-16 md:h-20 rounded-2xl bg-indigo-50 hover:bg-indigo-100 border-b-4 border-indigo-300 text-3xl sm:text-4xl text-indigo-950 shadow-sm cursor-pointer">5</button>
+
+        <!-- 2행: 6 ~ 0 -->
+        <button type="button" data-key="6" class="keypad-btn h-14 sm:h-16 md:h-20 rounded-2xl bg-indigo-50 hover:bg-indigo-100 border-b-4 border-indigo-300 text-3xl sm:text-4xl text-indigo-950 shadow-sm cursor-pointer">6</button>
+        <button type="button" data-key="7" class="keypad-btn h-14 sm:h-16 md:h-20 rounded-2xl bg-indigo-50 hover:bg-indigo-100 border-b-4 border-indigo-300 text-3xl sm:text-4xl text-indigo-950 shadow-sm cursor-pointer">7</button>
+        <button type="button" data-key="8" class="keypad-btn h-14 sm:h-16 md:h-20 rounded-2xl bg-indigo-50 hover:bg-indigo-100 border-b-4 border-indigo-300 text-3xl sm:text-4xl text-indigo-950 shadow-sm cursor-pointer">8</button>
+        <button type="button" data-key="9" class="keypad-btn h-14 sm:h-16 md:h-20 rounded-2xl bg-indigo-50 hover:bg-indigo-100 border-b-4 border-indigo-300 text-3xl sm:text-4xl text-indigo-950 shadow-sm cursor-pointer">9</button>
+        <button type="button" data-key="0" class="keypad-btn h-14 sm:h-16 md:h-20 rounded-2xl bg-indigo-50 hover:bg-indigo-100 border-b-4 border-indigo-300 text-3xl sm:text-4xl text-indigo-950 shadow-sm cursor-pointer">0</button>
+
+        <!-- 3행: 모두 비움 / 한 칸 지움 / 다음 칸 / 규칙 완성 -->
+        <button type="button" data-key="clearAll" class="keypad-btn col-span-1 h-14 sm:h-16 md:h-20 rounded-2xl bg-slate-200 hover:bg-slate-300 border-b-4 border-slate-400 text-lg sm:text-2xl text-slate-800 shadow-sm cursor-pointer">🗑 비움</button>
+        <button type="button" data-key="del" class="keypad-btn col-span-1 h-14 sm:h-16 md:h-20 rounded-2xl bg-amber-300 hover:bg-amber-400 border-b-4 border-amber-500 text-lg sm:text-2xl text-amber-950 shadow-sm cursor-pointer">⌫ 지움</button>
+        <button type="button" data-key="next" class="keypad-btn col-span-1 h-14 sm:h-16 md:h-20 rounded-2xl bg-sky-200 hover:bg-sky-300 border-b-4 border-sky-400 text-lg sm:text-2xl text-sky-950 shadow-sm cursor-pointer">다음칸 ➡</button>
+        <button type="button" data-key="check" class="keypad-btn col-span-2 h-14 sm:h-16 md:h-20 rounded-2xl bg-emerald-500 hover:bg-emerald-600 border-b-4 border-emerald-700 text-2xl sm:text-3xl text-white shadow-sm cursor-pointer">규칙 완성 ✔</button>
+      </div>
+    </div>
+
+    <!-- ==================== 시작 설정 모달 ==================== -->
+    <div id="start-overlay" class="fixed inset-0 z-30 flex items-center justify-center bg-slate-900/65 backdrop-blur-sm p-4">
+      <div class="max-w-xl w-full bg-white rounded-3xl border-8 border-amber-300 p-6 sm:p-8 text-center shadow-2xl animate-pop">
+        <div class="inline-block px-4 py-1 rounded-full bg-amber-100 text-amber-800 text-base sm:text-lg mb-2 border-2 border-amber-300">
+          🏫 [2수02-02] 자신이 정한 규칙에 따라 수 배열하기
+        </div>
+        <h1 class="text-3xl sm:text-5xl text-slate-800 mb-3">
+          나만의 숫자 규칙 발표!
+        </h1>
+        <p class="text-base sm:text-xl text-slate-600 mb-6">
+          숫자 6개를 채우고 친구들에게 규칙을 설명한 뒤<br />
+          <b>[규칙 완성 ✔]</b> 버튼을 눌러 확인해 보세요!
+        </p>
+
+        <!-- 숫자 자릿수 방식 선택 -->
+        <div class="mb-6 text-left bg-slate-50 p-4 sm:p-5 rounded-2xl border-2 border-slate-200">
+          <label class="block text-base sm:text-xl text-slate-700 mb-2.5">🔢 숫자 입력 방식 선택</label>
+          <div class="grid grid-cols-2 gap-3" id="digit-options">
+            <button type="button" data-digits="1" class="digit-opt-btn py-3 px-2 rounded-xl border-4 border-indigo-500 bg-indigo-100 text-indigo-950 text-base sm:text-lg font-bold cursor-pointer">
+              한 자리 수 자동 이동 (1~9)
+            </button>
+            <button type="button" data-digits="2" class="digit-opt-btn py-3 px-2 rounded-xl border-2 border-slate-300 bg-white text-slate-700 text-base sm:text-lg cursor-pointer">
+              두 자리 수 포함 (1~99)
+            </button>
+          </div>
+        </div>
+
+        <button id="start-game-btn" type="button" class="w-full py-4 sm:py-5 rounded-2xl bg-gradient-to-r from-indigo-500 to-blue-600 hover:brightness-110 active:scale-95 text-white text-2xl sm:text-4xl border-b-8 border-indigo-800 shadow-xl transition cursor-pointer">
+          🚀 발표 시작하기!
+        </button>
+      </div>
+    </div>
+
+    <!-- ==================== 발표한 규칙 모아보기 모달 (수업 정리용) ==================== -->
+    <div id="gallery-overlay" class="hidden fixed inset-0 z-40 flex items-center justify-center bg-slate-900/75 backdrop-blur-sm p-3 sm:p-6">
+      <div class="max-w-5xl w-full h-[90vh] flex flex-col bg-white rounded-3xl border-8 border-emerald-400 p-5 sm:p-7 shadow-2xl animate-pop">
+        <div class="flex items-center justify-between border-b-4 border-slate-200 pb-3 mb-4 shrink-0">
+          <h2 class="text-2xl sm:text-4xl text-slate-800">
+            📋 우리 반 친구들이 발표한 규칙 모아보기
+          </h2>
+          <button id="close-gallery-btn" type="button" class="px-5 py-2.5 rounded-2xl bg-slate-200 hover:bg-slate-300 active:scale-95 text-slate-800 text-xl sm:text-2xl cursor-pointer">
+            ✖ 닫기
+          </button>
+        </div>
+
+        <div id="gallery-list" class="flex-1 overflow-y-auto space-y-4 pr-1">
+          <!-- JS 동적 렌더링 -->
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    /**
+     * [2수02-02] 자신이 정한 규칙에 따라 수 배열하기 (1팀 단독 발표용)
+     * - 제한 시간 없음
+     * - 6칸 숫자를 모두 입력해도 자동 판별하지 않고, 학생이 규칙을 설명한 뒤 [규칙 완성 ✔] 버튼을 눌렀을 때만 판별
+     */
+
+    const SLOT_COUNT = 6;
+
+    const state = {
+      maxDigits: 1,
+      inputs: ['', '', '', '', '', ''],
+      activeSlot: 0,
+      isShake: false,
+      locked: false,
+      createdList: [],
+      lastInputTime: 0
+    };
+
+    /**
+     * [규칙 검증 엔진]
+     * - 모두 같은 숫자 반복 제외
+     * - 일정하게 커지거나 작아지는 규칙 (+1, +2, -1, -2 등)
+     * - 마디 반복 규칙 (2칸, 3칸, 4칸 반복)
+     */
+    function validateCustomPattern(rawInputs) {
+      const uniqueCount = new Set(rawInputs).size;
+      if (uniqueCount <= 1) {
+        return {
+          valid: false,
+          reason: '😅 모두 같은 숫자예요! 두 가지 이상의 숫자로 규칙을 다시 만들어 볼까요?'
+        };
+      }
+
+      // 1. 일정하게 커지기 / 작아지기 검사
+      const nums = rawInputs.map(Number);
+      const diff = nums[1] - nums[0];
+      if (diff !== 0) {
+        let isArithmetic = true;
+        for (let i = 2; i < nums.length; i++) {
+          if (nums[i] - nums[i - 1] !== diff) {
+            isArithmetic = false;
+            break;
+          }
+        }
+        if (isArithmetic) {
+          const absDiff = Math.abs(diff);
+          const ruleDesc = diff > 0
+            ? `${absDiff}씩 커지는 규칙`
+            : `${absDiff}씩 작아지는 규칙`;
+          return { valid: true, ruleName: ruleDesc };
+        }
+      }
+
+      // 2. 2칸, 3칸 마디 반복 검사
+      for (let period = 2; period <= 3; period++) {
+        let isPeriodic = true;
+        for (let i = period; i < rawInputs.length; i++) {
+          if (rawInputs[i] !== rawInputs[i % period]) {
+            isPeriodic = false;
+            break;
+          }
+        }
+        if (isPeriodic) {
+          return {
+            valid: true,
+            ruleName: `[${rawInputs.slice(0, period).join(' - ')}] 반복 규칙`
+          };
+        }
+      }
+
+      // 3. 4칸 마디 반복 시작 검사 (예: 1, 2, 3, 4, 1, 2)
+      let isPeriod4 = true;
+      for (let i = 4; i < rawInputs.length; i++) {
+        if (rawInputs[i] !== rawInputs[i % 4]) {
+          isPeriod4 = false;
+          break;
+        }
+      }
+      if (isPeriod4) {
+        return {
+          valid: true,
+          ruleName: `[${rawInputs.slice(0, 4).join(' - ')}] 반복 규칙`
+        };
+      }
+
+      return {
+        valid: false,
+        reason: '🤔 다시 도전! 규칙이 중간에 바뀌었어요. 숫자를 고쳐서 다시 눌러볼까요?'
+      };
+    }
+
+    function setFeedback(htmlText, type = 'normal') {
+      const el = document.getElementById('feedback-box');
+      el.innerHTML = htmlText;
+
+      if (type === 'error') {
+        el.className = 'w-full py-2.5 px-5 rounded-2xl bg-red-100 text-red-900 border-4 border-red-400 text-lg sm:text-2xl md:text-3xl shadow-sm text-center shrink-0 animate-pop';
+      } else if (type === 'ready') {
+        el.className = 'w-full py-2.5 px-5 rounded-2xl bg-amber-100 text-amber-950 border-4 border-amber-400 text-lg sm:text-2xl md:text-3xl shadow-sm text-center shrink-0 animate-pop';
+      } else {
+        el.className = 'w-full py-2.5 px-5 rounded-2xl bg-white text-indigo-950 border-4 border-indigo-200 text-lg sm:text-2xl md:text-3xl shadow-sm text-center shrink-0';
+      }
+    }
+
+    // 6칸 숫자 보드 렌더링
+    function renderBoard(isNew = false) {
+      const container = document.getElementById('sequence-board');
+      container.innerHTML = '';
+
+      state.inputs.forEach((val, idx) => {
+        const tile = document.createElement('div');
+        const isSelected = state.activeSlot === idx && !state.locked;
+
+        let boxStyle = 'bg-white border-slate-300 text-slate-800';
+        if (state.isShake) {
+          boxStyle = 'bg-red-100 border-red-500 text-red-700 animate-shake';
+        } else if (isSelected) {
+          boxStyle = 'bg-indigo-50 border-indigo-500 ring-4 ring-indigo-300 text-indigo-950';
+        } else if (val !== '') {
+          boxStyle = 'bg-white border-indigo-400 text-indigo-950';
+        }
+
+        tile.className = `num-tile rounded-full flex-1 max-w-[130px] aspect-square border-4 sm:border-[6px] ${boxStyle} flex items-center justify-center shadow-lg cursor-pointer transition-all ${isNew ? 'animate-pop' : ''}`;
+
+        if (val === '') {
+          const placeholder = document.createElement('span');
+          placeholder.className = isSelected
+            ? 'cursor-blink text-xl sm:text-3xl text-indigo-500'
+            : 'text-slate-300 text-2xl sm:text-3xl';
+          placeholder.textContent = isSelected ? '입력' : `${idx + 1}`;
+          tile.appendChild(placeholder);
+        } else {
+          tile.classList.add('text-4xl', 'sm:text-6xl', 'md:text-7xl', 'font-bold');
+          tile.textContent = val;
+        }
+
+        // 원하는 칸 터치 시 바로 해당 칸으로 커서 이동
+        tile.addEventListener('pointerdown', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (state.locked) return;
+          state.activeSlot = idx;
+          renderBoard(false);
+        });
+
+        container.appendChild(tile);
+      });
+    }
+
+    // 키패드 입력 처리 (자동 채점 절대 안 함! 오직 [규칙 완성 ✔] 눌렀을 때만 판별)
+    function handleKeyInput(key) {
+      if (state.locked) return;
+
+      // 150ms 펜 연타 중복 방지
+      const now = Date.now();
+      if (now - state.lastInputTime < 150) return;
+      state.lastInputTime = now;
+
+      const slot = state.activeSlot;
+
+      // 1. 모두 비우기
+      if (key === 'clearAll') {
+        state.inputs = ['', '', '', '', '', ''];
+        state.activeSlot = 0;
+        setFeedback('✨ 6칸에 나만의 숫자 규칙을 넣고, 친구들에게 설명한 뒤 <b>[규칙 완성 ✔]</b>을 눌러주세요!', 'normal');
+        renderBoard(false);
+        return;
+      }
+
+      // 2. 한 칸 지우기
+      if (key === 'del') {
+        if (state.inputs[slot].length > 0) {
+          state.inputs[slot] = state.inputs[slot].slice(0, -1);
+        } else if (slot > 0) {
+          state.activeSlot = slot - 1;
+          state.inputs[slot - 1] = state.inputs[slot - 1].slice(0, -1);
+        }
+        renderBoard(false);
+        return;
+      }
+
+      // 3. 다음 칸 이동
+      if (key === 'next') {
+        state.activeSlot = (slot + 1) % SLOT_COUNT;
+        renderBoard(false);
+        return;
+      }
+
+      // 4. 규칙 완성 확인 (오직 이 버튼을 눌렀을 때만 AI 판별!)
+      if (key === 'check') {
+        verifyPattern();
+        return;
+      }
+
+      // 5. 숫자 입력 (0~9)
+      if (state.maxDigits === 1) {
+        state.inputs[slot] = key;
+        if (slot < SLOT_COUNT - 1) {
+          state.activeSlot = slot + 1;
+        }
+      } else {
+        if (state.inputs[slot].length < 2) {
+          state.inputs[slot] = state.inputs[slot] === '0' ? key : state.inputs[slot] + key;
+        } else {
+          state.inputs[slot] = key;
+        }
+      }
+
+      renderBoard(false);
+
+      // 6칸이 모두 채워졌을 때 판별하지 않고 "설명 후 버튼을 누르세요" 안내만 표시
+      if (state.inputs.every((v) => v !== '')) {
+        setFeedback('🎤 6칸 완성! 친구들에게 규칙을 설명한 뒤 <b>[규칙 완성 ✔]</b>을 눌러주세요!', 'ready');
+      }
+    }
+
+    // [규칙 완성 ✔] 버튼 클릭 시에만 실행되는 판별 함수
+    function verifyPattern() {
+      if (state.locked) return;
+
+      const emptyIdx = state.inputs.findIndex((v) => v === '');
+      if (emptyIdx !== -1) {
+        state.activeSlot = emptyIdx;
+        setFeedback(`👉 ${emptyIdx + 1}번째 칸이 비어 있어요! 6칸을 모두 채워주세요!`, 'error');
+        renderBoard(false);
+        return;
+      }
+
+      const result = validateCustomPattern(state.inputs);
+
+      if (result.valid) {
+        state.locked = true;
+        state.createdList.push({
+          items: [...state.inputs],
+          ruleName: result.ruleName
+        });
+
+        document.getElementById('solved-count').textContent = `${state.createdList.length}개`;
+        document.getElementById('rule-result-title').textContent = `⭕ 성공! [${result.ruleName}]`;
+
+        const numsWrap = document.getElementById('rule-result-numbers');
+        numsWrap.innerHTML = state.inputs.map((val) => `
+          <span class="num-tile w-14 h-14 sm:w-20 sm:h-20 rounded-full bg-white border-4 border-emerald-500 text-emerald-950 flex items-center justify-center text-2xl sm:text-4xl font-bold shadow">
+            ${val}
+          </span>
+        `).join('');
+
+        document.getElementById('success-overlay').classList.remove('hidden');
+      } else {
+        state.locked = true;
+        state.isShake = true;
+        setFeedback(result.reason, 'error');
+        renderBoard(false);
+
+        setTimeout(() => {
+          state.isShake = false;
+          state.locked = false;
+          renderBoard(false);
+        }, 420);
+      }
+    }
+
+    // 다음 친구 발표용 새 보드 준비
+    function resetForNextStudent() {
+      state.inputs = ['', '', '', '', '', ''];
+      state.activeSlot = 0;
+      state.isShake = false;
+      state.locked = false;
+      document.getElementById('success-overlay').classList.add('hidden');
+      setFeedback('✨ 6칸에 나만의 숫자 규칙을 넣고, 친구들에게 설명한 뒤 <b>[규칙 완성 ✔]</b>을 눌러주세요!', 'normal');
+      renderBoard(true);
+    }
+
+    // 발표한 규칙 모아보기 갤러리 렌더링
+    function renderGallery() {
+      const listEl = document.getElementById('gallery-list');
+      if (state.createdList.length === 0) {
+        listEl.innerHTML = `
+          <div class="text-center py-16 text-2xl sm:text-3xl text-slate-400">
+            아직 완성된 발표 규칙이 없어요! 친구들과 규칙을 만들어 보세요 😊
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = state.createdList.map((rec, idx) => {
+        const tilesHtml = rec.items.map((val) => `
+          <span class="num-tile w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-indigo-50 border-4 border-indigo-400 text-indigo-950 flex items-center justify-center text-2xl sm:text-4xl font-bold shadow-sm">
+            ${val}
+          </span>
+        `).join('');
+
+        return `
+          <div class="bg-slate-50 rounded-3xl p-4 sm:p-5 border-4 border-slate-200 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
+            <div class="flex items-center gap-3">
+              <span class="px-4 py-1.5 rounded-2xl bg-slate-800 text-white text-lg sm:text-2xl font-bold">${idx + 1}번째 발표</span>
+              <span class="px-4 py-1.5 rounded-2xl bg-emerald-100 text-emerald-950 border-2 border-emerald-400 text-xl sm:text-3xl font-bold">
+                ✨ ${rec.ruleName}
+              </span>
+            </div>
+            <div class="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
+              ${tilesHtml}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // 숫자 키패드 멀티터치/클릭 이벤트 바인딩
+      document.querySelectorAll('.keypad-btn').forEach((btn) => {
+        btn.addEventListener('pointerdown', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          btn.classList.add('pressed');
+          setTimeout(() => btn.classList.remove('pressed'), 90);
+          handleKeyInput(btn.dataset.key);
+        });
+      });
+
+      // 자릿수 선택 버튼
+      document.querySelectorAll('.digit-opt-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          state.maxDigits = Number(btn.dataset.digits);
+          document.querySelectorAll('.digit-opt-btn').forEach((b) => {
+            b.className = 'digit-opt-btn py-3 px-2 rounded-xl border-2 border-slate-300 bg-white text-slate-700 text-base sm:text-lg cursor-pointer';
+          });
+          btn.className = 'digit-opt-btn py-3 px-2 rounded-xl border-4 border-indigo-500 bg-indigo-100 text-indigo-950 text-base sm:text-lg font-bold cursor-pointer';
+        });
+      });
+
+      // 발표 시작하기
+      document.getElementById('start-game-btn').addEventListener('click', () => {
+        state.createdList = [];
+        document.getElementById('solved-count').textContent = '0개';
+        document.getElementById('start-overlay').classList.add('hidden');
+        resetForNextStudent();
+      });
+
+      // 다음 친구 발표하기
+      document.getElementById('next-student-btn').addEventListener('click', resetForNextStudent);
+
+      // 발표한 규칙 모아보기 열기/닫기
+      document.getElementById('open-gallery-btn').addEventListener('click', () => {
+        renderGallery();
+        document.getElementById('gallery-overlay').classList.remove('hidden');
+      });
+
+      document.getElementById('close-gallery-btn').addEventListener('click', () => {
+        document.getElementById('gallery-overlay').classList.add('hidden');
+      });
+
+      // 처음부터 버튼
+      document.getElementById('reset-btn').addEventListener('click', () => {
+        document.getElementById('success-overlay').classList.add('hidden');
+        document.getElementById('gallery-overlay').classList.add('hidden');
+        document.getElementById('start-overlay').classList.remove('hidden');
+      });
+
+      renderBoard(true);
+    });
+  </script>
+</body>
+</html>
