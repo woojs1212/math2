@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>나만의 규칙 만들기 발표! [2수02-02] (1학년 1반)</title>
+  <title>1학년 1팀 vs 2팀 대결 미니게임 모음집</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Google Fonts: Jua & Noto Sans KR -->
@@ -30,22 +30,24 @@
     }
 
     @keyframes popIn {
-      0% { transform: scale(0.84); opacity: 0; }
-      70% { transform: scale(1.04); opacity: 1; }
+      0% { transform: scale(0.82); opacity: 0; }
+      70% { transform: scale(1.05); opacity: 1; }
       100% { transform: scale(1); opacity: 1; }
     }
 
     @keyframes shakeWrong {
       0%, 100% { transform: translateX(0); }
-      20% { transform: translateX(-10px); }
-      40% { transform: translateX(10px); }
-      60% { transform: translateX(-7px); }
-      80% { transform: translateX(7px); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-5px); }
+      80% { transform: translateX(5px); }
     }
 
-    @keyframes pulseCursor {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.25; }
+    @keyframes floatScore {
+      0% { transform: translateY(6px) scale(0.75); opacity: 0; }
+      25% { transform: translateY(-10px) scale(1.15); opacity: 1; }
+      80% { transform: translateY(-26px) scale(1); opacity: 1; }
+      100% { transform: translateY(-40px) scale(0.95); opacity: 0; }
     }
 
     .animate-pop {
@@ -53,157 +55,301 @@
     }
 
     .animate-shake {
-      animation: shakeWrong 0.38s ease-in-out;
+      animation: shakeWrong 0.35s ease-in-out;
     }
 
-    .cursor-blink {
-      animation: pulseCursor 0.9s infinite;
+    .animate-float-score {
+      animation: floatScore 0.85s ease-out forwards;
     }
 
-    .keypad-btn {
-      transition: transform 0.05s ease, filter 0.08s ease;
+    .touch-btn {
+      transition: transform 0.06s ease, filter 0.08s ease;
     }
-    .keypad-btn:active, .keypad-btn.pressed {
+    .touch-btn:active {
       transform: scale(0.94) translateY(2px);
-      filter: brightness(0.94);
-    }
-
-    .num-tile {
-      font-variant-numeric: tabular-nums;
+      filter: brightness(0.95);
     }
   </style>
 </head>
 <body class="flex flex-col h-screen w-screen bg-[#FFFDF7] text-slate-800">
 
-  <!-- ==================== 상단 발표 헤더 ==================== -->
-  <header class="relative z-20 flex items-center justify-between px-4 sm:px-8 py-2.5 bg-white border-b-4 border-amber-200 shadow-sm shrink-0">
-    <div class="flex items-center gap-3">
-      <span class="px-3.5 py-1 rounded-2xl bg-amber-100 text-amber-900 border-2 border-amber-300 text-base sm:text-xl">
-        🏫 1학년 1반 수학 [2수02-02]
-      </span>
-      <span class="hidden md:inline text-xl sm:text-2xl text-slate-700">나만의 숫자 규칙 발표하기</span>
+  <!-- ==================== 상단 통합 게임 선택 및 점수/타이머 헤더 ==================== -->
+  <header class="relative z-20 flex flex-wrap items-center justify-between gap-2 px-3 sm:px-5 py-2 bg-white border-b-4 border-amber-200 shadow-sm shrink-0">
+    <!-- 1팀 점수 -->
+    <div class="relative flex items-center gap-2 bg-blue-600 text-white px-3.5 sm:px-5 py-1.5 rounded-2xl border-b-4 border-blue-800 shadow">
+      <span class="text-lg sm:text-2xl">💙 1팀</span>
+      <div class="bg-white text-blue-700 px-3 py-0.5 rounded-xl text-2xl sm:text-3xl font-bold">
+        <span id="score-t1">0</span><span class="text-sm sm:text-lg ml-0.5">점</span>
+      </div>
+      <div id="popup-t1" class="pointer-events-none absolute -bottom-8 right-2 z-30"></div>
     </div>
 
-    <div class="flex items-center gap-2 sm:gap-3">
-      <div class="flex items-center gap-2 bg-indigo-600 text-white px-4 py-1.5 rounded-2xl border-b-4 border-indigo-800 shadow">
-        <span class="text-base sm:text-xl">⭐ 성공한 규칙</span>
-        <span id="solved-count" class="bg-white text-indigo-700 px-3 py-0.5 rounded-xl text-xl sm:text-3xl">0개</span>
+    <!-- 중앙: 게임 선택 탭 + 타이머 + 일시정지/설정 -->
+    <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-center">
+      <nav class="flex items-center gap-1 bg-slate-100 p-1 rounded-2xl border-2 border-slate-200" id="game-tabs">
+        <button type="button" data-game="spot" class="game-tab-btn px-3 sm:px-4 py-1.5 rounded-xl bg-amber-400 text-amber-950 font-bold text-sm sm:text-lg shadow-sm cursor-pointer">
+          🔍 1. 틀린 그림 찾기
+        </button>
+        <button type="button" data-game="pattern" class="game-tab-btn px-3 sm:px-4 py-1.5 rounded-xl text-slate-600 hover:bg-white text-sm sm:text-lg cursor-pointer">
+          🧩 2. 다음 그림 맞히기
+        </button>
+        <button type="button" data-game="clock" class="game-tab-btn px-3 sm:px-4 py-1.5 rounded-xl text-slate-600 hover:bg-white text-sm sm:text-lg cursor-pointer">
+          ⏰ 3. 몇 시 몇 분?
+        </button>
+      </nav>
+
+      <!-- 타이머 표시 -->
+      <div id="timer-box" class="flex items-center gap-1.5 bg-slate-900 text-white px-3.5 sm:px-5 py-1.5 rounded-2xl border-4 border-amber-400 shadow">
+        <span id="timer-label" class="hidden md:inline text-amber-300 text-sm">⏱ 남은 시간</span>
+        <span id="timer-display" class="text-xl sm:text-3xl tracking-wider">02:00</span>
       </div>
 
-      <button id="open-gallery-btn" type="button" class="px-3.5 sm:px-5 py-2 rounded-2xl bg-emerald-100 hover:bg-emerald-200 active:scale-95 text-emerald-950 border-2 border-emerald-400 text-base sm:text-xl transition cursor-pointer">
-        📋 발표한 규칙 모아보기
+      <button id="pause-btn" type="button" class="px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 active:scale-95 text-amber-950 border-2 border-amber-400 text-sm sm:text-base font-bold cursor-pointer">
+        ⏸ 멈춤
       </button>
-      <button id="reset-btn" type="button" class="px-3.5 sm:px-4 py-2 rounded-2xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 border-2 border-slate-300 text-base sm:text-xl transition cursor-pointer">
-        ⚙️ 처음부터
+
+      <button id="open-setup-btn" type="button" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 border-2 border-slate-300 text-sm sm:text-base cursor-pointer">
+        ⚙️ 시간/재시작
       </button>
+    </div>
+
+    <!-- 2팀 점수 -->
+    <div class="relative flex items-center gap-2 bg-rose-600 text-white px-3.5 sm:px-5 py-1.5 rounded-2xl border-b-4 border-rose-800 shadow">
+      <div id="popup-t2" class="pointer-events-none absolute -bottom-8 left-2 z-30"></div>
+      <div class="bg-white text-rose-700 px-3 py-0.5 rounded-xl text-2xl sm:text-3xl font-bold">
+        <span id="score-t2">0</span><span class="text-sm sm:text-lg ml-0.5">점</span>
+      </div>
+      <span class="text-lg sm:text-2xl">2팀 ❤️</span>
     </div>
   </header>
 
-  <!-- ==================== 메인 단독 발표 영역 ==================== -->
-  <main class="relative flex-1 flex flex-col justify-between w-full max-w-6xl mx-auto px-4 sm:px-8 pt-3 pb-5 sm:pb-7 overflow-hidden">
+  <!-- ==================== 메인 게임 스테이지 ==================== -->
+  <main class="relative flex-1 w-full h-full overflow-hidden">
 
-    <!-- 상단 안내 / 오답 피드백 배너 -->
-    <div id="feedback-box" class="w-full py-2.5 px-5 rounded-2xl bg-white text-indigo-950 border-4 border-indigo-200 text-lg sm:text-2xl md:text-3xl shadow-sm text-center shrink-0">
-      ✨ 6칸에 나만의 숫자 규칙을 넣고, 친구들에게 설명한 뒤 <b>[규칙 완성 ✔]</b>을 눌러주세요!
-    </div>
-
-    <!-- 중단 대형 6칸 숫자 배열 보드 -->
-    <div class="relative flex-1 flex flex-col items-center justify-center my-2">
-      <!-- 성공 축하 오버레이 (다음 친구 발표 버튼 포함) -->
-      <div id="success-overlay" class="hidden absolute inset-0 z-20 flex flex-col items-center justify-center bg-amber-50/95 backdrop-blur-sm rounded-3xl border-4 border-emerald-400 p-4 text-center shadow-xl">
-        <div class="text-5xl sm:text-6xl mb-2 animate-pop">🎉</div>
-        <div id="rule-result-title" class="bg-emerald-500 text-white px-6 sm:px-10 py-3 sm:py-4 rounded-3xl border-4 border-white shadow-xl text-2xl sm:text-4xl md:text-5xl mb-3 animate-pop">
-          ⭕ 성공! 멋진 규칙이에요!
+    <!-- ===================================================================== -->
+    <!-- [게임 1] 틀린 그림 찾기 (가운데 기준 그림 / 왼쪽 1팀 / 오른쪽 2팀) -->
+    <!-- ===================================================================== -->
+    <section id="stage-spot" class="w-full h-full flex flex-col p-2 sm:p-3 gap-2">
+      <!-- 상단 스테이지 진행 바 -->
+      <div class="flex items-center justify-between bg-white rounded-2xl px-4 py-1.5 border-2 border-amber-300 shadow-sm shrink-0">
+        <span id="spot-theme-title" class="text-base sm:text-xl text-amber-900 font-bold">🎨 동화 장면 1</span>
+        <div class="flex items-center gap-2">
+          <span class="text-sm sm:text-lg text-slate-700 font-bold">함께 찾은 곳</span>
+          <div id="spot-dots" class="flex items-center gap-1.5"></div>
+          <span id="spot-found-text" class="text-base sm:text-xl font-bold text-emerald-700 ml-1">0/5</span>
         </div>
-        <div id="rule-result-numbers" class="flex items-center justify-center gap-2 sm:gap-3 mb-5 flex-wrap"></div>
-        <button id="next-student-btn" type="button" class="px-8 sm:px-12 py-3.5 sm:py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-2xl sm:text-3xl border-b-8 border-indigo-900 shadow-xl transition cursor-pointer">
-          🏃‍♂️ 다음 친구 발표하기
+        <button id="spot-skip-btn" type="button" class="px-3 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs sm:text-sm font-bold cursor-pointer">
+          다음 그림 ⏭
         </button>
       </div>
 
-      <!-- 6칸 숫자 타일 -->
-      <div id="sequence-board" class="w-full flex items-center justify-center gap-2 sm:gap-4 flex-nowrap py-2">
-        <!-- JS 동적 생성 -->
-      </div>
-
-      <!-- 하단 발표 순서 안내 -->
-      <p id="guide-text" class="mt-3 text-base sm:text-xl text-slate-600 text-center">
-        1️⃣ 숫자 6개를 모두 채워요 &nbsp;➡&nbsp; 2️⃣ 어떤 규칙인지 친구들에게 말해요 &nbsp;➡&nbsp; 3️⃣ <span class="text-emerald-700 font-bold">[규칙 완성 ✔]</span> 터치!
-      </p>
-    </div>
-
-    <!-- 하단 대형 숫자 키패드 -->
-    <div class="bg-white rounded-3xl p-3 sm:p-4 border-4 border-indigo-200 shadow-lg shrink-0">
-      <div class="grid grid-cols-5 gap-2 sm:gap-3">
-        <!-- 1행: 1 ~ 5 -->
-        <button type="button" data-key="1" class="keypad-btn h-14 sm:h-16 md:h-20 rounded-2xl bg-indigo-50 hover:bg-indigo-100 border-b-4 border-indigo-300 text-3xl sm:text-4xl text-indigo-950 shadow-sm cursor-pointer">1</button>
-        <button type="button" data-key="2" class="keypad-btn h-14 sm:h-16 md:h-20 rounded-2xl bg-indigo-50 hover:bg-indigo-100 border-b-4 border-indigo-300 text-3xl sm:text-4xl text-indigo-950 shadow-sm cursor-pointer">2</button>
-        <button type="button" data-key="3" class="keypad-btn h-14 sm:h-16 md:h-20 rounded-2xl bg-indigo-50 hover:bg-indigo-100 border-b-4 border-indigo-300 text-3xl sm:text-4xl text-indigo-950 shadow-sm cursor-pointer">3</button>
-        <button type="button" data-key="4" class="keypad-btn h-14 sm:h-16 md:h-20 rounded-2xl bg-indigo-50 hover:bg-indigo-100 border-b-4 border-indigo-300 text-3xl sm:text-4xl text-indigo-950 shadow-sm cursor-pointer">4</button>
-        <button type="button" data-key="5" class="keypad-btn h-14 sm:h-16 md:h-20 rounded-2xl bg-indigo-50 hover:bg-indigo-100 border-b-4 border-indigo-300 text-3xl sm:text-4xl text-indigo-950 shadow-sm cursor-pointer">5</button>
-
-        <!-- 2행: 6 ~ 0 -->
-        <button type="button" data-key="6" class="keypad-btn h-14 sm:h-16 md:h-20 rounded-2xl bg-indigo-50 hover:bg-indigo-100 border-b-4 border-indigo-300 text-3xl sm:text-4xl text-indigo-950 shadow-sm cursor-pointer">6</button>
-        <button type="button" data-key="7" class="keypad-btn h-14 sm:h-16 md:h-20 rounded-2xl bg-indigo-50 hover:bg-indigo-100 border-b-4 border-indigo-300 text-3xl sm:text-4xl text-indigo-950 shadow-sm cursor-pointer">7</button>
-        <button type="button" data-key="8" class="keypad-btn h-14 sm:h-16 md:h-20 rounded-2xl bg-indigo-50 hover:bg-indigo-100 border-b-4 border-indigo-300 text-3xl sm:text-4xl text-indigo-950 shadow-sm cursor-pointer">8</button>
-        <button type="button" data-key="9" class="keypad-btn h-14 sm:h-16 md:h-20 rounded-2xl bg-indigo-50 hover:bg-indigo-100 border-b-4 border-indigo-300 text-3xl sm:text-4xl text-indigo-950 shadow-sm cursor-pointer">9</button>
-        <button type="button" data-key="0" class="keypad-btn h-14 sm:h-16 md:h-20 rounded-2xl bg-indigo-50 hover:bg-indigo-100 border-b-4 border-indigo-300 text-3xl sm:text-4xl text-indigo-950 shadow-sm cursor-pointer">0</button>
-
-        <!-- 3행: 모두 비움 / 한 칸 지움 / 다음 칸 / 규칙 완성 -->
-        <button type="button" data-key="clearAll" class="keypad-btn col-span-1 h-14 sm:h-16 md:h-20 rounded-2xl bg-slate-200 hover:bg-slate-300 border-b-4 border-slate-400 text-lg sm:text-2xl text-slate-800 shadow-sm cursor-pointer">🗑 비움</button>
-        <button type="button" data-key="del" class="keypad-btn col-span-1 h-14 sm:h-16 md:h-20 rounded-2xl bg-amber-300 hover:bg-amber-400 border-b-4 border-amber-500 text-lg sm:text-2xl text-amber-950 shadow-sm cursor-pointer">⌫ 지움</button>
-        <button type="button" data-key="next" class="keypad-btn col-span-1 h-14 sm:h-16 md:h-20 rounded-2xl bg-sky-200 hover:bg-sky-300 border-b-4 border-sky-400 text-lg sm:text-2xl text-sky-950 shadow-sm cursor-pointer">다음칸 ➡</button>
-        <button type="button" data-key="check" class="keypad-btn col-span-2 h-14 sm:h-16 md:h-20 rounded-2xl bg-emerald-500 hover:bg-emerald-600 border-b-4 border-emerald-700 text-2xl sm:text-3xl text-white shadow-sm cursor-pointer">규칙 완성 ✔</button>
-      </div>
-    </div>
-
-    <!-- ==================== 시작 설정 모달 ==================== -->
-    <div id="start-overlay" class="fixed inset-0 z-30 flex items-center justify-center bg-slate-900/65 backdrop-blur-sm p-4">
-      <div class="max-w-xl w-full bg-white rounded-3xl border-8 border-amber-300 p-6 sm:p-8 text-center shadow-2xl animate-pop">
-        <div class="inline-block px-4 py-1 rounded-full bg-amber-100 text-amber-800 text-base sm:text-lg mb-2 border-2 border-amber-300">
-          🏫 [2수02-02] 자신이 정한 규칙에 따라 수 배열하기
+      <!-- 3단 분할: 왼쪽(1팀 터치) | 가운데(원본 그림 - 깨끗하게 유지) | 오른쪽(2팀 터치) -->
+      <div class="flex-1 grid grid-cols-3 gap-2 sm:gap-3 min-h-0">
+        <!-- 1팀 그림 영역 -->
+        <div class="flex flex-col bg-blue-50/90 rounded-3xl border-4 border-blue-400 p-2 shadow-md min-h-0">
+          <div class="text-center text-blue-800 text-base sm:text-xl font-bold pb-1 shrink-0">💙 1팀 그림 (여기를 터치!)</div>
+          <div id="spot-board-t1" class="relative flex-1 bg-white rounded-2xl border-2 border-blue-200 overflow-hidden cursor-pointer"></div>
         </div>
-        <h1 class="text-3xl sm:text-5xl text-slate-800 mb-3">
-          나만의 숫자 규칙 발표!
-        </h1>
-        <p class="text-base sm:text-xl text-slate-600 mb-6">
-          숫자 6개를 채우고 친구들에게 규칙을 설명한 뒤<br />
-          <b>[규칙 완성 ✔]</b> 버튼을 눌러 확인해 보세요!
-        </p>
 
-        <!-- 숫자 자릿수 방식 선택 -->
-        <div class="mb-6 text-left bg-slate-50 p-4 sm:p-5 rounded-2xl border-2 border-slate-200">
-          <label class="block text-base sm:text-xl text-slate-700 mb-2.5">🔢 숫자 입력 방식 선택</label>
-          <div class="grid grid-cols-2 gap-3" id="digit-options">
-            <button type="button" data-digits="1" class="digit-opt-btn py-3 px-2 rounded-xl border-4 border-indigo-500 bg-indigo-100 text-indigo-950 text-base sm:text-lg font-bold cursor-pointer">
-              한 자리 수 자동 이동 (1~9)
-            </button>
-            <button type="button" data-digits="2" class="digit-opt-btn py-3 px-2 rounded-xl border-2 border-slate-300 bg-white text-slate-700 text-base sm:text-lg cursor-pointer">
-              두 자리 수 포함 (1~99)
-            </button>
+        <!-- 가운데 기준 그림 영역 -->
+        <div class="flex flex-col bg-amber-50/90 rounded-3xl border-4 border-amber-400 p-2 shadow-md min-h-0">
+          <div class="text-center text-amber-900 text-base sm:text-xl font-bold pb-1 shrink-0">⭐ 기준 그림 (비교해요!)</div>
+          <div id="spot-board-center" class="relative flex-1 bg-white rounded-2xl border-2 border-amber-200 overflow-hidden"></div>
+        </div>
+
+        <!-- 2팀 그림 영역 -->
+        <div class="flex flex-col bg-rose-50/90 rounded-3xl border-4 border-rose-400 p-2 shadow-md min-h-0">
+          <div class="text-center text-rose-800 text-base sm:text-xl font-bold pb-1 shrink-0">❤️ 2팀 그림 (여기를 터치!)</div>
+          <div id="spot-board-t2" class="relative flex-1 bg-white rounded-2xl border-2 border-rose-200 overflow-hidden cursor-pointer"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- [게임 2] 다음 그림 맞히기 (양 팀 독립 진행 + 규칙 힌트 숨김 + 패스 버튼) -->
+    <!-- ===================================================================== -->
+    <section id="stage-pattern" class="hidden w-full h-full grid grid-cols-2 divide-x-4 divide-slate-300">
+      <!-- 1팀 영역 -->
+      <div class="flex flex-col justify-between h-full bg-gradient-to-b from-sky-50 to-blue-100/80 p-3 sm:p-5 overflow-hidden">
+        <div class="flex items-center justify-between bg-white/90 rounded-2xl px-4 py-2 border-2 border-blue-200 shrink-0">
+          <span class="text-lg sm:text-2xl text-blue-800 font-bold">💙 1팀 다음 그림 맞히기</span>
+          <span class="text-sm sm:text-base text-blue-600 font-bold">맞히면 +10점!</span>
+        </div>
+
+        <!-- 문제 배열 줄 -->
+        <div class="flex-1 flex flex-col items-center justify-center my-2">
+          <div id="pat-seq-t1" class="w-full flex items-center justify-center gap-1 sm:gap-2 flex-nowrap"></div>
+          <p id="pat-msg-t1" class="mt-3 text-base sm:text-xl text-blue-800 font-bold text-center">빈칸(□)에 알맞은 그림을 아래에서 고르세요!</p>
+        </div>
+
+        <!-- 보기 4개 + 패스 버튼 -->
+        <div class="flex items-stretch gap-2 bg-white/95 p-3 rounded-3xl border-4 border-blue-300 shadow-lg shrink-0">
+          <div id="pat-choices-t1" class="flex-1 grid grid-cols-4 gap-2"></div>
+          <button id="pat-pass-t1" type="button" class="touch-btn px-3 sm:px-4 rounded-2xl bg-slate-200 hover:bg-slate-300 border-b-4 border-slate-400 text-slate-800 text-sm sm:text-lg font-bold flex flex-col items-center justify-center shadow cursor-pointer shrink-0">
+            <span class="text-xl sm:text-2xl">⏭</span>
+            <span>패스</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 2팀 영역 -->
+      <div class="flex flex-col justify-between h-full bg-gradient-to-b from-rose-50 to-red-100/80 p-3 sm:p-5 overflow-hidden">
+        <div class="flex items-center justify-between bg-white/90 rounded-2xl px-4 py-2 border-2 border-rose-200 shrink-0">
+          <span class="text-lg sm:text-2xl text-rose-800 font-bold">❤️ 2팀 다음 그림 맞히기</span>
+          <span class="text-sm sm:text-base text-rose-600 font-bold">맞히면 +10점!</span>
+        </div>
+
+        <!-- 문제 배열 줄 -->
+        <div class="flex-1 flex flex-col items-center justify-center my-2">
+          <div id="pat-seq-t2" class="w-full flex items-center justify-center gap-1 sm:gap-2 flex-nowrap"></div>
+          <p id="pat-msg-t2" class="mt-3 text-base sm:text-xl text-rose-800 font-bold text-center">빈칸(□)에 알맞은 그림을 아래에서 고르세요!</p>
+        </div>
+
+        <!-- 보기 4개 + 패스 버튼 -->
+        <div class="flex items-stretch gap-2 bg-white/95 p-3 rounded-3xl border-4 border-rose-300 shadow-lg shrink-0">
+          <div id="pat-choices-t2" class="flex-1 grid grid-cols-4 gap-2"></div>
+          <button id="pat-pass-t2" type="button" class="touch-btn px-3 sm:px-4 rounded-2xl bg-slate-200 hover:bg-slate-300 border-b-4 border-slate-400 text-slate-800 text-sm sm:text-lg font-bold flex flex-col items-center justify-center shadow cursor-pointer shrink-0">
+            <span class="text-xl sm:text-2xl">⏭</span>
+            <span>패스</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- [게임 3] 몇 시 몇 분? (N시 / N시 30분 전용 선착순 대결) -->
+    <!-- ===================================================================== -->
+    <section id="stage-clock" class="hidden relative w-full h-full grid grid-cols-2 divide-x-4 divide-slate-300">
+      <!-- 다음 친구 준비 카운트다운 오버레이 (2 -> 1 -> 시작!) -->
+      <div id="clock-wait-overlay" class="hidden absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-900/75 backdrop-blur-sm p-4 text-center">
+        <div id="clock-winner-banner" class="bg-emerald-500 text-white px-8 py-4 rounded-3xl border-4 border-white shadow-2xl text-3xl sm:text-5xl mb-4 animate-pop">
+          ⭕ 1팀 정답! +10점!
+        </div>
+        <div class="bg-white rounded-3xl border-8 border-amber-400 px-10 py-6 shadow-2xl">
+          <p class="text-2xl sm:text-3xl text-slate-700 mb-2">🏃‍♂️ 다음 친구 준비!</p>
+          <div id="clock-countdown-num" class="text-6xl sm:text-8xl text-amber-500 font-black">2</div>
+        </div>
+      </div>
+
+      <!-- 1팀 시계 영역 -->
+      <div class="flex flex-col justify-between h-full bg-gradient-to-b from-sky-50 to-blue-100/80 p-3 sm:p-5 overflow-hidden">
+        <div class="flex items-center justify-between bg-white/90 rounded-2xl px-4 py-1.5 border-2 border-blue-200 shrink-0">
+          <span class="text-lg sm:text-2xl text-blue-800 font-bold">💙 1팀 시계 보기</span>
+          <span class="text-sm sm:text-base text-blue-600 font-bold">먼저 맞히면 +10점!</span>
+        </div>
+
+        <div class="flex-1 flex flex-col items-center justify-center min-h-0 my-1">
+          <div id="clock-face-t1" class="w-48 h-48 sm:w-64 sm:h-64 md:w-72 md:h-72 flex items-center justify-center"></div>
+          <p id="clock-msg-t1" class="mt-2 text-base sm:text-xl text-blue-800 font-bold">알맞은 시각 버튼을 먼저 누르세요!</p>
+        </div>
+
+        <div id="clock-choices-t1" class="grid grid-cols-2 gap-2.5 sm:gap-3 bg-white/95 p-3 rounded-3xl border-4 border-blue-300 shadow-lg shrink-0"></div>
+      </div>
+
+      <!-- 2팀 시계 영역 -->
+      <div class="flex flex-col justify-between h-full bg-gradient-to-b from-rose-50 to-red-100/80 p-3 sm:p-5 overflow-hidden">
+        <div class="flex items-center justify-between bg-white/90 rounded-2xl px-4 py-1.5 border-2 border-rose-200 shrink-0">
+          <span class="text-lg sm:text-2xl text-rose-800 font-bold">❤️ 2팀 시계 보기</span>
+          <span class="text-sm sm:text-base text-rose-600 font-bold">먼저 맞히면 +10점!</span>
+        </div>
+
+        <div class="flex-1 flex flex-col items-center justify-center min-h-0 my-1">
+          <div id="clock-face-t2" class="w-48 h-48 sm:w-64 sm:h-64 md:w-72 md:h-72 flex items-center justify-center"></div>
+          <p id="clock-msg-t2" class="mt-2 text-base sm:text-xl text-rose-800 font-bold">알맞은 시각 버튼을 먼저 누르세요!</p>
+        </div>
+
+        <div id="clock-choices-t2" class="grid grid-cols-2 gap-2.5 sm:gap-3 bg-white/95 p-3 rounded-3xl border-4 border-rose-300 shadow-lg shrink-0"></div>
+      </div>
+    </section>
+
+    <!-- ==================== 일시정지(멈춤) 오버레이 ==================== -->
+    <div id="pause-overlay" class="hidden fixed inset-0 z-40 flex items-center justify-center bg-slate-900/70 backdrop-blur-sm p-4">
+      <div class="max-w-md w-full bg-white rounded-3xl border-8 border-amber-300 p-8 text-center shadow-2xl animate-pop">
+        <div class="text-6xl mb-3">⏸</div>
+        <h2 class="text-3xl sm:text-4xl text-slate-800 mb-3">잠깐 멈춤!</h2>
+        <p class="text-lg text-slate-600 mb-6">준비가 되면 계속하기 버튼을 눌러 주세요.</p>
+        <button id="resume-btn" type="button" class="w-full py-4 rounded-2xl bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white text-2xl sm:text-3xl border-b-8 border-emerald-700 shadow-lg cursor-pointer">
+          ▶ 계속하기
+        </button>
+      </div>
+    </div>
+
+    <!-- ==================== 시작 및 제한시간 설정 모달 ==================== -->
+    <div id="setup-overlay" class="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/70 backdrop-blur-sm p-4">
+      <div class="max-w-xl w-full bg-white rounded-3xl border-8 border-amber-300 p-6 sm:p-8 text-center shadow-2xl animate-pop">
+        <div class="inline-block px-4 py-1 rounded-full bg-amber-100 text-amber-900 text-base sm:text-lg mb-2 border-2 border-amber-300">
+          🏫 초등학교 1학년 1팀 vs 2팀 동시 대결
+        </div>
+        <h1 class="text-3xl sm:text-5xl text-slate-800 mb-5">
+          신나는 교실 대결 게임!
+        </h1>
+
+        <div class="space-y-4 mb-6 text-left bg-slate-50 p-4 sm:p-5 rounded-2xl border-2 border-slate-200">
+          <!-- 게임 종목 선택 -->
+          <div>
+            <label class="block text-base sm:text-lg text-slate-700 mb-2">🎮 대결할 게임 선택</label>
+            <div class="grid grid-cols-3 gap-2" id="modal-game-options">
+              <button type="button" data-game="spot" class="modal-game-btn py-2.5 px-1 rounded-xl border-4 border-amber-500 bg-amber-100 text-amber-950 text-sm sm:text-lg font-bold cursor-pointer">
+                🔍 틀린 그림 찾기
+              </button>
+              <button type="button" data-game="pattern" class="modal-game-btn py-2.5 px-1 rounded-xl border-2 border-slate-300 bg-white text-slate-700 text-sm sm:text-lg cursor-pointer">
+                🧩 다음 그림 맞히기
+              </button>
+              <button type="button" data-game="clock" class="modal-game-btn py-2.5 px-1 rounded-xl border-2 border-slate-300 bg-white text-slate-700 text-sm sm:text-lg cursor-pointer">
+                ⏰ 몇 시 몇 분?
+              </button>
+            </div>
+          </div>
+
+          <!-- 제한 시간 선택 (1분 / 2분 / 3분) -->
+          <div>
+            <label class="block text-base sm:text-lg text-slate-700 mb-2">⏱ 제한 시간 선택</label>
+            <div class="grid grid-cols-3 gap-2" id="modal-time-options">
+              <button type="button" data-sec="60" class="modal-time-btn py-2.5 rounded-xl border-2 border-slate-300 bg-white text-slate-700 text-lg sm:text-xl cursor-pointer">
+                1분
+              </button>
+              <button type="button" data-sec="120" class="modal-time-btn py-2.5 rounded-xl border-4 border-blue-500 bg-blue-100 text-blue-950 text-lg sm:text-xl font-bold cursor-pointer">
+                2분 (기본)
+              </button>
+              <button type="button" data-sec="180" class="modal-time-btn py-2.5 rounded-xl border-2 border-slate-300 bg-white text-slate-700 text-lg sm:text-xl cursor-pointer">
+                3분
+              </button>
+            </div>
           </div>
         </div>
 
-        <button id="start-game-btn" type="button" class="w-full py-4 sm:py-5 rounded-2xl bg-gradient-to-r from-indigo-500 to-blue-600 hover:brightness-110 active:scale-95 text-white text-2xl sm:text-4xl border-b-8 border-indigo-800 shadow-xl transition cursor-pointer">
-          🚀 발표 시작하기!
+        <button id="start-match-btn" type="button" class="w-full py-4 sm:py-5 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-500 to-rose-600 hover:brightness-110 active:scale-95 text-white text-2xl sm:text-4xl border-b-8 border-indigo-900 shadow-xl transition cursor-pointer">
+          🚀 대결 시작하기!
         </button>
       </div>
     </div>
 
-    <!-- ==================== 발표한 규칙 모아보기 모달 (수업 정리용) ==================== -->
-    <div id="gallery-overlay" class="hidden fixed inset-0 z-40 flex items-center justify-center bg-slate-900/75 backdrop-blur-sm p-3 sm:p-6">
-      <div class="max-w-5xl w-full h-[90vh] flex flex-col bg-white rounded-3xl border-8 border-emerald-400 p-5 sm:p-7 shadow-2xl animate-pop">
-        <div class="flex items-center justify-between border-b-4 border-slate-200 pb-3 mb-4 shrink-0">
-          <h2 class="text-2xl sm:text-4xl text-slate-800">
-            📋 우리 반 친구들이 발표한 규칙 모아보기
-          </h2>
-          <button id="close-gallery-btn" type="button" class="px-5 py-2.5 rounded-2xl bg-slate-200 hover:bg-slate-300 active:scale-95 text-slate-800 text-xl sm:text-2xl cursor-pointer">
-            ✖ 닫기
-          </button>
+    <!-- ==================== 종료 및 최종 점수 결과 모달 ==================== -->
+    <div id="result-overlay" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/75 backdrop-blur-sm p-4">
+      <div class="max-w-2xl w-full bg-white rounded-3xl border-8 border-amber-400 p-6 sm:p-10 text-center shadow-2xl animate-pop">
+        <div class="text-5xl sm:text-6xl mb-2">🏆</div>
+        <h2 id="final-winner-text" class="text-3xl sm:text-5xl text-slate-800 mb-6">
+          1팀 승리! 축하합니다!
+        </h2>
+
+        <div class="grid grid-cols-2 gap-4 mb-8">
+          <div id="final-card-t1" class="rounded-3xl bg-blue-50 border-4 border-blue-400 p-6">
+            <div class="text-2xl text-blue-800 mb-1">💙 1팀</div>
+            <div class="text-5xl sm:text-6xl text-blue-600 font-bold"><span id="final-score-t1">0</span>점</div>
+          </div>
+          <div id="final-card-t2" class="rounded-3xl bg-rose-50 border-4 border-rose-400 p-6">
+            <div class="text-2xl text-rose-800 mb-1">❤️ 2팀</div>
+            <div class="text-5xl sm:text-6xl text-rose-600 font-bold"><span id="final-score-t2">0</span>점</div>
+          </div>
         </div>
 
-        <div id="gallery-list" class="flex-1 overflow-y-auto space-y-4 pr-1">
-          <!-- JS 동적 렌더링 -->
+        <div class="grid grid-cols-2 gap-3">
+          <button id="replay-same-btn" type="button" class="py-4 rounded-2xl bg-amber-400 hover:bg-amber-500 active:scale-95 text-amber-950 text-xl sm:text-2xl border-b-8 border-amber-600 shadow-lg cursor-pointer">
+            🔄 같은 게임 다시 하기
+          </button>
+          <button id="choose-other-btn" type="button" class="py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xl sm:text-2xl border-b-8 border-indigo-900 shadow-lg cursor-pointer">
+            🎮 다른 게임 고르기
+          </button>
         </div>
       </div>
     </div>
@@ -212,365 +358,1074 @@
 
   <script>
     /**
-     * [2수02-02] 자신이 정한 규칙에 따라 수 배열하기 (1팀 단독 발표용)
-     * - 제한 시간 없음
-     * - 6칸 숫자를 모두 입력해도 자동 판별하지 않고, 학생이 규칙을 설명한 뒤 [규칙 완성 ✔] 버튼을 눌렀을 때만 판별
+     * 초등학교 1학년 1팀 vs 2팀 동시 대결 미니게임 3종
+     * - 상단 탭 전환 시 점수(0점) 및 제한 시간 완전 초기화
+     * - 일시정지(⏸ 멈춤) 기능 지원
+     * - 재시작/다음 조 진행 시 항상 새로운 랜덤 문제 출제
      */
 
-    const SLOT_COUNT = 6;
-
-    const state = {
-      maxDigits: 1,
-      inputs: ['', '', '', '', '', ''],
-      activeSlot: 0,
-      isShake: false,
-      locked: false,
-      createdList: [],
-      lastInputTime: 0
+    const appState = {
+      currentGame: 'spot', // 'spot' | 'pattern' | 'clock'
+      durationSec: 120,
+      timeLeft: 120,
+      isRunning: false,
+      isManualPaused: false,
+      isTimerPaused: false,
+      timerId: null,
+      scores: { t1: 0, t2: 0 }
     };
 
-    /**
-     * [규칙 검증 엔진]
-     * - 모두 같은 숫자 반복 제외
-     * - 일정하게 커지거나 작아지는 규칙 (+1, +2, -1, -2 등)
-     * - 마디 반복 규칙 (2칸, 3칸, 4칸 반복)
-     */
-    function validateCustomPattern(rawInputs) {
-      const uniqueCount = new Set(rawInputs).size;
-      if (uniqueCount <= 1) {
-        return {
-          valid: false,
-          reason: '😅 모두 같은 숫자예요! 두 가지 이상의 숫자로 규칙을 다시 만들어 볼까요?'
-        };
-      }
+    const clockState = {
+      hour: 12,
+      minute: 30,
+      lastKey: '',
+      locked: false,
+      waitTimer: null
+    };
 
-      // 1. 일정하게 커지기 / 작아지기 검사
-      const nums = rawInputs.map(Number);
-      const diff = nums[1] - nums[0];
-      if (diff !== 0) {
-        let isArithmetic = true;
-        for (let i = 2; i < nums.length; i++) {
-          if (nums[i] - nums[i - 1] !== diff) {
-            isArithmetic = false;
-            break;
-          }
-        }
-        if (isArithmetic) {
-          const absDiff = Math.abs(diff);
-          const ruleDesc = diff > 0
-            ? `${absDiff}씩 커지는 규칙`
-            : `${absDiff}씩 작아지는 규칙`;
-          return { valid: true, ruleName: ruleDesc };
-        }
-      }
-
-      // 2. 2칸, 3칸 마디 반복 검사
-      for (let period = 2; period <= 3; period++) {
-        let isPeriodic = true;
-        for (let i = period; i < rawInputs.length; i++) {
-          if (rawInputs[i] !== rawInputs[i % period]) {
-            isPeriodic = false;
-            break;
-          }
-        }
-        if (isPeriodic) {
-          return {
-            valid: true,
-            ruleName: `[${rawInputs.slice(0, period).join(' - ')}] 반복 규칙`
-          };
-        }
-      }
-
-      // 3. 4칸 마디 반복 시작 검사 (예: 1, 2, 3, 4, 1, 2)
-      let isPeriod4 = true;
-      for (let i = 4; i < rawInputs.length; i++) {
-        if (rawInputs[i] !== rawInputs[i % 4]) {
-          isPeriod4 = false;
-          break;
-        }
-      }
-      if (isPeriod4) {
-        return {
-          valid: true,
-          ruleName: `[${rawInputs.slice(0, 4).join(' - ')}] 반복 규칙`
-        };
-      }
-
-      return {
-        valid: false,
-        reason: '🤔 다시 도전! 규칙이 중간에 바뀌었어요. 숫자를 고쳐서 다시 눌러볼까요?'
-      };
+    function randInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    function setFeedback(htmlText, type = 'normal') {
-      const el = document.getElementById('feedback-box');
-      el.innerHTML = htmlText;
+    function shuffle(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
 
-      if (type === 'error') {
-        el.className = 'w-full py-2.5 px-5 rounded-2xl bg-red-100 text-red-900 border-4 border-red-400 text-lg sm:text-2xl md:text-3xl shadow-sm text-center shrink-0 animate-pop';
-      } else if (type === 'ready') {
-        el.className = 'w-full py-2.5 px-5 rounded-2xl bg-amber-100 text-amber-950 border-4 border-amber-400 text-lg sm:text-2xl md:text-3xl shadow-sm text-center shrink-0 animate-pop';
+    function resetScores() {
+      appState.scores = { t1: 0, t2: 0 };
+      document.getElementById('score-t1').textContent = '0';
+      document.getElementById('score-t2').textContent = '0';
+    }
+
+    function addTeamScore(teamKey, points = 10) {
+      appState.scores[teamKey] += points;
+      document.getElementById(`score-${teamKey}`).textContent = appState.scores[teamKey];
+
+      const popupWrap = document.getElementById(`popup-${teamKey}`);
+      const badge = document.createElement('div');
+      badge.className = 'animate-float-score whitespace-nowrap px-3 py-1 rounded-full bg-amber-400 text-amber-950 font-bold text-lg sm:text-2xl border-2 border-white shadow-lg';
+      badge.textContent = `+${points}점!`;
+      popupWrap.appendChild(badge);
+      setTimeout(() => badge.remove(), 900);
+    }
+
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function updateTimerUI() {
+      const el = document.getElementById('timer-display');
+      const box = document.getElementById('timer-box');
+      const label = document.getElementById('timer-label');
+      el.textContent = formatTime(appState.timeLeft);
+
+      if (appState.isManualPaused) {
+        label.textContent = '⏸ 일시정지';
+        box.classList.add('border-amber-300');
+        box.classList.remove('border-amber-400', 'border-rose-500', 'border-sky-400');
+      } else if (appState.isTimerPaused) {
+        label.textContent = '⏸ 교대 대기';
+        box.classList.add('border-sky-400');
+        box.classList.remove('border-amber-400', 'border-rose-500', 'border-amber-300');
+      } else if (appState.timeLeft <= 15 && appState.timeLeft > 0) {
+        label.textContent = '⏱ 남은 시간';
+        el.classList.add('text-rose-400');
+        box.classList.add('border-rose-500');
+        box.classList.remove('border-amber-400', 'border-sky-400', 'border-amber-300');
       } else {
-        el.className = 'w-full py-2.5 px-5 rounded-2xl bg-white text-indigo-950 border-4 border-indigo-200 text-lg sm:text-2xl md:text-3xl shadow-sm text-center shrink-0';
+        label.textContent = '⏱ 남은 시간';
+        el.classList.remove('text-rose-400');
+        box.classList.add('border-amber-400');
+        box.classList.remove('border-rose-500', 'border-sky-400', 'border-amber-300');
       }
     }
 
-    // 6칸 숫자 보드 렌더링
-    function renderBoard(isNew = false) {
-      const container = document.getElementById('sequence-board');
-      container.innerHTML = '';
+    function switchStageView(gameId) {
+      appState.currentGame = gameId;
+      ['spot', 'pattern', 'clock'].forEach((id) => {
+        const stage = document.getElementById(`stage-${id}`);
+        if (id === gameId) stage.classList.remove('hidden');
+        else stage.classList.add('hidden');
+      });
 
-      state.inputs.forEach((val, idx) => {
-        const tile = document.createElement('div');
-        const isSelected = state.activeSlot === idx && !state.locked;
-
-        let boxStyle = 'bg-white border-slate-300 text-slate-800';
-        if (state.isShake) {
-          boxStyle = 'bg-red-100 border-red-500 text-red-700 animate-shake';
-        } else if (isSelected) {
-          boxStyle = 'bg-indigo-50 border-indigo-500 ring-4 ring-indigo-300 text-indigo-950';
-        } else if (val !== '') {
-          boxStyle = 'bg-white border-indigo-400 text-indigo-950';
-        }
-
-        tile.className = `num-tile rounded-full flex-1 max-w-[130px] aspect-square border-4 sm:border-[6px] ${boxStyle} flex items-center justify-center shadow-lg cursor-pointer transition-all ${isNew ? 'animate-pop' : ''}`;
-
-        if (val === '') {
-          const placeholder = document.createElement('span');
-          placeholder.className = isSelected
-            ? 'cursor-blink text-xl sm:text-3xl text-indigo-500'
-            : 'text-slate-300 text-2xl sm:text-3xl';
-          placeholder.textContent = isSelected ? '입력' : `${idx + 1}`;
-          tile.appendChild(placeholder);
+      document.querySelectorAll('.game-tab-btn').forEach((btn) => {
+        if (btn.dataset.game === gameId) {
+          btn.className = 'game-tab-btn px-3 sm:px-4 py-1.5 rounded-xl bg-amber-400 text-amber-950 font-bold text-sm sm:text-lg shadow-sm cursor-pointer';
         } else {
-          tile.classList.add('text-4xl', 'sm:text-6xl', 'md:text-7xl', 'font-bold');
-          tile.textContent = val;
+          btn.className = 'game-tab-btn px-3 sm:px-4 py-1.5 rounded-xl text-slate-600 hover:bg-white text-sm sm:text-lg cursor-pointer';
         }
+      });
 
-        // 원하는 칸 터치 시 바로 해당 칸으로 커서 이동
-        tile.addEventListener('pointerdown', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          if (state.locked) return;
-          state.activeSlot = idx;
-          renderBoard(false);
-        });
-
-        container.appendChild(tile);
+      document.querySelectorAll('.modal-game-btn').forEach((btn) => {
+        if (btn.dataset.game === gameId) {
+          btn.className = 'modal-game-btn py-2.5 px-1 rounded-xl border-4 border-amber-500 bg-amber-100 text-amber-950 text-sm sm:text-lg font-bold cursor-pointer';
+        } else {
+          btn.className = 'modal-game-btn py-2.5 px-1 rounded-xl border-2 border-slate-300 bg-white text-slate-700 text-sm sm:text-lg cursor-pointer';
+        }
       });
     }
 
-    // 키패드 입력 처리 (자동 채점 절대 안 함! 오직 [규칙 완성 ✔] 눌렀을 때만 판별)
-    function handleKeyInput(key) {
-      if (state.locked) return;
+    function startMatch() {
+      clearInterval(appState.timerId);
+      clearTimeout(clockState.waitTimer);
 
-      // 150ms 펜 연타 중복 방지
-      const now = Date.now();
-      if (now - state.lastInputTime < 150) return;
-      state.lastInputTime = now;
+      resetScores();
 
-      const slot = state.activeSlot;
+      appState.timeLeft = appState.durationSec;
+      appState.isRunning = true;
+      appState.isManualPaused = false;
+      appState.isTimerPaused = false;
+      updateTimerUI();
 
-      // 1. 모두 비우기
-      if (key === 'clearAll') {
-        state.inputs = ['', '', '', '', '', ''];
-        state.activeSlot = 0;
-        setFeedback('✨ 6칸에 나만의 숫자 규칙을 넣고, 친구들에게 설명한 뒤 <b>[규칙 완성 ✔]</b>을 눌러주세요!', 'normal');
-        renderBoard(false);
-        return;
-      }
+      document.getElementById('setup-overlay').classList.add('hidden');
+      document.getElementById('result-overlay').classList.add('hidden');
+      document.getElementById('pause-overlay').classList.add('hidden');
+      document.getElementById('clock-wait-overlay').classList.add('hidden');
 
-      // 2. 한 칸 지우기
-      if (key === 'del') {
-        if (state.inputs[slot].length > 0) {
-          state.inputs[slot] = state.inputs[slot].slice(0, -1);
-        } else if (slot > 0) {
-          state.activeSlot = slot - 1;
-          state.inputs[slot - 1] = state.inputs[slot - 1].slice(0, -1);
+      switchStageView(appState.currentGame);
+
+      if (appState.currentGame === 'spot') initSpotGame();
+      else if (appState.currentGame === 'pattern') initPatternGame();
+      else if (appState.currentGame === 'clock') initClockGame();
+
+      appState.timerId = setInterval(() => {
+        if (!appState.isRunning || appState.isManualPaused || appState.isTimerPaused) return;
+        appState.timeLeft -= 1;
+        updateTimerUI();
+        if (appState.timeLeft <= 0) {
+          finishMatch();
         }
-        renderBoard(false);
-        return;
-      }
+      }, 1000);
+    }
 
-      // 3. 다음 칸 이동
-      if (key === 'next') {
-        state.activeSlot = (slot + 1) % SLOT_COUNT;
-        renderBoard(false);
-        return;
-      }
+    function finishMatch() {
+      clearInterval(appState.timerId);
+      clearTimeout(clockState.waitTimer);
+      appState.isRunning = false;
+      appState.isManualPaused = false;
+      appState.isTimerPaused = false;
 
-      // 4. 규칙 완성 확인 (오직 이 버튼을 눌렀을 때만 AI 판별!)
-      if (key === 'check') {
-        verifyPattern();
-        return;
-      }
+      const s1 = appState.scores.t1;
+      const s2 = appState.scores.t2;
 
-      // 5. 숫자 입력 (0~9)
-      if (state.maxDigits === 1) {
-        state.inputs[slot] = key;
-        if (slot < SLOT_COUNT - 1) {
-          state.activeSlot = slot + 1;
-        }
+      document.getElementById('final-score-t1').textContent = s1;
+      document.getElementById('final-score-t2').textContent = s2;
+
+      const title = document.getElementById('final-winner-text');
+      const card1 = document.getElementById('final-card-t1');
+      const card2 = document.getElementById('final-card-t2');
+      card1.classList.remove('ring-8', 'ring-amber-400', 'scale-105');
+      card2.classList.remove('ring-8', 'ring-amber-400', 'scale-105');
+
+      if (s1 > s2) {
+        title.textContent = '🎉 1팀 승리! 축하합니다!';
+        title.className = 'text-3xl sm:text-5xl text-blue-600 mb-6';
+        card1.classList.add('ring-8', 'ring-amber-400', 'scale-105');
+      } else if (s2 > s1) {
+        title.textContent = '🎉 2팀 승리! 축하합니다!';
+        title.className = 'text-3xl sm:text-5xl text-rose-600 mb-6';
+        card2.classList.add('ring-8', 'ring-amber-400', 'scale-105');
       } else {
-        if (state.inputs[slot].length < 2) {
-          state.inputs[slot] = state.inputs[slot] === '0' ? key : state.inputs[slot] + key;
+        title.textContent = '🤝 우와! 사이좋은 무승부!';
+        title.className = 'text-3xl sm:text-5xl text-amber-600 mb-6';
+      }
+
+      document.getElementById('result-overlay').classList.remove('hidden');
+    }
+
+    // =========================================================================
+    // [게임 1] 틀린 그림 찾기 (25가지 다채로운 동화풍 장면 생성 엔진)
+    // =========================================================================
+    const SPOT_STAGE_CONFIGS = [
+      {
+        title: '🦁 초원의 기린과 사자 친구',
+        sky: ['#FEF3C7', '#FDE68A'], ground: '#86EFAC', hill: '#4ADE80',
+        props: ['sun_warm', 'acacia_tree', 'giraffe', 'lion_cub', 'waterhole', 'cloud_fluffy', 'grass_tuft'],
+        diffs: [
+          { x: 58, y: 52, r: 28, orig: 'sun_rays', alt: 'sun_sunglasses' },
+          { x: 225, y: 120, r: 28, orig: 'giraffe_horns_2', alt: 'giraffe_hat' },
+          { x: 92, y: 275, r: 30, orig: 'lion_mane_orange', alt: 'lion_bow_blue' },
+          { x: 205, y: 315, r: 28, orig: 'duck_yellow', alt: 'frog_green' },
+          { x: 145, y: 185, r: 26, orig: 'bird_red', alt: 'butterfly_purple' }
+        ]
+      },
+      {
+        title: '🚀 반짝반짝 우주선 여행',
+        sky: ['#0F172A', '#1E3A8A'], ground: '#94A3B8', hill: '#CBD5E1',
+        props: ['stars_bg', 'saturn_planet', 'moon_crater', 'rocket_ship', 'alien_ufo', 'astronaut'],
+        diffs: [
+          { x: 150, y: 135, r: 30, orig: 'rocket_window_round', alt: 'rocket_window_heart' },
+          { x: 150, y: 245, r: 28, orig: 'rocket_flame_orange', alt: 'rocket_flame_blue' },
+          { x: 65, y: 85, r: 30, orig: 'saturn_ring_gold', alt: 'saturn_ring_pink' },
+          { x: 242, y: 92, r: 28, orig: 'ufo_dome_green', alt: 'ufo_absent' },
+          { x: 72, y: 315, r: 30, orig: 'flag_red', alt: 'flag_yellow' }
+        ]
+      },
+      {
+        title: '🍦 달콤한 아이스크림 트럭',
+        sky: ['#E0F2FE', '#BAE6FD'], ground: '#E2E8F0', hill: '#93C5FD',
+        props: ['cloud_fluffy', 'icecream_truck', 'awning_stripe', 'giant_cone', 'bench_park', 'balloon_bunch'],
+        diffs: [
+          { x: 150, y: 95, r: 30, orig: 'cone_scoop_pink', alt: 'cone_scoop_mint' },
+          { x: 96, y: 278, r: 26, orig: 'wheel_hub_yellow', alt: 'wheel_hub_red' },
+          { x: 235, y: 145, r: 28, orig: 'balloon_3', alt: 'balloon_2' },
+          { x: 168, y: 195, r: 28, orig: 'chef_bear', alt: 'chef_cat' },
+          { x: 52, y: 325, r: 26, orig: 'puppy_brown', alt: 'puppy_white' }
+        ]
+      },
+      {
+        title: '🐠 산호초 바닷속 왕국',
+        sky: ['#CFFAFE', '#67E8F9'], ground: '#FDE68A', hill: '#FCD34D',
+        props: ['bubbles_group', 'coral_reef', 'submarine_yellow', 'octopus_pink', 'treasure_chest', 'seaweed_pair'],
+        diffs: [
+          { x: 150, y: 120, r: 30, orig: 'sub_periscope_right', alt: 'sub_periscope_left' },
+          { x: 85, y: 240, r: 30, orig: 'octopus_crown', alt: 'octopus_ribbon' },
+          { x: 222, y: 295, r: 30, orig: 'chest_closed', alt: 'chest_open_gem' },
+          { x: 235, y: 90, r: 26, orig: 'clownfish', alt: 'blue_tang' },
+          { x: 148, y: 345, r: 26, orig: 'starfish_orange', alt: 'shell_pearl' }
+        ]
+      },
+      {
+        title: '🍓 숲속 딸기 케이크 집',
+        sky: ['#FCE7F3', '#FBCFE8'], ground: '#BBF7D0', hill: '#86EFAC',
+        props: ['cloud_fluffy', 'strawberry_house', 'candy_cane', 'mushroom_red', 'squirrel_cute', 'flower_bed'],
+        diffs: [
+          { x: 150, y: 118, r: 28, orig: 'roof_cream_swirl', alt: 'roof_cherry_top' },
+          { x: 150, y: 235, r: 28, orig: 'door_heart', alt: 'door_star' },
+          { x: 64, y: 285, r: 28, orig: 'mushroom_dots_white', alt: 'mushroom_blue' },
+          { x: 240, y: 280, r: 28, orig: 'squirrel_acorn', alt: 'bunny_carrot' },
+          { x: 225, y: 165, r: 26, orig: 'chimney_smoke', alt: 'chimney_absent' }
+        ]
+      },
+      {
+        title: '🚂 칙칙폭폭 꼬마 기차 여행',
+        sky: ['#DBEAFE', '#EFF6FF'], ground: '#A7F3D0', hill: '#6EE7B7',
+        props: ['sun_warm', 'mountain_snow', 'rail_track', 'steam_train', 'crossing_sign', 'sheep_flock'],
+        diffs: []
+      },
+      {
+        title: '⛺ 별빛 아래 숲속 캠핑',
+        sky: ['#1E1B4B', '#312E81'], ground: '#166534', hill: '#15803D',
+        props: ['moon_crescent', 'stars_bg', 'pine_trees', 'camping_tent', 'campfire', 'owl_branch'],
+        diffs: []
+      },
+      {
+        title: '🚜 즐거운 동물 농장 아침',
+        sky: ['#FEF9C3', '#E0F2FE'], ground: '#BEF264', hill: '#84CC16',
+        props: ['sun_warm', 'red_barn', 'windmill', 'tractor_green', 'cow_spotted', 'fence_wood'],
+        diffs: []
+      },
+      {
+        title: '🏰 구름 위 무지개 성',
+        sky: ['#E0E7FF', '#FCE7F3'], ground: '#FFFFFF', hill: '#F1F5F9',
+        props: ['rainbow_arc', 'fairy_castle', 'cloud_fluffy', 'unicorn_white', 'star_wand'],
+        diffs: []
+      },
+      {
+        title: '🏖️ 여름 바닷가 모래성 놀이',
+        sky: ['#BAE6FD', '#E0F2FE'], ground: '#FDE047', hill: '#38BDF8',
+        props: ['sun_warm', 'sailboat', 'beach_umbrella', 'sandcastle', 'crab_red', 'beach_ball'],
+        diffs: []
+      },
+      {
+        title: '🦖 공룡 친구들의 화산섬',
+        sky: ['#FFEDD5', '#FED7AA'], ground: '#86EFAC', hill: '#22C55E',
+        props: ['volcano_bg', 'palm_tree', 'brachio_green', 'tricera_orange', 'dino_egg'],
+        diffs: []
+      },
+      {
+        title: '⛄ 눈 내리는 겨울 눈사람 마을',
+        sky: ['#CBD5E1', '#E2E8F0'], ground: '#FFFFFF', hill: '#F8FAFC',
+        props: ['snowflakes', 'pine_snow', 'snowman_big', 'igloo_ice', 'penguin_cute', 'sled_red'],
+        diffs: []
+      },
+      {
+        title: '🎪 신나는 서커스 천막',
+        sky: ['#FEF3C7', '#FDE68A'], ground: '#FCA5A5', hill: '#F87171',
+        props: ['cloud_fluffy', 'circus_tent', 'elephant_ball', 'seal_balance', 'ticket_booth'],
+        diffs: []
+      },
+      {
+        title: '🚒 출동! 멋진 소방차',
+        sky: ['#E0F2FE', '#BAE6FD'], ground: '#94A3B8', hill: '#CBD5E1',
+        props: ['cloud_fluffy', 'city_buildings', 'fire_truck', 'fire_hydrant', 'dalmatian_dog'],
+        diffs: []
+      },
+      {
+        title: '🏴‍☠️ 보물섬 해적선 모험',
+        sky: ['#BAE6FD', '#7DD3FC'], ground: '#FDE047', hill: '#0284C7',
+        props: ['sun_warm', 'pirate_ship', 'island_palm', 'parrot_red', 'treasure_map'],
+        diffs: []
+      },
+      {
+        title: '🏫 즐거운 1학년 우리 교실',
+        sky: ['#FEF9C3', '#FEF3C7'], ground: '#FDBA74', hill: '#FB923C',
+        props: ['classroom_board', 'wall_clock', 'teacher_desk', 'globe_earth', 'school_bag'],
+        diffs: []
+      },
+      {
+        title: '🎈 하늘을 나는 열기구 축제',
+        sky: ['#DBEAFE', '#E0E7FF'], ground: '#86EFAC', hill: '#4ADE80',
+        props: ['cloud_fluffy', 'hot_air_balloon_main', 'hot_air_balloon_small', 'bird_flock', 'windmill_small'],
+        diffs: []
+      },
+      {
+        title: '🎂 생일 축하 동물 친구들',
+        sky: ['#FCE7F3', '#FAE8FF'], ground: '#FDE68A', hill: '#FCD34D',
+        props: ['party_banner', 'birthday_table', 'cake_3tier', 'bear_party', 'gift_pile'],
+        diffs: []
+      },
+      {
+        title: '🤖 똑똑한 로봇 연구소',
+        sky: ['#E2E8F0', '#CBD5E1'], ground: '#64748B', hill: '#475569',
+        props: ['lab_screen', 'robot_friend', 'gear_wheels', 'battery_pack', 'mini_drone'],
+        diffs: []
+      },
+      {
+        title: '🍂 다람쥐의 도토리 가을 숲',
+        sky: ['#FEF3C7', '#FFEDD5'], ground: '#F59E0B', hill: '#D97706',
+        props: ['autumn_tree', 'falling_leaves', 'hedgehog_cute', 'acorn_basket', 'log_bridge'],
+        diffs: []
+      },
+      {
+        title: '🌊 신기한 해저 잠수함 탐험',
+        sky: ['#0284C7', '#0369A1'], ground: '#FACC15', hill: '#EAB308',
+        props: ['whale_blue', 'jellyfish_glow', 'coral_pink', 'anchor_iron', 'pearl_clam'],
+        diffs: []
+      },
+      {
+        title: '🧁 알록달록 빵집 쇼윈도',
+        sky: ['#FEF3C7', '#FDE68A'], ground: '#FDBA74', hill: '#FB923C',
+        props: ['bakery_awning', 'bread_shelf', 'cupcake_stand', 'croissant_tray', 'baker_bear'],
+        diffs: []
+      },
+      {
+        title: '🌻 햇살 가득 꽃밭 나비 정원',
+        sky: ['#E0F2FE', '#DCFCE7'], ground: '#86EFAC', hill: '#4ADE80',
+        props: ['sun_warm', 'watering_can', 'sunflower_tall', 'ladybug_leaf', 'snail_shell'],
+        diffs: []
+      },
+      {
+        title: '⛵ 바람 씽씽 요트 항구',
+        sky: ['#BAE6FD', '#E0F2FE'], ground: '#38BDF8', hill: '#0284C7',
+        props: ['lighthouse', 'seagulls', 'yacht_white', 'pier_wood', 'pelican_bird'],
+        diffs: []
+      },
+      {
+        title: '🐼 대나무 숲속 판다 놀이터',
+        sky: ['#DCFCE7', '#ECFCCB'], ground: '#A3E635', hill: '#65A30D',
+        props: ['bamboo_stalks', 'panda_swing', 'red_panda', 'lantern_paper', 'stone_path'],
+        diffs: []
+      }
+    ];
+
+    function renderSpotPart(partName) {
+      const parts = {
+        sun_warm: `<g><circle cx="58" cy="52" r="24" fill="#FDE047" stroke="#F59E0B" stroke-width="3"/><circle cx="58" cy="52" r="18" fill="#FACC15"/></g>`,
+        sun_rays: `<g stroke="#F59E0B" stroke-width="4" stroke-linecap="round"><line x1="58" y1="18" x2="58" y2="10"/><line x1="58" y1="86" x2="58" y2="94"/><line x1="24" y1="52" x2="16" y2="52"/><line x1="92" y1="52" x2="100" y2="52"/><line x1="34" y1="28" x2="28" y2="22"/><line x1="82" y1="76" x2="88" y2="82"/></g>`,
+        sun_sunglasses: `<g><rect x="42" y="45" width="13" height="9" rx="2" fill="#1E293B"/><rect x="61" y="45" width="13" height="9" rx="2" fill="#1E293B"/><line x1="55" y1="48" x2="61" y2="48" stroke="#1E293B" stroke-width="2.5"/><path d="M50 61 Q58 67 66 61" fill="none" stroke="#92400E" stroke-width="2.5" stroke-linecap="round"/></g>`,
+        cloud_fluffy: `<g fill="#FFFFFF" opacity="0.92"><circle cx="195" cy="48" r="15"/><circle cx="215" cy="42" r="20"/><circle cx="238" cy="46" r="16"/><rect x="195" y="46" width="43" height="16" rx="8"/></g>`,
+        grass_tuft: `<g stroke="#15803D" stroke-width="3.5" stroke-linecap="round" fill="none"><path d="M28 365 L22 350 M28 365 L28 346 M28 365 L35 351"/><path d="M262 358 L256 344 M262 358 L263 340 M262 358 L269 345"/></g>`,
+        acacia_tree: `<g><rect x="38" y="165" width="16" height="95" rx="5" fill="#92400E"/><ellipse cx="46" cy="152" rx="42" ry="18" fill="#16A34A"/><ellipse cx="46" cy="144" rx="30" ry="12" fill="#22C55E"/></g>`,
+        giraffe: `<g><rect x="208" y="135" width="16" height="115" rx="8" fill="#FBBF24" stroke="#D97706" stroke-width="2.5"/><ellipse cx="222" cy="240" rx="28" ry="18" fill="#FBBF24" stroke="#D97706" stroke-width="2.5"/><rect x="202" y="252" width="8" height="35" rx="3" fill="#D97706"/><rect x="232" y="252" width="8" height="35" rx="3" fill="#D97706"/><circle cx="215" cy="175" r="5" fill="#B45309"/><circle cx="217" cy="202" r="6" fill="#B45309"/><ellipse cx="222" cy="130" rx="18" ry="13" fill="#FDE047" stroke="#D97706" stroke-width="2.5"/><circle cx="228" cy="128" r="3" fill="#1E293B"/></g>`,
+        giraffe_horns_2: `<g stroke="#92400E" stroke-width="3" stroke-linecap="round"><line x1="215" y1="118" x2="212" y2="106"/><circle cx="212" cy="105" r="3" fill="#92400E"/><line x1="225" y1="118" x2="228" y2="106"/><circle cx="228" cy="105" r="3" fill="#92400E"/></g>`,
+        giraffe_hat: `<g><polygon points="208,118 222,94 236,118" fill="#EF4444" stroke="#B91C1C" stroke-width="2"/><circle cx="222" cy="93" r="4" fill="#FACC15"/></g>`,
+        lion_cub: `<g><circle cx="92" cy="272" r="24" fill="#EA580C"/><circle cx="92" cy="272" r="16" fill="#FDBA74"/><circle cx="86" cy="269" r="2.5" fill="#1E293B"/><circle cx="98" cy="269" r="2.5" fill="#1E293B"/><polygon points="89,275 95,275 92,279" fill="#7C2D12"/></g>`,
+        lion_mane_orange: `<circle cx="92" cy="291" r="6" fill="#FACC15"/>`,
+        lion_bow_blue: `<g fill="#2563EB"><polygon points="82,291 92,286 92,296"/><polygon points="102,291 92,286 92,296"/><circle cx="92" cy="291" r="3" fill="#93C5FD"/></g>`,
+        waterhole: `<ellipse cx="205" cy="322" rx="48" ry="20" fill="#38BDF8" stroke="#0284C7" stroke-width="3"/>`,
+        duck_yellow: `<g><ellipse cx="205" cy="318" rx="12" ry="8" fill="#FACC15"/><circle cx="213" cy="310" r="6" fill="#FACC15"/><polygon points="218,310 225,312 218,314" fill="#F97316"/></g>`,
+        frog_green: `<g><ellipse cx="205" cy="318" rx="13" ry="9" fill="#22C55E"/><circle cx="199" cy="309" r="4" fill="#22C55E"/><circle cx="211" cy="309" r="4" fill="#22C55E"/><circle cx="199" cy="309" r="1.5" fill="#000"/><circle cx="211" cy="309" r="1.5" fill="#000"/></g>`,
+        bird_red: `<g><ellipse cx="145" cy="185" rx="11" ry="8" fill="#EF4444"/><polygon points="155,185 163,183 155,188" fill="#FACC15"/></g>`,
+        butterfly_purple: `<g><ellipse cx="139" cy="185" rx="8" ry="11" fill="#A855F7"/><ellipse cx="151" cy="185" rx="8" ry="11" fill="#C084FC"/><rect x="143" y="177" width="4" height="16" rx="2" fill="#4C1D95"/></g>`,
+
+        stars_bg: `<g fill="#FEF08A"><circle cx="35" cy="35" r="2.5"/><circle cx="115" cy="28" r="2"/><circle cx="200" cy="38" r="3"/><circle cx="275" cy="55" r="2.5"/><circle cx="42" cy="165" r="2"/><circle cx="268" cy="185" r="2.5"/></g>`,
+        saturn_planet: `<circle cx="65" cy="85" r="18" fill="#FB923C"/>`,
+        saturn_ring_gold: `<ellipse cx="65" cy="85" rx="30" ry="7" fill="none" stroke="#FDE047" stroke-width="4" transform="rotate(-18 65 85)"/>`,
+        saturn_ring_pink: `<ellipse cx="65" cy="85" rx="30" ry="7" fill="none" stroke="#F472B6" stroke-width="4" transform="rotate(-18 65 85)"/>`,
+        moon_crater: `<g fill="#64748B" opacity="0.45"><circle cx="145" cy="330" r="14"/><circle cx="220" cy="345" r="18"/><circle cx="85" cy="355" r="11"/></g>`,
+        rocket_ship: `<g><polygon points="150,62 122,115 178,115" fill="#EF4444"/><rect x="122" y="115" width="56" height="95" rx="8" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="3"/><polygon points="122,175 100,215 122,205" fill="#EF4444"/><polygon points="178,175 200,215 178,205" fill="#EF4444"/></g>`,
+        rocket_window_round: `<circle cx="150" cy="142" r="15" fill="#38BDF8" stroke="#0284C7" stroke-width="4"/>`,
+        rocket_window_heart: `<path d="M150 154 C132 140 132 124 150 134 C168 124 168 140 150 154 Z" fill="#F43F5E" stroke="#BE123C" stroke-width="2"/>`,
+        rocket_flame_orange: `<path d="M134 212 Q150 262 166 212 Z" fill="#F97316"/>`,
+        rocket_flame_blue: `<path d="M134 212 Q150 262 166 212 Z" fill="#38BDF8"/>`,
+        alien_ufo: `<g><ellipse cx="242" cy="100" rx="26" ry="9" fill="#94A3B8"/><circle cx="230" cy="100" r="2.5" fill="#FACC15"/><circle cx="242" cy="100" r="2.5" fill="#FACC15"/><circle cx="254" cy="100" r="2.5" fill="#FACC15"/></g>`,
+        ufo_dome_green: `<path d="M228 96 Q242 74 256 96 Z" fill="#4ADE80" opacity="0.85"/>`,
+        ufo_absent: ``,
+        astronaut: `<g><circle cx="185" cy="292" r="15" fill="#FFFFFF" stroke="#94A3B8" stroke-width="3"/><rect x="176" y="286" width="18" height="10" rx="4" fill="#38BDF8"/><rect x="173" y="307" width="24" height="26" rx="6" fill="#FFFFFF" stroke="#94A3B8" stroke-width="3"/></g>`,
+        flag_red: `<g><line x1="65" y1="340" x2="65" y2="295" stroke="#FFFFFF" stroke-width="3"/><polygon points="65,295 95,305 65,315" fill="#EF4444"/></g>`,
+        flag_yellow: `<g><line x1="65" y1="340" x2="65" y2="295" stroke="#FFFFFF" stroke-width="3"/><polygon points="65,295 95,305 65,315" fill="#FACC15"/></g>`,
+
+        icecream_truck: `<g><rect x="65" y="165" width="170" height="105" rx="16" fill="#FFFFFF" stroke="#F472B6" stroke-width="4"/><rect x="65" y="225" width="170" height="45" rx="10" fill="#FBCFE8"/><rect x="125" y="178" width="85" height="45" rx="6" fill="#E0F2FE" stroke="#0284C7" stroke-width="2.5"/><circle cx="96" cy="278" r="20" fill="#1E293B"/><circle cx="204" cy="278" r="20" fill="#1E293B"/><circle cx="204" cy="278" r="8" fill="#FACC15"/></g>`,
+        awning_stripe: `<g><path d="M120 178 L215 178 L220 192 L115 192 Z" fill="#F43F5E"/></g>`,
+        giant_cone: `<g><polygon points="136,112 164,112 150,164" fill="#D97706" stroke="#92400E" stroke-width="2.5"/></g>`,
+        cone_scoop_pink: `<circle cx="150" cy="100" r="18" fill="#F472B6" stroke="#DB2777" stroke-width="2.5"/>`,
+        cone_scoop_mint: `<circle cx="150" cy="100" r="18" fill="#34D399" stroke="#059669" stroke-width="2.5"/>`,
+        wheel_hub_yellow: `<circle cx="96" cy="278" r="8" fill="#FACC15"/>`,
+        wheel_hub_red: `<circle cx="96" cy="278" r="8" fill="#EF4444"/>`,
+        balloon_bunch: `<g stroke="#64748B" stroke-width="2"><line x1="235" y1="185" x2="225" y2="145"/><line x1="235" y1="185" x2="245" y2="142"/></g>`,
+        balloon_3: `<g><circle cx="225" cy="140" r="11" fill="#EF4444"/><circle cx="245" cy="138" r="11" fill="#3B82F6"/><circle cx="235" cy="126" r="11" fill="#FACC15"/></g>`,
+        balloon_2: `<g><circle cx="225" cy="140" r="11" fill="#EF4444"/><circle cx="245" cy="138" r="11" fill="#3B82F6"/></g>`,
+        chef_bear: `<g><circle cx="168" cy="206" r="13" fill="#B45309"/><circle cx="158" cy="195" r="5" fill="#B45309"/><circle cx="178" cy="195" r="5" fill="#B45309"/><circle cx="164" cy="205" r="2" fill="#000"/><circle cx="172" cy="205" r="2" fill="#000"/></g>`,
+        chef_cat: `<g><circle cx="168" cy="206" r="13" fill="#F8FAFC" stroke="#94A3B8" stroke-width="2"/><polygon points="156,198 160,186 166,195" fill="#F8FAFC" stroke="#94A3B8" stroke-width="2"/><polygon points="180,198 176,186 170,195" fill="#F8FAFC" stroke="#94A3B8" stroke-width="2"/><circle cx="164" cy="205" r="2" fill="#000"/><circle cx="172" cy="205" r="2" fill="#000"/></g>`,
+        bench_park: ``,
+        puppy_brown: `<g><ellipse cx="52" cy="332" rx="14" ry="10" fill="#B45309"/><circle cx="44" cy="320" r="9" fill="#B45309"/><circle cx="41" cy="318" r="2" fill="#000"/></g>`,
+        puppy_white: `<g><ellipse cx="52" cy="332" rx="14" ry="10" fill="#FFFFFF" stroke="#94A3B8" stroke-width="2"/><circle cx="44" cy="320" r="9" fill="#FFFFFF" stroke="#94A3B8" stroke-width="2"/><circle cx="41" cy="318" r="2" fill="#000"/></g>`,
+
+        bubbles_group: `<g fill="none" stroke="#FFFFFF" stroke-width="2.5" opacity="0.8"><circle cx="42" cy="65" r="8"/><circle cx="55" cy="45" r="5"/><circle cx="265" cy="145" r="7"/></g>`,
+        coral_reef: `<path d="M25 335 Q15 290 35 265 M35 335 Q50 295 42 270" stroke="#F43F5E" stroke-width="9" stroke-linecap="round" fill="none"/>`,
+        seaweed_pair: `<path d="M275 340 Q260 295 278 255 Q292 220 272 190" stroke="#16A34A" stroke-width="10" stroke-linecap="round" fill="none"/>`,
+        submarine_yellow: `<g><ellipse cx="150" cy="122" rx="64" ry="34" fill="#FACC15" stroke="#CA8A04" stroke-width="3.5"/><rect x="132" y="74" width="32" height="20" rx="6" fill="#FACC15" stroke="#CA8A04" stroke-width="3"/><circle cx="122" cy="122" r="11" fill="#E0F2FE" stroke="#0369A1" stroke-width="3"/><circle cx="152" cy="122" r="11" fill="#E0F2FE" stroke="#0369A1" stroke-width="3"/><circle cx="182" cy="122" r="11" fill="#E0F2FE" stroke="#0369A1" stroke-width="3"/></g>`,
+        sub_periscope_right: `<path d="M148 74 L148 54 L164 54" fill="none" stroke="#CA8A04" stroke-width="5" stroke-linecap="round"/>`,
+        sub_periscope_left: `<path d="M148 74 L148 54 L132 54" fill="none" stroke="#CA8A04" stroke-width="5" stroke-linecap="round"/>`,
+        octopus_pink: `<g><circle cx="85" cy="242" r="22" fill="#F472B6"/><path d="M68 258 Q60 276 72 278 M80 262 Q78 280 86 280 M92 262 Q94 280 102 278 M102 258 Q112 274 104 278" stroke="#F472B6" stroke-width="6" stroke-linecap="round" fill="none"/><circle cx="78" cy="240" r="3" fill="#1E293B"/><circle cx="92" cy="240" r="3" fill="#1E293B"/></g>`,
+        octopus_crown: `<polygon points="73,221 78,209 85,218 92,209 97,221" fill="#FACC15" stroke="#CA8A04" stroke-width="2"/>`,
+        octopus_ribbon: `<g fill="#38BDF8"><polygon points="72,219 85,213 85,225"/><polygon points="98,219 85,213 85,225"/></g>`,
+        treasure_chest: `<rect x="196" y="292" width="52" height="34" rx="5" fill="#B45309" stroke="#78350F" stroke-width="3"/>`,
+        chest_closed: `<path d="M196 292 Q222 274 248 292 Z" fill="#D97706" stroke="#78350F" stroke-width="3"/>`,
+        chest_open_gem: `<g><path d="M196 284 Q222 264 248 284 Z" fill="#D97706" stroke="#78350F" stroke-width="3"/><polygon points="222,276 232,286 222,296 212,286" fill="#38BDF8"/></g>`,
+        clownfish: `<g><ellipse cx="235" cy="90" rx="18" ry="11" fill="#F97316"/><polygon points="253,90 265,80 265,100" fill="#F97316"/><rect x="231" y="79" width="5" height="22" fill="#FFFFFF"/></g>`,
+        blue_tang: `<g><ellipse cx="235" cy="90" rx="18" ry="11" fill="#2563EB"/><polygon points="253,90 265,80 265,100" fill="#FACC15"/></g>`,
+        starfish_orange: `<polygon points="148,325 153,339 168,339 156,348 160,362 148,353 136,362 140,348 128,339 143,339" fill="#FB923C" stroke="#EA580C" stroke-width="2"/>`,
+        shell_pearl: `<g><path d="M130 352 Q148 326 166 352 Z" fill="#FBCFE8" stroke="#DB2777" stroke-width="2.5"/><circle cx="148" cy="346" r="6" fill="#FFFFFF"/></g>`,
+
+        strawberry_house: `<g><rect x="92" y="162" width="116" height="118" rx="14" fill="#FFF1F2" stroke="#FB7185" stroke-width="4"/><path d="M78 165 Q150 82 222 165 Z" fill="#F43F5E" stroke="#BE123C" stroke-width="3"/><rect x="132" y="215" width="36" height="65" rx="8" fill="#FDBA74" stroke="#C2410C" stroke-width="3"/></g>`,
+        roof_cream_swirl: `<path d="M126 118 Q150 96 174 118 Q150 132 126 118 Z" fill="#FFFFFF"/>`,
+        roof_cherry_top: `<circle cx="150" cy="108" r="11" fill="#BE123C"/>`,
+        door_heart: `<path d="M150 245 C138 235 138 225 150 232 C162 225 162 235 150 245 Z" fill="#F43F5E"/>`,
+        door_star: `<polygon points="150,224 154,233 163,233 156,239 158,247 150,242 142,247 144,239 137,233 146,233" fill="#FACC15"/>`,
+        mushroom_red: `<g><rect x="56" y="292" width="16" height="22" rx="4" fill="#FEF3C7"/><path d="M40 294 Q64 260 88 294 Z" fill="#EF4444"/></g>`,
+        mushroom_dots_white: `<g fill="#FFFFFF"><circle cx="54" cy="283" r="4"/><circle cx="72" cy="283" r="4"/></g>`,
+        mushroom_blue: `<path d="M40 294 Q64 260 88 294 Z" fill="#3B82F6"/>`,
+        squirrel_cute: ``,
+        squirrel_acorn: `<g><circle cx="240" cy="282" r="14" fill="#D97706"/><circle cx="235" cy="278" r="2" fill="#000"/><ellipse cx="250" cy="286" rx="8" ry="11" fill="#B45309"/></g>`,
+        bunny_carrot: `<g><circle cx="240" cy="282" r="14" fill="#FFFFFF" stroke="#94A3B8" stroke-width="2"/><ellipse cx="235" cy="264" rx="4" ry="11" fill="#FFFFFF" stroke="#94A3B8" stroke-width="2"/><ellipse cx="245" cy="264" rx="4" ry="11" fill="#FFFFFF" stroke="#94A3B8" stroke-width="2"/></g>`,
+        chimney_smoke: `<g><rect x="195" y="122" width="16" height="28" fill="#B45309"/><circle cx="203" cy="108" r="7" fill="#FFFFFF" opacity="0.85"/></g>`,
+        chimney_absent: ``,
+        candy_cane: ``,
+        flower_bed: ``
+      };
+      return parts[partName] || '';
+    }
+
+    function buildRichScene(index) {
+      const cfg = SPOT_STAGE_CONFIGS[index % SPOT_STAGE_CONFIGS.length];
+      const basePropsSvg = cfg.props.map((p) => renderSpotPart(p)).join('');
+
+      if (index >= 5) {
+        return buildProceduralStoryScene(index, cfg);
+      }
+
+      const bgSvg = `
+        <defs>
+          <linearGradient id="skyGrad_${index}" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="${cfg.sky[0]}"/>
+            <stop offset="100%" stop-color="${cfg.sky[1]}"/>
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="300" height="400" fill="url(#skyGrad_${index})"/>
+        <path d="M0 265 Q150 225 300 265 L300 400 L0 400 Z" fill="${cfg.hill}"/>
+        <rect x="0" y="295" width="300" height="105" fill="${cfg.ground}"/>
+        ${basePropsSvg}
+      `;
+
+      const diffs = cfg.diffs.map((d, idx) => ({
+        id: idx,
+        x: d.x,
+        y: d.y,
+        r: d.r,
+        orig: renderSpotPart(d.orig),
+        alt: renderSpotPart(d.alt)
+      }));
+
+      return { title: cfg.title, baseSvg: bgSvg, diffs };
+    }
+
+    function buildProceduralStoryScene(index, cfg) {
+      const themesPalette = [
+        { main: '#EF4444', sub: '#FACC15', accent: '#38BDF8', roof: '#B91C1C' },
+        { main: '#3B82F6', sub: '#F472B6', accent: '#34D399', roof: '#1D4ED8' },
+        { main: '#F97316', sub: '#A855F7', accent: '#FDE047', roof: '#C2410C' },
+        { main: '#10B981', sub: '#FB7185', accent: '#60A5FA', roof: '#047857' },
+        { main: '#8B5CF6', sub: '#FBBF24', accent: '#F472B6', roof: '#6D28D9' }
+      ];
+      const pal = themesPalette[index % themesPalette.length];
+
+      const baseSvg = `
+        <defs>
+          <linearGradient id="pSky_${index}" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="${cfg.sky[0]}"/>
+            <stop offset="100%" stop-color="${cfg.sky[1]}"/>
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="300" height="400" fill="url(#pSky_${index})"/>
+        <circle cx="54" cy="52" r="22" fill="#FDE047" stroke="#F59E0B" stroke-width="3"/>
+        <g fill="#FFFFFF" opacity="0.9">
+          <circle cx="210" cy="48" r="14"/><circle cx="228" cy="44" r="18"/><circle cx="246" cy="48" r="14"/>
+        </g>
+        <path d="M0 255 Q95 215 190 250 T300 245 L300 400 L0 400 Z" fill="${cfg.hill}"/>
+        <rect x="0" y="288" width="300" height="112" fill="${cfg.ground}"/>
+        <rect x="85" y="168" width="130" height="115" rx="14" fill="#FFFBEB" stroke="${pal.main}" stroke-width="4"/>
+        <polygon points="72,172 150,108 228,172" fill="${pal.roof}" stroke="#78350F" stroke-width="3"/>
+        <rect x="132" y="222" width="36" height="61" rx="6" fill="${pal.sub}" stroke="#78350F" stroke-width="3"/>
+        <rect x="34" y="215" width="14" height="72" rx="4" fill="#92400E"/>
+        <circle cx="41" cy="198" r="30" fill="#16A34A"/>
+        <circle cx="41" cy="190" r="20" fill="#22C55E"/>
+        <rect x="252" y="220" width="14" height="68" rx="4" fill="#92400E"/>
+        <circle cx="259" cy="202" r="28" fill="#15803D"/>
+      `;
+
+      const diffs = [
+        {
+          id: 0, x: 150, y: 146, r: 26,
+          orig: `<circle cx="150" cy="146" r="14" fill="${pal.accent}" stroke="#1E293B" stroke-width="3"/>`,
+          alt: `<polygon points="150,131 155,142 167,142 157,149 161,160 150,153 139,160 143,149 133,142 145,142" fill="#FACC15" stroke="#B45309" stroke-width="2"/>`
+        },
+        {
+          id: 1, x: 108, y: 202, r: 24,
+          orig: `<rect x="96" y="190" width="24" height="24" rx="4" fill="#BAE6FD" stroke="#0284C7" stroke-width="2.5"/>`,
+          alt: `<rect x="96" y="190" width="24" height="24" rx="4" fill="#FBCFE8" stroke="#DB2777" stroke-width="2.5"/>`
+        },
+        {
+          id: 2, x: 192, y: 202, r: 24,
+          orig: `<circle cx="192" cy="202" r="12" fill="#FEF08A" stroke="#CA8A04" stroke-width="2.5"/>`,
+          alt: ``
+        },
+        {
+          id: 3, x: 68, y: 332, r: 28,
+          orig: `<g><circle cx="68" cy="326" r="13" fill="#FB923C"/><circle cx="60" cy="314" r="5" fill="#FB923C"/><circle cx="76" cy="314" r="5" fill="#FB923C"/><circle cx="64" cy="324" r="2" fill="#000"/><circle cx="72" cy="324" r="2" fill="#000"/></g>`,
+          alt: `<g><circle cx="68" cy="326" r="13" fill="#FFFFFF" stroke="#64748B" stroke-width="2"/><ellipse cx="62" cy="308" rx="4" ry="10" fill="#FFFFFF" stroke="#64748B" stroke-width="2"/><ellipse cx="74" cy="308" rx="4" ry="10" fill="#FFFFFF" stroke="#64748B" stroke-width="2"/><circle cx="64" cy="324" r="2" fill="#000"/><circle cx="72" cy="324" r="2" fill="#000"/></g>`
+        },
+        {
+          id: 4, x: 228, y: 332, r: 28,
+          orig: `<g><line x1="228" y1="352" x2="228" y2="324" stroke="#15803D" stroke-width="4"/><circle cx="228" cy="318" r="12" fill="#EF4444"/><circle cx="228" cy="318" r="5" fill="#FACC15"/></g>`,
+          alt: `<g><line x1="228" y1="352" x2="228" y2="324" stroke="#15803D" stroke-width="4"/><circle cx="228" cy="318" r="12" fill="#3B82F6"/><circle cx="228" cy="318" r="5" fill="#FACC15"/></g>`
+        }
+      ];
+
+      return { title: cfg.title, baseSvg, diffs };
+    }
+
+    const spotState = {
+      orderQueue: [],
+      cursor: 0,
+      currentScene: null,
+      foundIds: new Set(),
+      foundByTeam: {}
+    };
+
+    function refillSpotQueue() {
+      const indices = Array.from({ length: SPOT_STAGE_CONFIGS.length }, (_, i) => i);
+      spotState.orderQueue = shuffle(indices);
+      spotState.cursor = 0;
+    }
+
+    function initSpotGame() {
+      if (spotState.orderQueue.length === 0 || spotState.cursor >= spotState.orderQueue.length) {
+        refillSpotQueue();
+      }
+      loadNextSpotScene();
+    }
+
+    function loadNextSpotScene() {
+      if (spotState.cursor >= spotState.orderQueue.length) {
+        refillSpotQueue();
+      }
+      const nextIdx = spotState.orderQueue[spotState.cursor++];
+      const scene = buildRichScene(nextIdx);
+      spotState.currentScene = scene;
+      spotState.foundIds = new Set();
+      spotState.foundByTeam = {};
+
+      document.getElementById('spot-theme-title').textContent = scene.title;
+      updateSpotProgress();
+
+      renderSpotBoard('spot-board-center', scene, false, null);
+      renderSpotBoard('spot-board-t1', scene, true, 't1');
+      renderSpotBoard('spot-board-t2', scene, true, 't2');
+    }
+
+    function updateSpotProgress() {
+      const count = spotState.foundIds.size;
+      document.getElementById('spot-found-text').textContent = `${count}/5`;
+
+      const dotsWrap = document.getElementById('spot-dots');
+      dotsWrap.innerHTML = '';
+      for (let i = 0; i < 5; i++) {
+        const dot = document.createElement('span');
+        dot.className = i < count
+          ? 'w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-emerald-500 border-2 border-emerald-700 inline-block animate-pop'
+          : 'w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-slate-200 border-2 border-slate-300 inline-block';
+        dotsWrap.appendChild(dot);
+      }
+    }
+
+    function renderSpotBoard(containerId, scene, isModified, teamKey) {
+      const wrap = document.getElementById(containerId);
+      const diffsSvg = scene.diffs.map((d) => isModified ? d.alt : d.orig).join('');
+
+      const foundCirclesSvg = isModified
+        ? Array.from(spotState.foundIds).map((fid) => {
+            const d = scene.diffs.find((item) => item.id === fid);
+            const finder = spotState.foundByTeam[fid];
+            const ringColor = finder === 't1' ? '#2563EB' : '#E11D48';
+            return `
+              <g class="animate-pop">
+                <circle cx="${d.x}" cy="${d.y}" r="${d.r}" fill="none" stroke="#FFFFFF" stroke-width="8" />
+                <circle cx="${d.x}" cy="${d.y}" r="${d.r}" fill="none" stroke="${ringColor}" stroke-width="5" />
+              </g>
+            `;
+          }).join('')
+        : '';
+
+      wrap.innerHTML = `
+        <svg viewBox="0 0 300 400" preserveAspectRatio="xMidYMid meet" class="w-full h-full block">
+          ${scene.baseSvg}
+          ${diffsSvg}
+          ${foundCirclesSvg}
+        </svg>
+      `;
+
+      if (!isModified) return;
+
+      const svgEl = wrap.querySelector('svg');
+      svgEl.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        if (!appState.isRunning || appState.isManualPaused) return;
+
+        const pt = svgEl.createSVGPoint();
+        pt.x = e.clientX;
+        pt.y = e.clientY;
+        const ctm = svgEl.getScreenCTM();
+        if (!ctm) return;
+        const svgPt = pt.matrixTransform(ctm.inverse());
+
+        let matchedDiff = null;
+        for (const d of scene.diffs) {
+          if (spotState.foundIds.has(d.id)) continue;
+          const dist = Math.hypot(svgPt.x - d.x, svgPt.y - d.y);
+          if (dist <= d.r + 14) {
+            matchedDiff = d;
+            break;
+          }
+        }
+
+        if (matchedDiff) {
+          spotState.foundIds.add(matchedDiff.id);
+          spotState.foundByTeam[matchedDiff.id] = teamKey;
+          addTeamScore(teamKey, 10);
+          updateSpotProgress();
+
+          renderSpotBoard('spot-board-t1', scene, true, 't1');
+          renderSpotBoard('spot-board-t2', scene, true, 't2');
+
+          if (spotState.foundIds.size >= 5) {
+            setTimeout(() => {
+              if (appState.isRunning && appState.currentGame === 'spot') {
+                loadNextSpotScene();
+              }
+            }, 900);
+          }
         } else {
-          state.inputs[slot] = key;
+          wrap.classList.remove('animate-shake');
+          void wrap.offsetWidth;
+          wrap.classList.add('animate-shake');
+        }
+      });
+    }
+
+    // =========================================================================
+    // [게임 2] 다음 그림 맞히기
+    // - 1팀과 2팀 완전 독립 진행 (한 팀이 맞혀도 다른 팀 문제 안 바뀜)
+    // - 상단 규칙 구조 힌트 태그 제거
+    // - 각 팀 보기 옆에 '⏭ 패스' 버튼 배치
+    // =========================================================================
+    const PATTERN_ITEMS = [
+      { id: 'stone', emoji: '🪨', name: '돌맹이' },
+      { id: 'wave', emoji: '🌊', name: '파도' },
+      { id: 'shell', emoji: '🐚', name: '조개' },
+      { id: 'star', emoji: '⭐', name: '별' },
+      { id: 'apple', emoji: '🍎', name: '사과' },
+      { id: 'banana', emoji: '🍌', name: '바나나' },
+      { id: 'grape', emoji: '🍇', name: '포도' },
+      { id: 'tree', emoji: '🌲', name: '나무' },
+      { id: 'flower', emoji: '🌻', name: '해바라기' },
+      { id: 'cloud', emoji: '☁️', name: '구름' },
+      { id: 'heart', emoji: '💖', name: '하트' },
+      { id: 'chick', emoji: '🐥', name: '병아리' }
+    ];
+
+    const PATTERN_STRUCTURES = [
+      'ABABAB',   // AB AB A □
+      'AABAABA',  // AAB AAB □
+      'ABBABBA',  // ABB ABB □
+      'ABCABCA'   // ABC ABC □
+    ];
+
+    const patternState = {
+      t1: { sequence: [], answer: null, choices: [], locked: false, lastSig: '' },
+      t2: { sequence: [], answer: null, choices: [], locked: false, lastSig: '' }
+    };
+
+    function initPatternGame() {
+      generateRandomPatternForTeam('t1', true);
+      generateRandomPatternForTeam('t2', false);
+    }
+
+    function generateRandomPatternForTeam(teamKey, preferStoneWave = false) {
+      const team = patternState[teamKey];
+      let tries = 0;
+      while (tries < 20) {
+        tries++;
+        const code = preferStoneWave && team.lastSig === ''
+          ? 'ABABAB'
+          : PATTERN_STRUCTURES[randInt(0, PATTERN_STRUCTURES.length - 1)];
+
+        let fourItems;
+        if (preferStoneWave && team.lastSig === '') {
+          const extras = shuffle(PATTERN_ITEMS.slice(2)).slice(0, 2);
+          fourItems = [PATTERN_ITEMS[0], PATTERN_ITEMS[1], extras[0], extras[1]];
+        } else {
+          fourItems = shuffle(PATTERN_ITEMS).slice(0, 4);
+        }
+
+        const map = { A: fourItems[0], B: fourItems[1], C: fourItems[2] };
+        const fullSeq = code.split('').map((ch) => map[ch]);
+        const visibleSeq = fullSeq.slice(0, fullSeq.length - 1);
+        const answerItem = fullSeq[fullSeq.length - 1];
+        const sig = visibleSeq.map((i) => i.id).join(',');
+
+        if (sig !== team.lastSig) {
+          team.lastSig = sig;
+          team.sequence = visibleSeq;
+          team.answer = answerItem;
+          team.choices = shuffle(fourItems);
+          team.locked = false;
+          document.getElementById(`pat-msg-${teamKey}`).textContent = '빈칸(□)에 알맞은 그림을 아래에서 고르세요!';
+          renderPatternTeam(teamKey);
+          return;
         }
       }
-
-      renderBoard(false);
-
-      // 6칸이 모두 채워졌을 때 판별하지 않고 "설명 후 버튼을 누르세요" 안내만 표시
-      if (state.inputs.every((v) => v !== '')) {
-        setFeedback('🎤 6칸 완성! 친구들에게 규칙을 설명한 뒤 <b>[규칙 완성 ✔]</b>을 눌러주세요!', 'ready');
-      }
     }
 
-    // [규칙 완성 ✔] 버튼 클릭 시에만 실행되는 판별 함수
-    function verifyPattern() {
-      if (state.locked) return;
+    function renderPatternTeam(teamKey) {
+      const data = patternState[teamKey];
+      const seqWrap = document.getElementById(`pat-seq-${teamKey}`);
+      const isBlue = teamKey === 't1';
+      const totalLen = data.sequence.length + 1;
+      const cardMaxW = totalLen >= 7 ? 'max-w-[74px]' : 'max-w-[86px]';
 
-      const emptyIdx = state.inputs.findIndex((v) => v === '');
-      if (emptyIdx !== -1) {
-        state.activeSlot = emptyIdx;
-        setFeedback(`👉 ${emptyIdx + 1}번째 칸이 비어 있어요! 6칸을 모두 채워주세요!`, 'error');
-        renderBoard(false);
-        return;
-      }
+      const cardsHtml = data.sequence.map((item) => `
+        <div class="flex-1 ${cardMaxW} aspect-square rounded-2xl bg-white border-4 ${isBlue ? 'border-blue-200' : 'border-rose-200'} flex flex-col items-center justify-center shadow-md animate-pop">
+          <span class="text-2xl sm:text-4xl leading-none">${item.emoji}</span>
+          <span class="text-[11px] sm:text-xs text-slate-600 mt-1">${item.name}</span>
+        </div>
+      `).join('');
 
-      const result = validateCustomPattern(state.inputs);
+      const blankHtml = `
+        <div class="flex-1 ${cardMaxW} aspect-square rounded-2xl ${isBlue ? 'bg-blue-100 border-blue-500 text-blue-600' : 'bg-rose-100 border-rose-500 text-rose-600'} border-4 border-dashed flex flex-col items-center justify-center shadow-inner animate-pop">
+          <span class="text-2xl sm:text-4xl font-black">□</span>
+          <span class="text-[11px] sm:text-xs font-bold mt-0.5">다음은?</span>
+        </div>
+      `;
 
-      if (result.valid) {
-        state.locked = true;
-        state.createdList.push({
-          items: [...state.inputs],
-          ruleName: result.ruleName
-        });
+      seqWrap.innerHTML = cardsHtml + blankHtml;
 
-        document.getElementById('solved-count').textContent = `${state.createdList.length}개`;
-        document.getElementById('rule-result-title').textContent = `⭕ 성공! [${result.ruleName}]`;
+      const choicesWrap = document.getElementById(`pat-choices-${teamKey}`);
+      choicesWrap.innerHTML = '';
 
-        const numsWrap = document.getElementById('rule-result-numbers');
-        numsWrap.innerHTML = state.inputs.map((val) => `
-          <span class="num-tile w-14 h-14 sm:w-20 sm:h-20 rounded-full bg-white border-4 border-emerald-500 text-emerald-950 flex items-center justify-center text-2xl sm:text-4xl font-bold shadow">
-            ${val}
-          </span>
-        `).join('');
-
-        document.getElementById('success-overlay').classList.remove('hidden');
-      } else {
-        state.locked = true;
-        state.isShake = true;
-        setFeedback(result.reason, 'error');
-        renderBoard(false);
-
-        setTimeout(() => {
-          state.isShake = false;
-          state.locked = false;
-          renderBoard(false);
-        }, 420);
-      }
-    }
-
-    // 다음 친구 발표용 새 보드 준비
-    function resetForNextStudent() {
-      state.inputs = ['', '', '', '', '', ''];
-      state.activeSlot = 0;
-      state.isShake = false;
-      state.locked = false;
-      document.getElementById('success-overlay').classList.add('hidden');
-      setFeedback('✨ 6칸에 나만의 숫자 규칙을 넣고, 친구들에게 설명한 뒤 <b>[규칙 완성 ✔]</b>을 눌러주세요!', 'normal');
-      renderBoard(true);
-    }
-
-    // 발표한 규칙 모아보기 갤러리 렌더링
-    function renderGallery() {
-      const listEl = document.getElementById('gallery-list');
-      if (state.createdList.length === 0) {
-        listEl.innerHTML = `
-          <div class="text-center py-16 text-2xl sm:text-3xl text-slate-400">
-            아직 완성된 발표 규칙이 없어요! 친구들과 규칙을 만들어 보세요 😊
-          </div>
+      data.choices.forEach((choice) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `touch-btn py-3 sm:py-4 px-1 rounded-2xl border-b-4 ${
+          isBlue
+            ? 'bg-blue-50 hover:bg-blue-100 border-blue-300 text-blue-950'
+            : 'bg-rose-50 hover:bg-rose-100 border-rose-300 text-rose-950'
+        } flex flex-col items-center justify-center shadow cursor-pointer`;
+        btn.innerHTML = `
+          <span class="text-3xl sm:text-5xl mb-1">${choice.emoji}</span>
+          <span class="text-xs sm:text-base font-bold">${choice.name}</span>
         `;
-        return;
-      }
 
-      listEl.innerHTML = state.createdList.map((rec, idx) => {
-        const tilesHtml = rec.items.map((val) => `
-          <span class="num-tile w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-indigo-50 border-4 border-indigo-400 text-indigo-950 flex items-center justify-center text-2xl sm:text-4xl font-bold shadow-sm">
-            ${val}
-          </span>
-        `).join('');
-
-        return `
-          <div class="bg-slate-50 rounded-3xl p-4 sm:p-5 border-4 border-slate-200 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
-            <div class="flex items-center gap-3">
-              <span class="px-4 py-1.5 rounded-2xl bg-slate-800 text-white text-lg sm:text-2xl font-bold">${idx + 1}번째 발표</span>
-              <span class="px-4 py-1.5 rounded-2xl bg-emerald-100 text-emerald-950 border-2 border-emerald-400 text-xl sm:text-3xl font-bold">
-                ✨ ${rec.ruleName}
-              </span>
-            </div>
-            <div class="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
-              ${tilesHtml}
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      // 숫자 키패드 멀티터치/클릭 이벤트 바인딩
-      document.querySelectorAll('.keypad-btn').forEach((btn) => {
         btn.addEventListener('pointerdown', (e) => {
           e.preventDefault();
-          e.stopPropagation();
-          btn.classList.add('pressed');
-          setTimeout(() => btn.classList.remove('pressed'), 90);
-          handleKeyInput(btn.dataset.key);
-        });
-      });
+          if (!appState.isRunning || appState.isManualPaused || data.locked) return;
 
-      // 자릿수 선택 버튼
-      document.querySelectorAll('.digit-opt-btn').forEach((btn) => {
+          if (choice.id === data.answer.id) {
+            data.locked = true;
+            addTeamScore(teamKey, 10);
+            document.getElementById(`pat-msg-${teamKey}`).textContent = `⭕ 정답! [${choice.name}]이에요! +10점!`;
+
+            const blankEl = seqWrap.lastElementChild;
+            if (blankEl) {
+              blankEl.className = `flex-1 ${cardMaxW} aspect-square rounded-2xl bg-emerald-100 border-4 border-emerald-500 flex flex-col items-center justify-center shadow-md animate-pop`;
+              blankEl.innerHTML = `
+                <span class="text-2xl sm:text-4xl leading-none">${choice.emoji}</span>
+                <span class="text-[11px] sm:text-xs text-emerald-800 font-bold mt-1">${choice.name}</span>
+              `;
+            }
+
+            setTimeout(() => {
+              if (appState.isRunning && appState.currentGame === 'pattern') {
+                generateRandomPatternForTeam(teamKey, false);
+              }
+            }, 650);
+          } else {
+            btn.classList.remove('animate-shake');
+            void btn.offsetWidth;
+            btn.classList.add('animate-shake', 'bg-red-100', 'border-red-400');
+            document.getElementById(`pat-msg-${teamKey}`).textContent = '❌ 아쉬워요! 두 번 반복된 규칙을 다시 보세요!';
+          }
+        });
+
+        choicesWrap.appendChild(btn);
+      });
+    }
+
+    // =========================================================================
+    // [게임 3] 몇 시 몇 분? (N시 / N시 30분 전용)
+    // =========================================================================
+    function initClockGame() {
+      clockState.lastKey = '';
+      nextClockProblem();
+    }
+
+    function formatClockKorean(h, m) {
+      return m === 0 ? `${h}시` : `${h}시 30분`;
+    }
+
+    function createAnalogClockSvg(hour, minute) {
+      const minuteAngle = minute * 6;
+      const hourAngle = ((hour % 12) + minute / 60) * 30;
+
+      let ticksHtml = '';
+      for (let i = 0; i < 60; i++) {
+        const angle = i * 6;
+        const isHourMark = i % 5 === 0;
+        const y1 = isHourMark ? 14 : 16;
+        const y2 = isHourMark ? 25 : 21;
+        const strokeW = isHourMark ? 3.2 : 1.3;
+        const color = isHourMark ? '#1E293B' : '#94A3B8';
+        ticksHtml += `<line x1="100" y1="${y1}" x2="100" y2="${y2}" stroke="${color}" stroke-width="${strokeW}" stroke-linecap="round" transform="rotate(${angle} 100 100)"/>`;
+      }
+
+      let numsHtml = '';
+      for (let n = 1; n <= 12; n++) {
+        const rad = ((n * 30 - 90) * Math.PI) / 180;
+        const x = 100 + 62 * Math.cos(rad);
+        const y = 100 + 62 * Math.sin(rad);
+        numsHtml += `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" font-size="16" font-weight="900" fill="#1E293B">${n}</text>`;
+      }
+
+      return `
+        <svg viewBox="0 0 200 200" class="w-full h-full drop-shadow-md animate-pop">
+          <circle cx="100" cy="100" r="92" fill="#FFFFFF" stroke="#F59E0B" stroke-width="8"/>
+          <circle cx="100" cy="100" r="86" fill="none" stroke="#FEF3C7" stroke-width="3"/>
+          ${ticksHtml}
+          ${numsHtml}
+          <line x1="100" y1="100" x2="100" y2="54" stroke="#E11D48" stroke-width="6.5" stroke-linecap="round" transform="rotate(${hourAngle} 100 100)"/>
+          <line x1="100" y1="100" x2="100" y2="30" stroke="#2563EB" stroke-width="4.5" stroke-linecap="round" transform="rotate(${minuteAngle} 100 100)"/>
+          <circle cx="100" cy="100" r="6" fill="#1E293B"/>
+        </svg>
+      `;
+    }
+
+    function nextClockProblem() {
+      clearTimeout(clockState.waitTimer);
+      appState.isTimerPaused = false;
+      updateTimerUI();
+      document.getElementById('clock-wait-overlay').classList.add('hidden');
+
+      let hour = 12;
+      let minute = 0;
+      let key = '';
+      let tries = 0;
+      while (tries < 20) {
+        tries++;
+        hour = randInt(1, 12);
+        minute = Math.random() < 0.5 ? 0 : 30;
+        key = `${hour}:${minute}`;
+        if (key !== clockState.lastKey) break;
+      }
+
+      clockState.lastKey = key;
+      clockState.hour = hour;
+      clockState.minute = minute;
+      clockState.locked = false;
+
+      const correctText = formatClockKorean(hour, minute);
+
+      const distractors = new Set();
+      while (distractors.size < 3) {
+        const wh = randInt(1, 12);
+        const wm = Math.random() < 0.5 ? 0 : 30;
+        const candidate = formatClockKorean(wh, wm);
+        if (candidate !== correctText) {
+          distractors.add(candidate);
+        }
+      }
+
+      const choices = shuffle([correctText, ...Array.from(distractors)]);
+
+      const svgMarkup = createAnalogClockSvg(hour, minute);
+      document.getElementById('clock-face-t1').innerHTML = svgMarkup;
+      document.getElementById('clock-face-t2').innerHTML = svgMarkup;
+      document.getElementById('clock-msg-t1').textContent = '알맞은 시각 버튼을 먼저 누르세요!';
+      document.getElementById('clock-msg-t2').textContent = '알맞은 시각 버튼을 먼저 누르세요!';
+
+      renderClockChoices('t1', choices, correctText);
+      renderClockChoices('t2', choices, correctText);
+    }
+
+    function renderClockChoices(teamKey, choices, correctText) {
+      const wrap = document.getElementById(`clock-choices-${teamKey}`);
+      const isBlue = teamKey === 't1';
+      wrap.innerHTML = '';
+
+      choices.forEach((label) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `touch-btn py-3.5 sm:py-5 px-2 rounded-2xl border-b-4 ${
+          isBlue
+            ? 'bg-blue-50 hover:bg-blue-100 border-blue-300 text-blue-950'
+            : 'bg-rose-50 hover:bg-rose-100 border-rose-300 text-rose-950'
+        } text-xl sm:text-3xl font-bold shadow cursor-pointer`;
+        btn.textContent = label;
+
+        btn.addEventListener('pointerdown', (e) => {
+          e.preventDefault();
+          if (!appState.isRunning || appState.isManualPaused || clockState.locked) return;
+
+          if (label === correctText) {
+            clockState.locked = true;
+            appState.isTimerPaused = true;
+            updateTimerUI();
+
+            addTeamScore(teamKey, 10);
+
+            const banner = document.getElementById('clock-winner-banner');
+            if (teamKey === 't1') {
+              banner.textContent = `⭕ 1팀 먼저 정답! (${correctText}) +10점!`;
+              banner.className = 'bg-blue-600 text-white px-6 sm:px-8 py-4 rounded-3xl border-4 border-white shadow-2xl text-2xl sm:text-4xl mb-4 animate-pop';
+            } else {
+              banner.textContent = `⭕ 2팀 먼저 정답! (${correctText}) +10점!`;
+              banner.className = 'bg-rose-600 text-white px-6 sm:px-8 py-4 rounded-3xl border-4 border-white shadow-2xl text-2xl sm:text-4xl mb-4 animate-pop';
+            }
+
+            const overlay = document.getElementById('clock-wait-overlay');
+            const numEl = document.getElementById('clock-countdown-num');
+            overlay.classList.remove('hidden');
+
+            numEl.textContent = '2';
+            clockState.waitTimer = setTimeout(() => {
+              if (!appState.isRunning) return;
+              numEl.textContent = '1';
+              clockState.waitTimer = setTimeout(() => {
+                if (!appState.isRunning) return;
+                numEl.textContent = '시작!';
+                clockState.waitTimer = setTimeout(() => {
+                  if (appState.isRunning && appState.currentGame === 'clock') {
+                    nextClockProblem();
+                  }
+                }, 450);
+              }, 850);
+            }, 850);
+          } else {
+            btn.classList.remove('animate-shake');
+            void btn.offsetWidth;
+            btn.classList.add('animate-shake', 'bg-red-100', 'border-red-400', 'text-red-800');
+            document.getElementById(`clock-msg-${teamKey}`).textContent = '❌ 짧은바늘과 긴바늘을 다시 보세요!';
+          }
+        });
+
+        wrap.appendChild(btn);
+      });
+    }
+
+    // =========================================================================
+    // 이벤트 초기화
+    // =========================================================================
+    window.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.game-tab-btn').forEach((btn) => {
         btn.addEventListener('click', () => {
-          state.maxDigits = Number(btn.dataset.digits);
-          document.querySelectorAll('.digit-opt-btn').forEach((b) => {
-            b.className = 'digit-opt-btn py-3 px-2 rounded-xl border-2 border-slate-300 bg-white text-slate-700 text-base sm:text-lg cursor-pointer';
-          });
-          btn.className = 'digit-opt-btn py-3 px-2 rounded-xl border-4 border-indigo-500 bg-indigo-100 text-indigo-950 text-base sm:text-lg font-bold cursor-pointer';
+          appState.currentGame = btn.dataset.game;
+          startMatch();
         });
       });
 
-      // 발표 시작하기
-      document.getElementById('start-game-btn').addEventListener('click', () => {
-        state.createdList = [];
-        document.getElementById('solved-count').textContent = '0개';
-        document.getElementById('start-overlay').classList.add('hidden');
-        resetForNextStudent();
+      document.querySelectorAll('.modal-game-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          switchStageView(btn.dataset.game);
+        });
       });
 
-      // 다음 친구 발표하기
-      document.getElementById('next-student-btn').addEventListener('click', resetForNextStudent);
-
-      // 발표한 규칙 모아보기 열기/닫기
-      document.getElementById('open-gallery-btn').addEventListener('click', () => {
-        renderGallery();
-        document.getElementById('gallery-overlay').classList.remove('hidden');
+      document.querySelectorAll('.modal-time-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          appState.durationSec = Number(btn.dataset.sec);
+          document.querySelectorAll('.modal-time-btn').forEach((b) => {
+            b.className = 'modal-time-btn py-2.5 rounded-xl border-2 border-slate-300 bg-white text-slate-700 text-lg sm:text-xl cursor-pointer';
+          });
+          btn.className = 'modal-time-btn py-2.5 rounded-xl border-4 border-blue-500 bg-blue-100 text-blue-950 text-lg sm:text-xl font-bold cursor-pointer';
+        });
       });
 
-      document.getElementById('close-gallery-btn').addEventListener('click', () => {
-        document.getElementById('gallery-overlay').classList.add('hidden');
+      document.getElementById('spot-skip-btn').addEventListener('click', () => {
+        if (!appState.isRunning || appState.isManualPaused) return;
+        loadNextSpotScene();
       });
 
-      // 처음부터 버튼
-      document.getElementById('reset-btn').addEventListener('click', () => {
-        document.getElementById('success-overlay').classList.add('hidden');
-        document.getElementById('gallery-overlay').classList.add('hidden');
-        document.getElementById('start-overlay').classList.remove('hidden');
+      document.getElementById('pat-pass-t1').addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        if (!appState.isRunning || appState.isManualPaused || patternState.t1.locked) return;
+        generateRandomPatternForTeam('t1', false);
       });
 
-      renderBoard(true);
+      document.getElementById('pat-pass-t2').addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        if (!appState.isRunning || appState.isManualPaused || patternState.t2.locked) return;
+        generateRandomPatternForTeam('t2', false);
+      });
+
+      document.getElementById('pause-btn').addEventListener('click', () => {
+        if (!appState.isRunning) return;
+        appState.isManualPaused = true;
+        updateTimerUI();
+        document.getElementById('pause-overlay').classList.remove('hidden');
+      });
+
+      document.getElementById('resume-btn').addEventListener('click', () => {
+        appState.isManualPaused = false;
+        updateTimerUI();
+        document.getElementById('pause-overlay').classList.add('hidden');
+      });
+
+      document.getElementById('start-match-btn').addEventListener('click', startMatch);
+      document.getElementById('replay-same-btn').addEventListener('click', startMatch);
+
+      document.getElementById('choose-other-btn').addEventListener('click', () => {
+        document.getElementById('result-overlay').classList.add('hidden');
+        document.getElementById('setup-overlay').classList.remove('hidden');
+      });
+
+      document.getElementById('open-setup-btn').addEventListener('click', () => {
+        clearInterval(appState.timerId);
+        clearTimeout(clockState.waitTimer);
+        appState.isRunning = false;
+        appState.isManualPaused = false;
+        appState.isTimerPaused = false;
+        document.getElementById('pause-overlay').classList.add('hidden');
+        document.getElementById('clock-wait-overlay').classList.add('hidden');
+        document.getElementById('setup-overlay').classList.remove('hidden');
+      });
+
+      initSpotGame();
     });
   </script>
 </body>
