@@ -176,13 +176,11 @@
           <span class="text-sm sm:text-base text-blue-600 font-bold">맞히면 +10점!</span>
         </div>
 
-        <!-- 문제 배열 줄 -->
         <div class="flex-1 flex flex-col items-center justify-center my-2 min-w-0">
           <div id="pat-seq-t1" class="w-full flex items-center justify-center gap-1 sm:gap-1.5 flex-nowrap px-1"></div>
           <p id="pat-msg-t1" class="mt-3 text-base sm:text-xl text-blue-800 font-bold text-center">빈칸(□)에 알맞은 그림을 아래에서 고르세요!</p>
         </div>
 
-        <!-- 보기 4개 + 패스 버튼 -->
         <div class="flex items-stretch gap-2 bg-white/95 p-3 rounded-3xl border-4 border-blue-300 shadow-lg shrink-0">
           <div id="pat-choices-t1" class="flex-1 grid grid-cols-4 gap-2"></div>
           <button id="pat-pass-t1" type="button" class="touch-btn px-3 sm:px-4 rounded-2xl bg-slate-200 hover:bg-slate-300 border-b-4 border-slate-400 text-slate-800 text-sm sm:text-lg font-bold flex flex-col items-center justify-center shadow cursor-pointer shrink-0">
@@ -199,13 +197,11 @@
           <span class="text-sm sm:text-base text-rose-600 font-bold">맞히면 +10점!</span>
         </div>
 
-        <!-- 문제 배열 줄 -->
         <div class="flex-1 flex flex-col items-center justify-center my-2 min-w-0">
           <div id="pat-seq-t2" class="w-full flex items-center justify-center gap-1 sm:gap-1.5 flex-nowrap px-1"></div>
           <p id="pat-msg-t2" class="mt-3 text-base sm:text-xl text-rose-800 font-bold text-center">빈칸(□)에 알맞은 그림을 아래에서 고르세요!</p>
         </div>
 
-        <!-- 보기 4개 + 패스 버튼 -->
         <div class="flex items-stretch gap-2 bg-white/95 p-3 rounded-3xl border-4 border-rose-300 shadow-lg shrink-0">
           <div id="pat-choices-t2" class="flex-1 grid grid-cols-4 gap-2"></div>
           <button id="pat-pass-t2" type="button" class="touch-btn px-3 sm:px-4 rounded-2xl bg-slate-200 hover:bg-slate-300 border-b-4 border-slate-400 text-slate-800 text-sm sm:text-lg font-bold flex flex-col items-center justify-center shadow cursor-pointer shrink-0">
@@ -220,7 +216,6 @@
     <!-- [게임 3] 몇 시 몇 분? (N시 / N시 30분 전용 선착순 대결) -->
     <!-- ===================================================================== -->
     <section id="stage-clock" class="hidden relative w-full h-full grid grid-cols-2 divide-x-4 divide-slate-300">
-      <!-- 다음 친구 준비 카운트다운 오버레이 (2 -> 1 -> 시작!) -->
       <div id="clock-wait-overlay" class="hidden absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-900/75 backdrop-blur-sm p-4 text-center">
         <div id="clock-winner-banner" class="bg-emerald-500 text-white px-8 py-4 rounded-3xl border-4 border-white shadow-2xl text-3xl sm:text-5xl mb-4 animate-pop">
           ⭕ 1팀 정답! +10점!
@@ -285,7 +280,6 @@
         </h1>
 
         <div class="space-y-4 mb-6 text-left bg-slate-50 p-4 sm:p-5 rounded-2xl border-2 border-slate-200">
-          <!-- 게임 종목 선택 -->
           <div>
             <label class="block text-base sm:text-lg text-slate-700 mb-2">🎮 대결할 게임 선택</label>
             <div class="grid grid-cols-3 gap-2" id="modal-game-options">
@@ -301,7 +295,6 @@
             </div>
           </div>
 
-          <!-- 제한 시간 선택 (1분 / 2분 / 3분) -->
           <div>
             <label class="block text-base sm:text-lg text-slate-700 mb-2">⏱ 제한 시간 선택</label>
             <div class="grid grid-cols-3 gap-2" id="modal-time-options">
@@ -534,875 +527,959 @@
     }
 
     // =========================================================================
-    // [게임 1] 틀린 그림 찾기 (25가지 고품질 동화풍 일러스트 장면)
+    // [게임 1] 틀린 그림 찾기 - 그림책풍 진한 잉크 외곽선 + 꽉 찬 디테일 일러스트
     // =========================================================================
-    const SHARED_SVG_DEFS = `
+    const INK = '#2B2118';
+
+    const BOOK_DEFS = `
       <defs>
-        <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#0F172A" flood-opacity="0.18"/>
-        </filter>
-        <linearGradient id="gSkyDay" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#7DD3FC"/>
-          <stop offset="55%" stop-color="#E0F2FE"/>
-          <stop offset="100%" stop-color="#FEF9C3"/>
-        </linearGradient>
-        <linearGradient id="gSkyWarm" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#FDE68A"/>
-          <stop offset="60%" stop-color="#FEF3C7"/>
-          <stop offset="100%" stop-color="#FFEDD5"/>
-        </linearGradient>
-        <linearGradient id="gSkyNight" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#090D16"/>
-          <stop offset="55%" stop-color="#1E1B4B"/>
-          <stop offset="100%" stop-color="#312E81"/>
-        </linearGradient>
-        <linearGradient id="gSkyOcean" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#A5F3FC"/>
-          <stop offset="45%" stop-color="#38BDF8"/>
-          <stop offset="100%" stop-color="#0369A1"/>
-        </linearGradient>
-        <linearGradient id="gSkyWinter" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#93C5FD"/>
-          <stop offset="65%" stop-color="#DBEAFE"/>
-          <stop offset="100%" stop-color="#F8FAFC"/>
-        </linearGradient>
-        <linearGradient id="gSkyPink" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#DDD6FE"/>
-          <stop offset="55%" stop-color="#FCE7F3"/>
-          <stop offset="100%" stop-color="#FFF1F2"/>
-        </linearGradient>
-        <linearGradient id="gMeadow" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#86EFAC"/>
-          <stop offset="55%" stop-color="#4ADE80"/>
-          <stop offset="100%" stop-color="#16A34A"/>
-        </linearGradient>
-        <linearGradient id="gMeadowFar" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#BBF7D0"/>
-          <stop offset="100%" stop-color="#4ADE80"/>
-        </linearGradient>
-        <linearGradient id="gSand" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#FEF08A"/>
-          <stop offset="65%" stop-color="#FDE047"/>
-          <stop offset="100%" stop-color="#F59E0B"/>
-        </linearGradient>
-        <linearGradient id="gWater" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#38BDF8"/>
-          <stop offset="100%" stop-color="#0284C7"/>
-        </linearGradient>
-        <linearGradient id="gSnow" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#FFFFFF"/>
-          <stop offset="100%" stop-color="#E2E8F0"/>
-        </linearGradient>
-        <linearGradient id="gWood" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stop-color="#92400E"/>
-          <stop offset="50%" stop-color="#B45309"/>
-          <stop offset="100%" stop-color="#78350F"/>
-        </linearGradient>
-        <radialGradient id="gSunGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="#FEF08A"/>
-          <stop offset="65%" stop-color="#FACC15"/>
-          <stop offset="100%" stop-color="#F59E0B"/>
-        </radialGradient>
+        <pattern id="patPaving" width="24" height="14" patternUnits="userSpaceOnUse">
+          <rect width="24" height="14" fill="#CBD5E1"/>
+          <path d="M0 7 H24 M12 0 V7 M6 7 V14 M18 7 V14" stroke="#64748B" stroke-width="1.2"/>
+        </pattern>
+        <pattern id="patWoodFloor" width="30" height="16" patternUnits="userSpaceOnUse">
+          <rect width="30" height="16" fill="#FDE68A"/>
+          <path d="M0 8 H30 M15 0 V8 M5 8 V16" stroke="#B45309" stroke-width="1.2"/>
+        </pattern>
+        <pattern id="patBrick" width="20" height="12" patternUnits="userSpaceOnUse">
+          <rect width="20" height="12" fill="#FDE047"/>
+          <path d="M0 6 H20 M10 0 V6 M5 6 V12 M15 6 V12" stroke="#D97706" stroke-width="1"/>
+        </pattern>
       </defs>
     `;
 
-    const ART = {
-      sunSmile: (x, y) => `
-        <g transform="translate(${x},${y})" filter="url(#softShadow)">
-          <circle r="33" fill="#FEF08A" opacity="0.4"/>
-          <g stroke="#F59E0B" stroke-width="3" stroke-linecap="round">
-            <line x1="0" y1="-29" x2="0" y2="-24"/><line x1="0" y1="24" x2="0" y2="29"/>
-            <line x1="-29" y1="0" x2="-24" y2="0"/><line x1="24" y1="0" x2="29" y2="0"/>
-            <line x1="-20" y1="-20" x2="-17" y2="-17"/><line x1="17" y1="17" x2="20" y2="20"/>
-            <line x1="20" y1="-20" x2="17" y2="-17"/><line x1="-17" y1="17" x2="-20" y2="20"/>
-          </g>
-          <circle r="20" fill="url(#gSunGlow)" stroke="#D97706" stroke-width="2"/>
-          <ellipse cx="-8" cy="2" rx="3.2" ry="2" fill="#FB7185" opacity="0.65"/>
-          <ellipse cx="8" cy="2" rx="3.2" ry="2" fill="#FB7185" opacity="0.65"/>
-          <circle cx="-6" cy="-3" r="2.2" fill="#78350F"/>
-          <circle cx="6" cy="-3" r="2.2" fill="#78350F"/>
-          <path d="M-5 4 Q0 9 5 4" fill="none" stroke="#78350F" stroke-width="2.2" stroke-linecap="round"/>
+    const BK = {
+      cloud: (x, y, s = 1) => `
+        <g transform="translate(${x},${y}) scale(${s})">
+          <path d="M-26 9 Q-34 9 -34 1 Q-34 -7 -23 -8 Q-20 -20 -6 -20 Q6 -20 10 -10 Q20 -13 26 -5 Q33 2 26 9 Z"
+                fill="#FFFFFF" stroke="${INK}" stroke-width="2.3" stroke-linejoin="round"/>
+          <path d="M-23 6 Q0 8 23 6" fill="none" stroke="#E2E8F0" stroke-width="2.5" stroke-linecap="round"/>
         </g>`,
-      cloudPuff: (x, y, scale = 1) => `
-        <g transform="translate(${x},${y}) scale(${scale})" filter="url(#softShadow)">
-          <path d="M-28 9 Q-35 9 -35 1 Q-35 -8 -24 -9 Q-21 -22 -7 -22 Q6 -22 10 -11 Q20 -14 27 -6 Q34 1 28 9 Z" fill="#E2E8F0"/>
-          <path d="M-27 6 Q-34 6 -34 -1 Q-34 -9 -23 -10 Q-20 -22 -7 -22 Q6 -22 10 -11 Q20 -14 26 -6 Q33 0 27 6 Z" fill="#FFFFFF"/>
-        </g>`,
-      pineTree: (x, y, snow = false) => `
-        <g transform="translate(${x},${y})" filter="url(#softShadow)">
-          <ellipse cx="0" cy="42" rx="18" ry="5" fill="#0F172A" opacity="0.16"/>
-          <rect x="-6" y="18" width="12" height="24" rx="4" fill="url(#gWood)"/>
-          <path d="M-30 22 Q0 -12 30 22 Z" fill="${snow ? '#CBD5E1' : '#15803D'}"/>
-          <path d="M-24 5 Q0 -26 24 5 Z" fill="${snow ? '#E2E8F0' : '#16A34A'}"/>
-          <path d="M-18 -12 Q0 -38 18 -12 Z" fill="${snow ? '#FFFFFF' : '#22C55E'}"/>
-          ${snow ? '<path d="M-12 -16 Q0 -34 12 -16 Q4 -12 0 -17 Q-4 -12 -12 -16 Z" fill="#F8FAFC"/>' : '<circle cx="-8" cy="10" r="2.5" fill="#FACC15"/><circle cx="9" cy="-2" r="2.5" fill="#F43F5E"/>'}
-        </g>`,
-      palmTree: (x, y) => `
-        <g transform="translate(${x},${y})" filter="url(#softShadow)">
-          <ellipse cx="2" cy="45" rx="16" ry="5" fill="#78350F" opacity="0.22"/>
-          <path d="M-5 45 Q-11 10 4 -26 L12 -24 Q-1 10 5 45 Z" fill="url(#gWood)"/>
-          <path d="M-4 30 L5 28 M-5 15 L5 13 M-3 0 L6 -2" stroke="#451A03" stroke-width="1.8"/>
-          <path d="M7 -24 Q-18 -36 -34 -16 Q-15 -21 7 -24 Z" fill="#15803D"/>
-          <path d="M7 -24 Q29 -37 42 -16 Q22 -21 7 -24 Z" fill="#16A34A"/>
-          <path d="M7 -24 Q-12 -47 -27 -37 Q-10 -35 7 -24 Z" fill="#22C55E"/>
-          <path d="M7 -24 Q23 -47 36 -35 Q18 -35 7 -24 Z" fill="#4ADE80"/>
-          <circle cx="3" cy="-19" r="4" fill="#78350F"/>
-          <circle cx="10" cy="-18" r="4" fill="#92400E"/>
-        </g>`,
-      roundTree: (x, y, c1 = '#15803D', c2 = '#22C55E', c3 = '#4ADE80') => `
-        <g transform="translate(${x},${y})" filter="url(#softShadow)">
-          <ellipse cx="0" cy="48" rx="20" ry="6" fill="#0F172A" opacity="0.16"/>
-          <path d="M-8 48 L-5 10 L5 10 L8 48 Z" fill="url(#gWood)"/>
-          <circle cx="-15" cy="4" r="19" fill="${c1}"/>
-          <circle cx="15" cy="4" r="19" fill="${c1}"/>
-          <circle cx="0" cy="-11" r="23" fill="${c2}"/>
-          <circle cx="-6" cy="-16" r="11" fill="${c3}" opacity="0.65"/>
-        </g>`,
-      cuteBird: (x, y, color = '#EF4444') => `
-        <g transform="translate(${x},${y})" filter="url(#softShadow)">
-          <polygon points="-11,0 -19,-5 -17,4" fill="${color}"/>
-          <path d="M-13 2 Q-13 -11 0 -11 Q12 -11 13 0 Q13 11 0 11 Q-11 11 -13 2 Z" fill="${color}"/>
-          <path d="M-4 0 Q4 -6 8 2 Q2 6 -4 0 Z" fill="#FFFFFF" opacity="0.65"/>
-          <polygon points="12,-2 20,0 12,3" fill="#FACC15" stroke="#B45309" stroke-width="0.8"/>
-          <circle cx="5" cy="-3" r="2.2" fill="#0F172A"/>
-          <circle cx="5.8" cy="-3.8" r="0.8" fill="#FFFFFF"/>
-        </g>`,
-      butterfly: (x, y, c1 = '#A855F7', c2 = '#F472B6') => `
-        <g transform="translate(${x},${y})" filter="url(#softShadow)">
-          <path d="M-2 -7 Q-7 -15 -11 -13 M2 -7 Q7 -15 11 -13" fill="none" stroke="#3B0764" stroke-width="1.5" stroke-linecap="round"/>
-          <path d="M0 0 C-18 -18 -24 5 -4 7 C-19 15 -6 23 0 8 Z" fill="${c1}" stroke="#FFFFFF" stroke-width="1"/>
-          <path d="M0 0 C18 -18 24 5 4 7 C19 15 6 23 0 8 Z" fill="${c2}" stroke="#FFFFFF" stroke-width="1"/>
-          <circle cx="-9" cy="-3" r="2.5" fill="#FEF08A"/>
-          <circle cx="9" cy="-3" r="2.5" fill="#FEF08A"/>
-          <rect x="-2" y="-8" width="4" height="18" rx="2" fill="#3B0764"/>
-        </g>`,
-      flower: (x, y, petal = '#F43F5E') => `
-        <g transform="translate(${x},${y})" filter="url(#softShadow)">
-          <path d="M0 6 L0 27" stroke="#15803D" stroke-width="3.5" stroke-linecap="round"/>
-          <path d="M0 18 Q-9 13 -11 19 Q-5 22 0 19 Z" fill="#22C55E"/>
-          <circle cx="-6" cy="-2" r="5.5" fill="${petal}"/>
-          <circle cx="6" cy="-2" r="5.5" fill="${petal}"/>
-          <circle cx="-4" cy="6" r="5.5" fill="${petal}"/>
-          <circle cx="4" cy="6" r="5.5" fill="${petal}"/>
-          <circle cx="0" cy="-6" r="5.5" fill="${petal}"/>
-          <circle cx="0" cy="1" r="4.8" fill="#FACC15" stroke="#D97706" stroke-width="1"/>
-        </g>`,
-      starShape: (x, y, color = '#FACC15', scale = 1) => `
-        <g transform="translate(${x},${y}) scale(${scale})" filter="url(#softShadow)">
-          <polygon points="0,-14 4,-4 14,-4 6,3 9,13 0,7 -9,13 -6,3 -14,-4 -4,-4" fill="${color}" stroke="#B45309" stroke-width="1.5" stroke-linejoin="round"/>
-        </g>`,
-      heartShape: (x, y, color = '#F43F5E', scale = 1) => `
-        <g transform="translate(${x},${y}) scale(${scale})" filter="url(#softShadow)">
-          <path d="M0 11 C-16 -2 -16 -14 0 -5 C16 -14 16 -2 0 11 Z" fill="${color}" stroke="#9F1239" stroke-width="1.5"/>
-        </g>`,
-      crown: (x, y) => `
-        <g transform="translate(${x},${y})" filter="url(#softShadow)">
-          <polygon points="-12,6 -14,-7 -5,0 0,-10 5,0 14,-7 12,6" fill="#FACC15" stroke="#B45309" stroke-width="1.8" stroke-linejoin="round"/>
-          <circle cx="0" cy="1" r="2.2" fill="#EF4444"/>
-        </g>`,
-      ribbon: (x, y, color = '#38BDF8') => `
-        <g transform="translate(${x},${y})" filter="url(#softShadow)">
-          <path d="M0 0 L-13 -8 Q-16 0 -13 8 Z" fill="${color}" stroke="#1E293B" stroke-width="1"/>
-          <path d="M0 0 L13 -8 Q16 0 13 8 Z" fill="${color}" stroke="#1E293B" stroke-width="1"/>
-          <circle r="4" fill="#FFFFFF" stroke="#1E293B" stroke-width="1"/>
-        </g>`,
-      partyHat: (x, y, color = '#EF4444') => `
-        <g transform="translate(${x},${y})" filter="url(#softShadow)">
-          <polygon points="-11,8 0,-15 11,8" fill="${color}" stroke="#1E293B" stroke-width="1.5"/>
-          <line x1="-6" y1="1" x2="6" y2="1" stroke="#FFFFFF" stroke-width="2"/>
-          <circle cx="0" cy="-16" r="3.8" fill="#FACC15"/>
-        </g>`,
-      sunglasses: (x, y) => `
+      sun: (x, y) => `
         <g transform="translate(${x},${y})">
-          <rect x="-14" y="-5" width="12" height="8" rx="2.5" fill="#0F172A"/>
-          <rect x="2" y="-5" width="12" height="8" rx="2.5" fill="#0F172A"/>
-          <line x1="-11" y1="-3" x2="-7" y2="-3" stroke="#38BDF8" stroke-width="1.5"/>
-          <line x1="5" y1="-3" x2="9" y2="-3" stroke="#38BDF8" stroke-width="1.5"/>
-          <line x1="-2" y1="-2" x2="2" y2="-2" stroke="#0F172A" stroke-width="2.5"/>
+          <g stroke="${INK}" stroke-width="2.2" stroke-linecap="round">
+            <line x1="0" y1="-28" x2="0" y2="-22"/><line x1="0" y1="22" x2="0" y2="28"/>
+            <line x1="-28" y1="0" x2="-22" y2="0"/><line x1="22" y1="0" x2="28" y2="0"/>
+            <line x1="-19" y1="-19" x2="-15" y2="-15"/><line x1="15" y1="15" x2="19" y2="19"/>
+            <line x1="19" y1="-19" x2="15" y2="-15"/><line x1="-15" y1="15" x2="-19" y2="19"/>
+          </g>
+          <circle r="18" fill="#FACC15" stroke="${INK}" stroke-width="2.4"/>
+          <ellipse cx="-7" cy="2" rx="3" ry="1.8" fill="#FB7185"/>
+          <ellipse cx="7" cy="2" rx="3" ry="1.8" fill="#FB7185"/>
+          <circle cx="-5" cy="-2" r="2" fill="${INK}"/>
+          <circle cx="5" cy="-2" r="2" fill="${INK}"/>
+          <path d="M-4 3 Q0 7 4 3" fill="none" stroke="${INK}" stroke-width="2" stroke-linecap="round"/>
+        </g>`,
+      grass: (x, y) => `
+        <path d="M${x} ${y} l-4 -7 M${x} ${y} l0 -9 M${x} ${y} l4 -7" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/>`,
+      bareTree: (x, y, scale = 1) => `
+        <g transform="translate(${x},${y}) scale(${scale})">
+          <path d="M-9 55 L-6 -5 L-26 -28 L-21 -32 L-5 -15 L-3 -42 L3 -42 L4 -14 L22 -32 L27 -27 L6 -4 L9 55 Z"
+                fill="#85583F" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>
+          <path d="M-14 -16 L-12 -28 M13 -15 L12 -27" stroke="${INK}" stroke-width="2.2" stroke-linecap="round"/>
+        </g>`,
+      bushTree: (x, y, c = '#4ADE80') => `
+        <g transform="translate(${x},${y})">
+          <rect x="-6" y="12" width="12" height="32" rx="3" fill="#92400E" stroke="${INK}" stroke-width="2.3"/>
+          <path d="M-24 14 Q-32 0 -18 -10 Q-14 -26 2 -24 Q18 -26 22 -10 Q34 0 24 14 Z"
+                fill="${c}" stroke="${INK}" stroke-width="2.3" stroke-linejoin="round"/>
+          <path d="M-12 -8 Q-6 -14 2 -10" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" opacity="0.65"/>
+        </g>`,
+      pine: (x, y, snow = false) => `
+        <g transform="translate(${x},${y})">
+          <rect x="-6" y="18" width="12" height="24" rx="2" fill="#92400E" stroke="${INK}" stroke-width="2.3"/>
+          <path d="M-28 20 L0 -8 L28 20 Z" fill="${snow ? '#E2E8F0' : '#16A34A'}" stroke="${INK}" stroke-width="2.3" stroke-linejoin="round"/>
+          <path d="M-22 3 L0 -23 L22 3 Z" fill="${snow ? '#F1F5F9' : '#22C55E'}" stroke="${INK}" stroke-width="2.3" stroke-linejoin="round"/>
+          <path d="M-16 -14 L0 -36 L16 -14 Z" fill="${snow ? '#FFFFFF' : '#4ADE80'}" stroke="${INK}" stroke-width="2.3" stroke-linejoin="round"/>
+        </g>`,
+      flower: (x, y, c = '#F43F5E') => `
+        <g transform="translate(${x},${y})">
+          <path d="M0 5 L0 22" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/>
+          <circle cx="-5" cy="-2" r="4.5" fill="${c}" stroke="${INK}" stroke-width="1.8"/>
+          <circle cx="5" cy="-2" r="4.5" fill="${c}" stroke="${INK}" stroke-width="1.8"/>
+          <circle cx="-3" cy="5" r="4.5" fill="${c}" stroke="${INK}" stroke-width="1.8"/>
+          <circle cx="3" cy="5" r="4.5" fill="${c}" stroke="${INK}" stroke-width="1.8"/>
+          <circle cx="0" cy="-5" r="4.5" fill="${c}" stroke="${INK}" stroke-width="1.8"/>
+          <circle cx="0" cy="0" r="4" fill="#FACC15" stroke="${INK}" stroke-width="1.8"/>
+        </g>`,
+      bird: (x, y, c = '#EF4444') => `
+        <g transform="translate(${x},${y})">
+          <path d="M-11 2 Q-11 -10 0 -10 Q11 -10 11 1 Q11 10 0 10 Q-10 10 -11 2 Z" fill="${c}" stroke="${INK}" stroke-width="2.2"/>
+          <polygon points="10,-2 18,1 10,4" fill="#FACC15" stroke="${INK}" stroke-width="1.8"/>
+          <circle cx="4" cy="-3" r="2" fill="${INK}"/>
+          <path d="M-3 0 Q3 -4 6 2" fill="none" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/>
         </g>`
     };
 
-    const SPOT_SCENES_25 = [
-      // 1. 놀이공원 대관람차
+    const SPOT_SCENES_14 = [
+      // 1. 첨부 이미지 스타일 그대로 재현! 해빙기 안전 학교 앞 코끼리와 병아리
       {
-        title: '🎡 1. 신나는 놀이공원 대관람차',
+        title: '🐘 1. 코끼리와 병아리의 학교 앞 안전 순찰',
         bg: `
-          <rect width="300" height="400" fill="url(#gSkyDay)"/>
-          <path d="M0 265 Q80 235 165 262 T300 255 L300 400 L0 400 Z" fill="url(#gMeadowFar)"/>
-          <path d="M0 295 Q150 272 300 295 L300 400 L0 400 Z" fill="url(#gMeadow)"/>
-          <path d="M0 332 Q150 312 300 332 L300 400 L0 400 Z" fill="#FDE68A"/>
-          ${ART.cloudPuff(62, 46, 0.92)}
-          <g transform="translate(155,155)" filter="url(#softShadow)">
-            <path d="M-46 138 L0 0 L46 138" fill="none" stroke="#475569" stroke-width="8" stroke-linecap="round"/>
-            <line x1="-28" y1="84" x2="28" y2="84" stroke="#64748B" stroke-width="5"/>
-            <circle r="76" fill="none" stroke="#F43F5E" stroke-width="7"/>
-            <circle r="54" fill="none" stroke="#FDA4AF" stroke-width="3.5"/>
-            <line x1="-76" y1="0" x2="76" y2="0" stroke="#94A3B8" stroke-width="2.5"/>
-            <line x1="0" y1="-76" x2="0" y2="76" stroke="#94A3B8" stroke-width="2.5"/>
-            <line x1="-54" y1="-54" x2="54" y2="54" stroke="#94A3B8" stroke-width="2.5"/>
-            <line x1="-54" y1="54" x2="54" y2="-54" stroke="#94A3B8" stroke-width="2.5"/>
-            <rect x="64" y="-9" width="24" height="18" rx="6" fill="#FACC15" stroke="#B45309" stroke-width="1.5"/>
-            <rect x="-88" y="-9" width="24" height="18" rx="6" fill="#10B981" stroke="#047857" stroke-width="1.5"/>
-            <circle r="12" fill="#FACC15" stroke="#B45309" stroke-width="3"/>
+          <rect width="300" height="400" fill="#87CEFA"/>
+          ${BK.cloud(195, 36, 0.9)}
+          ${BK.cloud(105, 118, 0.75)}
+          <!-- 뒷산 & 흙언덕 -->
+          <path d="M0 110 Q75 88 155 112 Q225 90 300 108 L300 185 L0 185 Z" fill="#84B866" stroke="${INK}" stroke-width="2.3"/>
+          <path d="M0 130 Q140 120 300 155 L300 220 L0 220 Z" fill="#D2B48C" stroke="${INK}" stroke-width="2.3"/>
+          <!-- 보도블록 광장 -->
+          <path d="M0 245 L105 168 L300 168 L300 400 L0 400 Z" fill="url(#patPaving)" stroke="${INK}" stroke-width="2.3"/>
+          <!-- 왼쪽 옹벽 & 눈더미/고드름 -->
+          <path d="M0 185 L105 185 L105 280 L0 335 Z" fill="#C4B5A0" stroke="${INK}" stroke-width="2.3"/>
+          <path d="M0 182 Q35 176 62 186 Q85 180 108 188 Q102 198 85 196 Q68 194 64 218 Q58 218 55 196 Q25 202 0 195 Z"
+                fill="#F0F9FF" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>
+          <!-- 웅덩이와 녹은 눈 -->
+          <ellipse cx="48" cy="162" rx="16" ry="5" fill="#7DD3FC" stroke="${INK}" stroke-width="1.8"/>
+          <path d="M18 332 Q55 302 115 315 Q148 322 125 342 Q75 352 18 332 Z" fill="#E0F2FE" stroke="${INK}" stroke-width="2.2"/>
+          <ellipse cx="82" cy="326" rx="22" ry="7" fill="#38BDF8" stroke="${INK}" stroke-width="1.8"/>
+          <!-- 왼쪽 큰 나무 & 표지판 -->
+          ${BK.bareTree(34, 128, 1.05)}
+          <g transform="translate(36,308)">
+            <rect x="-4" y="25" width="8" height="32" fill="#92400E" stroke="${INK}" stroke-width="2.2"/>
+            <rect x="-25" y="-12" width="50" height="40" rx="3" fill="#FDE68A" stroke="${INK}" stroke-width="2.4"/>
+            <text x="0" y="5" text-anchor="middle" font-size="11" font-weight="900" fill="${INK}">해빙기</text>
+            <text x="0" y="20" text-anchor="middle" font-size="11" font-weight="900" fill="${INK}">안전</text>
           </g>
-          <g transform="translate(65,312)" filter="url(#softShadow)">
-            <rect x="-28" y="-12" width="56" height="34" rx="8" fill="#F472B6" stroke="#BE185D" stroke-width="2.5"/>
-            <rect x="-22" y="-6" width="44" height="10" rx="4" fill="#FBCFE8"/>
-            <circle cx="-16" cy="26" r="9" fill="#1E293B"/>
-            <circle cx="16" cy="26" r="9" fill="#1E293B"/>
+          <!-- 노란 스쿨버스 -->
+          <g transform="translate(182,155)">
+            <rect x="-32" y="-14" width="62" height="32" rx="6" fill="#FACC15" stroke="${INK}" stroke-width="2.3"/>
+            <rect x="-28" y="-8" width="22" height="12" rx="2" fill="#BAE6FD" stroke="${INK}" stroke-width="1.8"/>
+            <rect x="-2" y="-8" width="12" height="12" rx="2" fill="#BAE6FD" stroke="${INK}" stroke-width="1.8"/>
+            <rect x="13" y="-8" width="12" height="12" rx="2" fill="#BAE6FD" stroke="${INK}" stroke-width="1.8"/>
+            <line x1="-32" y1="9" x2="30" y2="9" stroke="${INK}" stroke-width="2.5"/>
+            <circle cx="-18" cy="19" r="6.5" fill="#334155" stroke="${INK}" stroke-width="2"/>
+            <circle cx="16" cy="19" r="6.5" fill="#334155" stroke="${INK}" stroke-width="2"/>
+          </g>
+          <!-- 학교 건물 -->
+          <g transform="translate(255,130)">
+            <rect x="-42" y="-15" width="84" height="68" fill="#FEF3C7" stroke="${INK}" stroke-width="2.4"/>
+            <polygon points="-48,-15 0,-48 48,-15" fill="#EF4444" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>
+            <polygon points="-16,-15 0,-42 16,-15" fill="#FEF3C7" stroke="${INK}" stroke-width="2.3"/>
+            <!-- 창문들 -->
+            <rect x="-35" y="-5" width="16" height="14" fill="#7DD3FC" stroke="${INK}" stroke-width="1.8"/>
+            <rect x="-35" y="16" width="16" height="14" fill="#7DD3FC" stroke="${INK}" stroke-width="1.8"/>
+            <rect x="-12" y="0" width="24" height="12" fill="#7DD3FC" stroke="${INK}" stroke-width="1.8"/>
+            <!-- 현관 -->
+            <rect x="-13" y="25" width="26" height="28" fill="#64748B" stroke="${INK}" stroke-width="2"/>
+            <rect x="-17" y="21" width="34" height="6" fill="#EF4444" stroke="${INK}" stroke-width="2"/>
+          </g>
+          <!-- 오른쪽 끄트머리 눈더미 -->
+          <path d="M258 242 Q280 232 300 245 L300 278 Q272 276 258 262 Z" fill="#F0F9FF" stroke="${INK}" stroke-width="2.2"/>
+          <!-- 노란 병아리 캐릭터 -->
+          <g transform="translate(182,268)">
+            <!-- 경광봉 2개 -->
+            <line x1="-18" y1="8" x2="-28" y2="-16" stroke="#FB7185" stroke-width="5" stroke-linecap="round"/>
+            <line x1="-18" y1="8" x2="-28" y2="-16" stroke="${INK}" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="18" y1="8" x2="28" y2="-16" stroke="#FB7185" stroke-width="5" stroke-linecap="round"/>
+            <line x1="18" y1="8" x2="28" y2="-16" stroke="${INK}" stroke-width="1.5" stroke-linecap="round"/>
+            <!-- 몸통 & 줄무늬 조끼 -->
+            <ellipse cx="0" cy="14" rx="18" ry="16" fill="#FACC15" stroke="${INK}" stroke-width="2.3"/>
+            <rect x="-15" y="4" width="30" height="18" rx="4" fill="#F97316" stroke="${INK}" stroke-width="2"/>
+            <line x1="-14" y1="10" x2="14" y2="10" stroke="#FEF08A" stroke-width="2.5"/>
+            <line x1="-14" y1="16" x2="14" y2="16" stroke="#FEF08A" stroke-width="2.5"/>
+            <!-- 머리 & 꼬깔모자 -->
+            <circle cx="0" cy="-8" r="16" fill="#FACC15" stroke="${INK}" stroke-width="2.3"/>
+            <polygon points="-9,-21 0,-36 9,-21" fill="#F97316" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>
+            <ellipse cx="-9" cy="-5" rx="3" ry="2" fill="#FB7185"/>
+            <ellipse cx="9" cy="-5" rx="3" ry="2" fill="#FB7185"/>
+            <circle cx="-6" cy="-9" r="2.2" fill="${INK}"/>
+            <circle cx="6" cy="-9" r="2.2" fill="${INK}"/>
+            <polygon points="-3,-6 3,-6 0,-2" fill="#F97316" stroke="${INK}" stroke-width="1.5"/>
+            <!-- 발 -->
+            <ellipse cx="-7" cy="31" rx="6" ry="3" fill="#F97316" stroke="${INK}" stroke-width="2"/>
+            <ellipse cx="7" cy="31" rx="6" ry="3" fill="#F97316" stroke="${INK}" stroke-width="2"/>
           </g>
         `,
         diffs: [
-          { x: 155, y: 76, r: 24, orig: `<rect x="143" y="67" width="24" height="18" rx="6" fill="#3B82F6" stroke="#1D4ED8" stroke-width="1.5"/>`, alt: `<rect x="143" y="67" width="24" height="18" rx="6" fill="#A855F7" stroke="#6B21A8" stroke-width="1.5"/>` },
-          { x: 248, y: 82, r: 26, orig: `<g filter="url(#softShadow)"><line x1="248" y1="138" x2="248" y2="95" stroke="#64748B" stroke-width="2"/><circle cx="242" cy="82" r="11" fill="#EF4444"/><circle cx="256" cy="86" r="11" fill="#3B82F6"/></g>`, alt: `<g filter="url(#softShadow)"><line x1="248" y1="138" x2="248" y2="95" stroke="#64748B" stroke-width="2"/><circle cx="242" cy="82" r="11" fill="#EF4444"/><circle cx="256" cy="86" r="11" fill="#FACC15"/><circle cx="248" cy="70" r="11" fill="#22C55E"/></g>` },
-          { x: 65, y: 280, r: 25, orig: `<circle cx="65" cy="280" r="17" fill="#FBCFE8" stroke="#F472B6" stroke-width="2"/>`, alt: `<circle cx="65" cy="280" r="17" fill="#BAE6FD" stroke="#38BDF8" stroke-width="2"/>` },
-          { x: 215, y: 315, r: 26, orig: `<g filter="url(#softShadow)"><circle cx="215" cy="312" r="15" fill="#FDBA74"/><circle cx="205" cy="300" r="5.5" fill="#FDBA74"/><circle cx="225" cy="300" r="5.5" fill="#FDBA74"/><circle cx="210" cy="310" r="2" fill="#0F172A"/><circle cx="220" cy="310" r="2" fill="#0F172A"/><path d="M211 316 Q215 320 219 316" fill="none" stroke="#0F172A" stroke-width="1.8"/></g>`, alt: `<g filter="url(#softShadow)"><circle cx="215" cy="312" r="15" fill="#FDBA74"/><circle cx="205" cy="300" r="5.5" fill="#FDBA74"/><circle cx="225" cy="300" r="5.5" fill="#FDBA74"/><circle cx="210" cy="310" r="2" fill="#0F172A"/><circle cx="220" cy="310" r="2" fill="#0F172A"/><path d="M211 316 Q215 320 219 316" fill="none" stroke="#0F172A" stroke-width="1.8"/>${ART.partyHat(215, 293, '#3B82F6')}</g>` },
-          { x: 145, y: 362, r: 24, orig: ART.flower(145, 360, '#F43F5E'), alt: ART.butterfly(145, 358, '#A855F7', '#FACC15') }
+          // 1. 뒤쪽 언덕의 쓰러진 나무 vs 서 있는 나무
+          {
+            x: 112, y: 108, r: 26,
+            orig: `<g transform="translate(112,115) rotate(48)"><path d="M-4 22 L-3 -18 L-14 -30 L-10 -33 L-1 -23 L2 -36 L6 -35 L3 -20 L15 -28 L17 -24 L3 -14 L4 22 Z" fill="#85583F" stroke="${INK}" stroke-width="2"/></g>`,
+            alt: `<g transform="translate(94,108)"><path d="M-4 24 L-3 -14 L-14 -26 L-10 -29 L-1 -19 L1 -32 L5 -32 L3 -17 L14 -26 L17 -22 L3 -12 L4 24 Z" fill="#85583F" stroke="${INK}" stroke-width="2"/></g>`
+          },
+          // 2. 학교 지붕 시계 바늘 방향
+          {
+            x: 255, y: 104, r: 22,
+            orig: `<g><circle cx="255" cy="104" r="9" fill="#FFF" stroke="${INK}" stroke-width="2"/><path d="M255 104 L255 98 M255 104 L251 107" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/></g>`,
+            alt: `<g><circle cx="255" cy="104" r="9" fill="#FFF" stroke="${INK}" stroke-width="2"/><path d="M255 104 L255 97 M255 104 L260 104" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/></g>`
+          },
+          // 3. 옹벽의 지그재그 균열 유무
+          {
+            x: 68, y: 245, r: 26,
+            orig: `<path d="M58 216 L68 232 L60 245 L72 260 L64 275 M68 232 L80 228" fill="none" stroke="${INK}" stroke-width="2.3" stroke-linecap="round"/>`,
+            alt: ``
+          },
+          // 4. 코끼리 안전조끼 색깔 (노란색 vs 빨간색)
+          {
+            x: 118, y: 248, r: 32,
+            orig: `
+              <g transform="translate(118,242)">
+                <rect x="-20" y="18" width="40" height="36" rx="10" fill="#93C5FD" stroke="${INK}" stroke-width="2.4"/>
+                <rect x="-21" y="18" width="42" height="28" rx="6" fill="#FACC15" stroke="${INK}" stroke-width="2.3"/>
+                <line x1="-20" y1="27" x2="20" y2="27" stroke="#FFF" stroke-width="3"/>
+                <line x1="-20" y1="36" x2="20" y2="36" stroke="#FFF" stroke-width="3"/>
+                <circle cx="-26" cy="-6" r="14" fill="#93C5FD" stroke="${INK}" stroke-width="2.4"/>
+                <circle cx="26" cy="-6" r="14" fill="#93C5FD" stroke="${INK}" stroke-width="2.4"/>
+                <circle cx="0" cy="-6" r="24" fill="#93C5FD" stroke="${INK}" stroke-width="2.4"/>
+                <path d="M-6 2 Q-12 18 -3 20 Q2 20 1 8" fill="#93C5FD" stroke="${INK}" stroke-width="2.3"/>
+                <circle cx="-8" cy="-8" r="2.5" fill="${INK}"/><circle cx="8" cy="-8" r="2.5" fill="${INK}"/>
+                <ellipse cx="14" cy="-2" rx="4" ry="2.5" fill="#FB7185"/>
+                <circle cx="-34" cy="12" r="14" fill="#E0F2FE" stroke="${INK}" stroke-width="3"/>
+                <line x1="-26" y1="23" x2="-20" y2="35" stroke="${INK}" stroke-width="4" stroke-linecap="round"/>
+              </g>`,
+            alt: `
+              <g transform="translate(118,242)">
+                <rect x="-20" y="18" width="40" height="36" rx="10" fill="#93C5FD" stroke="${INK}" stroke-width="2.4"/>
+                <rect x="-21" y="18" width="42" height="28" rx="6" fill="#EF4444" stroke="${INK}" stroke-width="2.3"/>
+                <line x1="-20" y1="27" x2="20" y2="27" stroke="#FFF" stroke-width="3"/>
+                <line x1="-20" y1="36" x2="20" y2="36" stroke="#FFF" stroke-width="3"/>
+                <circle cx="-26" cy="-6" r="14" fill="#93C5FD" stroke="${INK}" stroke-width="2.4"/>
+                <circle cx="26" cy="-6" r="14" fill="#93C5FD" stroke="${INK}" stroke-width="2.4"/>
+                <circle cx="0" cy="-6" r="24" fill="#93C5FD" stroke="${INK}" stroke-width="2.4"/>
+                <path d="M-6 2 Q-12 18 -3 20 Q2 20 1 8" fill="#93C5FD" stroke="${INK}" stroke-width="2.3"/>
+                <circle cx="-8" cy="-8" r="2.5" fill="${INK}"/><circle cx="8" cy="-8" r="2.5" fill="${INK}"/>
+                <ellipse cx="14" cy="-2" rx="4" ry="2.5" fill="#FB7185"/>
+                <circle cx="-34" cy="12" r="14" fill="#E0F2FE" stroke="${INK}" stroke-width="3"/>
+                <line x1="-26" y1="23" x2="-20" y2="35" stroke="${INK}" stroke-width="4" stroke-linecap="round"/>
+              </g>`
+          },
+          // 5. 오른쪽 아래 배수구 낙엽 더미 vs 깨끗한 격자
+          {
+            x: 256, y: 365, r: 28,
+            orig: `
+              <g>
+                <polygon points="222,385 248,342 296,342 280,385" fill="#94A3B8" stroke="${INK}" stroke-width="2.3"/>
+                <ellipse cx="255" cy="364" rx="26" ry="13" fill="#92400E" stroke="${INK}" stroke-width="2"/>
+                <ellipse cx="246" cy="360" rx="10" ry="5" fill="#D97706" stroke="${INK}" stroke-width="1.6"/>
+                <ellipse cx="268" cy="368" rx="11" ry="5" fill="#B45309" stroke="${INK}" stroke-width="1.6"/>
+              </g>`,
+            alt: `
+              <g>
+                <polygon points="222,385 248,342 296,342 280,385" fill="#94A3B8" stroke="${INK}" stroke-width="2.3"/>
+                <line x1="245" y1="352" x2="282" y2="352" stroke="${INK}" stroke-width="2.5"/>
+                <line x1="238" y1="364" x2="276" y2="364" stroke="${INK}" stroke-width="2.5"/>
+                <line x1="232" y1="376" x2="270" y2="376" stroke="${INK}" stroke-width="2.5"/>
+              </g>`
+          }
         ]
       },
 
-      // 2. 웃음 가득 학교 운동장
+      // 2. 아기 곰과 토끼의 달콤한 숲속 빵집
       {
-        title: '🛝 2. 웃음 가득 학교 운동장',
+        title: '🧁 2. 아기 곰과 토끼의 숲속 빵집',
         bg: `
-          <rect width="300" height="400" fill="url(#gSkyDay)"/>
-          <path d="M0 245 Q150 220 300 245 L300 400 L0 400 Z" fill="url(#gSand)"/>
-          <path d="M18 320 Q150 290 282 320" fill="none" stroke="#F97316" stroke-width="24" stroke-linecap="round"/>
-          <path d="M18 320 Q150 290 282 320" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="8 6"/>
-          ${ART.sunSmile(48, 48)}
-          <g transform="translate(75,185)" filter="url(#softShadow)">
-            <path d="M-25 65 L-25 10 L-5 10 L-5 65" fill="none" stroke="#2563EB" stroke-width="6" stroke-linecap="round"/>
-            <path d="M-5 15 Q20 15 35 65 L52 65 Q32 5 -5 5 Z" fill="#FACC15" stroke="#CA8A04" stroke-width="2.5"/>
+          <rect width="300" height="400" fill="#BAE6FD"/>
+          ${BK.cloud(62, 42, 0.95)}
+          ${BK.cloud(245, 55, 0.8)}
+          <!-- 초록 언덕 -->
+          <path d="M0 195 Q90 165 185 190 Q245 170 300 188 L300 275 L0 275 Z" fill="#86EFAC" stroke="${INK}" stroke-width="2.3"/>
+          ${BK.bushTree(32, 185, '#4ADE80')}
+          ${BK.bushTree(272, 185, '#22C55E')}
+          <!-- 돌바닥 길 -->
+          <rect y="265" width="300" height="135" fill="url(#patPaving)" stroke="${INK}" stroke-width="2.3"/>
+          <!-- 빵집 건물 -->
+          <g transform="translate(150,185)">
+            <rect x="42" y="-82" width="18" height="35" fill="#DC2626" stroke="${INK}" stroke-width="2.3"/>
+            <rect x="-78" y="-25" width="156" height="105" fill="#FEF3C7" stroke="${INK}" stroke-width="2.5"/>
+            <polygon points="-88,-25 0,-75 88,-25" fill="#F97316" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
+            <!-- 줄무늬 차양 -->
+            <path d="M-84 12 L84 12 L90 32 L-90 32 Z" fill="#EF4444" stroke="${INK}" stroke-width="2.3"/>
+            <rect x="-55" y="12" width="22" height="20" fill="#FFF" stroke="${INK}" stroke-width="1.8"/>
+            <rect x="-11" y="12" width="22" height="20" fill="#FFF" stroke="${INK}" stroke-width="1.8"/>
+            <rect x="33" y="12" width="22" height="20" fill="#FFF" stroke="${INK}" stroke-width="1.8"/>
+            <!-- 출입문 & 진열창 -->
+            <rect x="-62" y="38" width="32" height="42" rx="4" fill="#92400E" stroke="${INK}" stroke-width="2.2"/>
+            <circle cx="-36" cy="60" r="2.5" fill="#FACC15"/>
+            <rect x="-18" y="38" width="82" height="32" rx="4" fill="#E0F2FE" stroke="${INK}" stroke-width="2.2"/>
+            <ellipse cx="4" cy="62" rx="10" ry="6" fill="#F59E0B" stroke="${INK}" stroke-width="1.8"/>
+            <ellipse cx="32" cy="62" rx="10" ry="6" fill="#F472B6" stroke="${INK}" stroke-width="1.8"/>
           </g>
-          <g transform="translate(215,215)" filter="url(#softShadow)">
-            <path d="M-38 40 L-38 0 L38 0 L38 40" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round"/>
-            <path d="M-35 5 L35 5 M-35 15 L35 15 M-35 25 L35 25 M-20 0 L-20 38 M0 0 L0 38 M20 0 L20 38" stroke="#94A3B8" stroke-width="1.5"/>
+          <!-- 아기 곰 제빵사 -->
+          <g transform="translate(88,315)">
+            <rect x="-16" y="12" width="32" height="32" rx="8" fill="#B45309" stroke="${INK}" stroke-width="2.3"/>
+            <rect x="-12" y="15" width="24" height="26" rx="4" fill="#FFFFFF" stroke="${INK}" stroke-width="2"/>
+            <circle cx="-14" cy="-16" r="6.5" fill="#B45309" stroke="${INK}" stroke-width="2.2"/>
+            <circle cx="14" cy="-16" r="6.5" fill="#B45309" stroke="${INK}" stroke-width="2.2"/>
+            <circle cx="0" cy="-4" r="18" fill="#B45309" stroke="${INK}" stroke-width="2.3"/>
+            <ellipse cx="0" cy="1" rx="7" ry="5" fill="#FDE68A" stroke="${INK}" stroke-width="1.8"/>
+            <circle cx="-6" cy="-6" r="2.2" fill="${INK}"/><circle cx="6" cy="-6" r="2.2" fill="${INK}"/>
+          </g>
+          <!-- 아기 토끼 손님 -->
+          <g transform="translate(215,322)">
+            <ellipse cx="-6" cy="-28" rx="4.5" ry="14" fill="#FFF" stroke="${INK}" stroke-width="2.2"/>
+            <ellipse cx="6" cy="-28" rx="4.5" ry="14" fill="#FFF" stroke="${INK}" stroke-width="2.2"/>
+            <rect x="-14" y="10" width="28" height="28" rx="8" fill="#F472B6" stroke="${INK}" stroke-width="2.2"/>
+            <circle cx="0" cy="-4" r="15" fill="#FFF" stroke="${INK}" stroke-width="2.3"/>
+            <circle cx="-5" cy="-6" r="2" fill="${INK}"/><circle cx="5" cy="-6" r="2" fill="${INK}"/>
+            <ellipse cx="-8" cy="-1" rx="3" ry="1.8" fill="#FDA4AF"/>
+            <ellipse cx="8" cy="-1" rx="3" ry="1.8" fill="#FDA4AF"/>
           </g>
         `,
         diffs: [
-          { x: 215, y: 120, r: 28, orig: `<g filter="url(#softShadow)"><rect x="180" y="95" width="70" height="45" rx="8" fill="#FEF3C7" stroke="#D97706" stroke-width="3"/><circle cx="215" cy="117" r="14" fill="#FFFFFF" stroke="#1E293B" stroke-width="2.5"/><path d="M215 117 L215 108 M215 117 L222 117" stroke="#E11D48" stroke-width="2.5"/></g>`, alt: `<g filter="url(#softShadow)"><rect x="180" y="95" width="70" height="45" rx="8" fill="#FEF3C7" stroke="#D97706" stroke-width="3"/>${ART.starShape(215, 117, '#FACC15', 1.1)}</g>` },
-          { x: 60, y: 162, r: 24, orig: ART.cuteBird(60, 162, '#EF4444'), alt: ART.cuteBird(60, 162, '#3B82F6') },
-          { x: 215, y: 242, r: 24, orig: `<circle cx="215" cy="242" r="12" fill="#FFFFFF" stroke="#0F172A" stroke-width="2.5"/>`, alt: `<circle cx="215" cy="242" r="12" fill="#F97316" stroke="#7C2D12" stroke-width="2.5"/>` },
-          { x: 85, y: 318, r: 25, orig: `<g filter="url(#softShadow)"><circle cx="85" cy="312" r="12" fill="#FDBA74"/><path d="M74 308 Q85 296 96 308 Z" fill="#EF4444"/><circle cx="82" cy="312" r="1.5" fill="#0F172A"/><circle cx="89" cy="312" r="1.5" fill="#0F172A"/></g>`, alt: `<g filter="url(#softShadow)"><circle cx="85" cy="312" r="12" fill="#FDBA74"/><path d="M74 308 Q85 296 96 308 Z" fill="#22C55E"/><circle cx="82" cy="312" r="1.5" fill="#0F172A"/><circle cx="89" cy="312" r="1.5" fill="#0F172A"/></g>` },
-          { x: 235, y: 358, r: 24, orig: `<g filter="url(#softShadow)"><rect x="223" y="346" width="24" height="24" rx="7" fill="#3B82F6"/><rect x="228" y="352" width="14" height="8" rx="2" fill="#93C5FD"/></g>`, alt: `` }
+          {
+            x: 202, y: 85, r: 24,
+            orig: `<g fill="#FFF" stroke="${INK}" stroke-width="2"><circle cx="202" cy="92" r="7"/><circle cx="212" cy="80" r="9"/></g>`,
+            alt: ``
+          },
+          {
+            x: 150, y: 142, r: 24,
+            orig: `<g><circle cx="150" cy="142" r="14" fill="#FFF" stroke="${INK}" stroke-width="2.2"/><ellipse cx="150" cy="144" rx="8" ry="5" fill="#F59E0B" stroke="${INK}" stroke-width="1.8"/></g>`,
+            alt: `<g><circle cx="150" cy="142" r="14" fill="#FFF" stroke="${INK}" stroke-width="2.2"/><path d="M150 150 C140 142 140 134 150 140 C160 134 160 142 150 150 Z" fill="#EF4444" stroke="${INK}" stroke-width="1.6"/></g>`
+          },
+          {
+            x: 88, y: 286, r: 24,
+            orig: `<path d="M76 294 L76 284 Q72 276 82 276 Q88 272 94 276 Q104 276 100 284 L100 294 Z" fill="#FFF" stroke="${INK}" stroke-width="2.2"/>`,
+            alt: `<polygon points="78,294 88,274 98,294" fill="#3B82F6" stroke="${INK}" stroke-width="2.2"/>`
+          },
+          {
+            x: 244, y: 334, r: 24,
+            orig: `<g><rect x="232" y="328" width="24" height="18" rx="4" fill="#D97706" stroke="${INK}" stroke-width="2"/><path d="M235 328 Q244 316 253 328" fill="none" stroke="${INK}" stroke-width="2.2"/></g>`,
+            alt: `<g><rect x="232" y="328" width="24" height="18" rx="4" fill="#38BDF8" stroke="${INK}" stroke-width="2"/><path d="M235 328 Q244 316 253 328" fill="none" stroke="${INK}" stroke-width="2.2"/></g>`
+          },
+          {
+            x: 42, y: 365, r: 24,
+            orig: BK.flower(42, 362, '#F43F5E'),
+            alt: BK.flower(42, 362, '#FACC15')
+          }
         ]
       },
 
-      // 3. 초원의 동물원 사파리
+      // 3. 여우 기관사와 다람쥐의 산골 기차역
       {
-        title: '🦁 3. 초원의 동물원 사파리',
+        title: '🚂 3. 여우 기관사와 다람쥐의 산골 기차역',
         bg: `
-          <rect width="300" height="400" fill="url(#gSkyWarm)"/>
-          <path d="M0 265 Q150 230 300 265 L300 400 L0 400 Z" fill="url(#gMeadow)"/>
-          <ellipse cx="205" cy="330" rx="52" ry="20" fill="url(#gWater)" stroke="#0284C7" stroke-width="3"/>
-          ${ART.roundTree(45, 195)}
-          <g transform="translate(225,180)" filter="url(#softShadow)">
-            <path d="M-8 65 L-6 -45 L8 -45 L10 65 Z" fill="#FBBF24" stroke="#D97706" stroke-width="2.5"/>
-            <ellipse cx="6" cy="62" rx="24" ry="15" fill="#FBBF24" stroke="#D97706" stroke-width="2.5"/>
-            <circle cx="0" cy="-15" r="5" fill="#B45309"/>
-            <circle cx="2" cy="12" r="6" fill="#B45309"/>
-            <ellipse cx="2" cy="-52" rx="16" ry="11" fill="#FDE047" stroke="#D97706" stroke-width="2.5"/>
-            <circle cx="8" cy="-54" r="2.5" fill="#0F172A"/>
+          <rect width="300" height="400" fill="#DBEAFE"/>
+          <!-- 설산 -->
+          <polygon points="0,210 68,95 142,210" fill="#94A3B8" stroke="${INK}" stroke-width="2.3"/>
+          <polygon points="48,129 68,95 88,129" fill="#FFFFFF" stroke="${INK}" stroke-width="2"/>
+          <polygon points="110,210 198,85 285,210" fill="#64748B" stroke="${INK}" stroke-width="2.3"/>
+          <polygon points="172,122 198,85 224,122" fill="#FFFFFF" stroke="${INK}" stroke-width="2"/>
+          <!-- 초록 들판 -->
+          <path d="M0 205 Q150 185 300 205 L300 285 L0 285 Z" fill="#86EFAC" stroke="${INK}" stroke-width="2.3"/>
+          <!-- 기찻길 -->
+          <rect y="280" width="300" height="120" fill="#E7E5E4" stroke="${INK}" stroke-width="2.3"/>
+          <rect y="302" width="300" height="8" fill="#475569" stroke="${INK}" stroke-width="2"/>
+          <!-- 기차역 건물 -->
+          <g transform="translate(68,185)">
+            <rect x="-48" y="-12" width="96" height="58" fill="#FEF3C7" stroke="${INK}" stroke-width="2.3"/>
+            <polygon points="-55,-12 0,-42 55,-12" fill="#2563EB" stroke="${INK}" stroke-width="2.3"/>
+            <rect x="-12" y="14" width="24" height="32" fill="#92400E" stroke="${INK}" stroke-width="2"/>
+            <rect x="-38" y="6" width="18" height="16" fill="#BAE6FD" stroke="${INK}" stroke-width="1.8"/>
+            <rect x="20" y="6" width="18" height="16" fill="#BAE6FD" stroke="${INK}" stroke-width="1.8"/>
           </g>
-          <g transform="translate(88,285)" filter="url(#softShadow)">
-            <circle r="24" fill="#EA580C"/>
-            <circle r="16" fill="#FDBA74"/>
-            <circle cx="-5" cy="-3" r="2.5" fill="#0F172A"/>
-            <circle cx="5" cy="-3" r="2.5" fill="#0F172A"/>
-            <path d="M-4 3 Q0 7 4 3" fill="none" stroke="#0F172A" stroke-width="2"/>
+          <!-- 증기 기관차 -->
+          <g transform="translate(195,268)">
+            <rect x="-58" y="-18" width="44" height="42" rx="6" fill="#EF4444" stroke="${INK}" stroke-width="2.4"/>
+            <rect x="-16" y="-4" width="66" height="28" rx="6" fill="#3B82F6" stroke="${INK}" stroke-width="2.4"/>
+            <rect x="28" y="-24" width="12" height="20" fill="#1E293B" stroke="${INK}" stroke-width="2"/>
+            <rect x="-46" y="-10" width="20" height="15" rx="2" fill="#FEF08A" stroke="${INK}" stroke-width="1.8"/>
+            <circle cx="-36" cy="28" r="11" fill="#334155" stroke="${INK}" stroke-width="2.2"/>
+            <circle cx="4" cy="28" r="9" fill="#334155" stroke="${INK}" stroke-width="2.2"/>
+            <circle cx="34" cy="28" r="9" fill="#334155" stroke="${INK}" stroke-width="2.2"/>
+          </g>
+          <!-- 여우 기관사 & 다람쥐 -->
+          <g transform="translate(82,348)">
+            <rect x="-13" y="8" width="26" height="26" rx="6" fill="#2563EB" stroke="${INK}" stroke-width="2.2"/>
+            <polygon points="-14,-12 -8,-25 -2,-12" fill="#F97316" stroke="${INK}" stroke-width="2"/>
+            <polygon points="14,-12 8,-25 2,-12" fill="#F97316" stroke="${INK}" stroke-width="2"/>
+            <circle cx="0" cy="-4" r="15" fill="#F97316" stroke="${INK}" stroke-width="2.2"/>
+            <circle cx="-5" cy="-5" r="2" fill="${INK}"/><circle cx="5" cy="-5" r="2" fill="${INK}"/>
           </g>
         `,
         diffs: [
-          { x: 58, y: 54, r: 26, orig: ART.sunSmile(58, 54), alt: `<g>${ART.sunSmile(58, 54)}${ART.sunglasses(58, 51)}</g>` },
-          { x: 226, y: 108, r: 24, orig: `<g stroke="#92400E" stroke-width="3"><line x1="220" y1="118" x2="217" y2="105"/><line x1="232" y1="118" x2="235" y2="105"/></g>`, alt: ART.partyHat(226, 108, '#EF4444') },
-          { x: 145, y: 175, r: 24, orig: ART.cuteBird(145, 175, '#EF4444'), alt: ART.butterfly(145, 175, '#A855F7', '#F472B6') },
-          { x: 88, y: 310, r: 24, orig: `<circle cx="88" cy="308" r="5" fill="#FACC15"/>`, alt: ART.ribbon(88, 308, '#2563EB') },
-          { x: 205, y: 326, r: 25, orig: `<g filter="url(#softShadow)"><ellipse cx="205" cy="326" rx="12" ry="8" fill="#FACC15"/><circle cx="213" cy="319" r="5.5" fill="#FACC15"/></g>`, alt: `<g filter="url(#softShadow)"><ellipse cx="205" cy="326" rx="13" ry="8" fill="#22C55E"/><circle cx="199" cy="318" r="4" fill="#22C55E"/><circle cx="211" cy="318" r="4" fill="#22C55E"/></g>` }
+          {
+            x: 245, y: 55, r: 24,
+            orig: BK.cloud(245, 55, 0.85),
+            alt: BK.sun(245, 55)
+          },
+          {
+            x: 68, y: 162, r: 22,
+            orig: `<circle cx="68" cy="162" r="10" fill="#FFF" stroke="${INK}" stroke-width="2"/>`,
+            alt: `<polygon points="68,151 71,159 79,159 73,164 75,172 68,167 61,172 63,164 57,159 65,159" fill="#FACC15" stroke="${INK}" stroke-width="1.8"/>`
+          },
+          {
+            x: 235, y: 224, r: 25,
+            orig: `<g fill="#FFF" stroke="${INK}" stroke-width="2"><circle cx="232" cy="230" r="8"/><circle cx="244" cy="218" r="10"/></g>`,
+            alt: `<g fill="#FBCFE8" stroke="${INK}" stroke-width="2"><circle cx="232" cy="230" r="8"/><circle cx="244" cy="218" r="10"/><circle cx="258" cy="206" r="11"/></g>`
+          },
+          {
+            x: 118, y: 344, r: 24,
+            orig: `<g><line x1="108" y1="356" x2="108" y2="332" stroke="${INK}" stroke-width="2.5"/><polygon points="108,332 132,339 108,346" fill="#22C55E" stroke="${INK}" stroke-width="2"/></g>`,
+            alt: `<g><line x1="108" y1="356" x2="108" y2="332" stroke="${INK}" stroke-width="2.5"/><polygon points="108,332 132,339 108,346" fill="#EF4444" stroke="${INK}" stroke-width="2"/></g>`
+          },
+          {
+            x: 215, y: 355, r: 26,
+            orig: `<g transform="translate(215,355)"><circle cx="0" cy="0" r="14" fill="#D97706" stroke="${INK}" stroke-width="2.2"/><rect x="18" y="-2" width="18" height="14" rx="3" fill="#B45309" stroke="${INK}" stroke-width="2"/></g>`,
+            alt: `<g transform="translate(215,355)"><circle cx="0" cy="0" r="14" fill="#D97706" stroke="${INK}" stroke-width="2.2"/><rect x="18" y="-2" width="18" height="14" rx="3" fill="#FACC15" stroke="${INK}" stroke-width="2"/></g>`
+          }
         ]
       },
 
-      // 4. 산호초 바닷속 아쿠아리움
+      // 4. 펭귄과 물개의 반짝이는 얼음 마을
       {
-        title: '🐠 4. 산호초 바닷속 아쿠아리움',
+        title: '🐧 4. 펭귄과 물개의 반짝이는 얼음 마을',
         bg: `
-          <rect width="300" height="400" fill="url(#gSkyOcean)"/>
-          <path d="M0 325 Q150 300 300 325 L300 400 L0 400 Z" fill="url(#gSand)"/>
-          <path d="M272 340 Q255 290 276 245 Q292 205 270 170" fill="none" stroke="#16A34A" stroke-width="11" stroke-linecap="round"/>
-          <path d="M26 335 Q14 285 35 255 M36 335 Q52 290 42 260" fill="none" stroke="#F43F5E" stroke-width="9" stroke-linecap="round"/>
-          <g transform="translate(150,122)" filter="url(#softShadow)">
-            <ellipse rx="62" ry="32" fill="#FACC15" stroke="#CA8A04" stroke-width="3.5"/>
-            <rect x="-16" y="-46" width="32" height="18" rx="6" fill="#FACC15" stroke="#CA8A04" stroke-width="3"/>
-            <circle cx="-26" cy="0" r="10" fill="#E0F2FE" stroke="#0369A1" stroke-width="3"/>
-            <circle cx="0" cy="0" r="10" fill="#E0F2FE" stroke="#0369A1" stroke-width="3"/>
-            <circle cx="26" cy="0" r="10" fill="#E0F2FE" stroke="#0369A1" stroke-width="3"/>
+          <rect width="300" height="400" fill="#BAE6FD"/>
+          ${BK.cloud(72, 48, 0.9)}
+          <path d="M0 185 Q95 155 185 182 Q245 162 300 180 L300 265 L0 265 Z" fill="#E0F2FE" stroke="${INK}" stroke-width="2.3"/>
+          <path d="M0 245 Q150 225 300 245 L300 400 L0 400 Z" fill="#FFFFFF" stroke="${INK}" stroke-width="2.3"/>
+          ${BK.pine(36, 185, true)}
+          ${BK.pine(265, 180, true)}
+          <!-- 얼음 연못 -->
+          <ellipse cx="195" cy="348" rx="58" ry="22" fill="#38BDF8" stroke="${INK}" stroke-width="2.3"/>
+          <!-- 이글루 -->
+          <g transform="translate(152,225)">
+            <path d="M-52 24 Q-52 -32 0 -32 Q52 -32 52 24 Z" fill="#E0F2FE" stroke="${INK}" stroke-width="2.5"/>
+            <path d="M-45 -5 H45 M-34 -19 H34 M-50 10 H50 M0 -32 V24 M-24 -24 V24 M24 -24 V24" stroke="#7DD3FC" stroke-width="1.8"/>
+            <path d="M-16 24 Q-16 0 0 0 Q16 0 16 24 Z" fill="#0284C7" stroke="${INK}" stroke-width="2.3"/>
           </g>
-          <g transform="translate(84,248)" filter="url(#softShadow)">
-            <circle r="21" fill="#F472B6"/>
-            <path d="M-16 14 Q-24 32 -12 34 M-5 18 Q-7 36 1 36 M7 18 Q9 36 17 34 M17 14 Q26 30 18 34" fill="none" stroke="#F472B6" stroke-width="6" stroke-linecap="round"/>
-            <circle cx="-6" cy="-2" r="2.5" fill="#0F172A"/>
-            <circle cx="6" cy="-2" r="2.5" fill="#0F172A"/>
+          <!-- 아기 펭귄 -->
+          <g transform="translate(76,315)">
+            <ellipse cx="0" cy="8" rx="18" ry="22" fill="#1E293B" stroke="${INK}" stroke-width="2.3"/>
+            <ellipse cx="0" cy="11" rx="11" ry="16" fill="#FFFFFF"/>
+            <circle cx="0" cy="-14" r="15" fill="#1E293B" stroke="${INK}" stroke-width="2.3"/>
+            <circle cx="-5" cy="-16" r="2.2" fill="#FFF"/><circle cx="5" cy="-16" r="2.2" fill="#FFF"/>
+            <polygon points="-4,-12 4,-12 0,-7" fill="#FACC15" stroke="${INK}" stroke-width="1.6"/>
           </g>
         `,
         diffs: [
-          { x: 150, y: 64, r: 24, orig: `<path d="M148 76 L148 56 L165 56" fill="none" stroke="#CA8A04" stroke-width="5" stroke-linecap="round"/>`, alt: `<path d="M148 76 L148 56 L131 56" fill="none" stroke="#CA8A04" stroke-width="5" stroke-linecap="round"/>` },
-          { x: 242, y: 88, r: 25, orig: `<g filter="url(#softShadow)"><ellipse cx="242" cy="88" rx="17" ry="10" fill="#F97316"/><polygon points="258,88 270,78 270,98" fill="#F97316"/><rect x="238" y="78" width="5" height="20" fill="#FFF"/></g>`, alt: `<g filter="url(#softShadow)"><ellipse cx="242" cy="88" rx="17" ry="10" fill="#2563EB"/><polygon points="258,88 270,78 270,98" fill="#FACC15"/></g>` },
-          { x: 84, y: 220, r: 24, orig: ART.crown(84, 222), alt: ART.ribbon(84, 222, '#38BDF8') },
-          { x: 222, y: 298, r: 28, orig: `<g filter="url(#softShadow)"><rect x="196" y="294" width="52" height="32" rx="5" fill="#B45309"/><path d="M196 294 Q222 276 248 294 Z" fill="#D97706"/></g>`, alt: `<g filter="url(#softShadow)"><rect x="196" y="294" width="52" height="32" rx="5" fill="#B45309"/><path d="M196 285 Q222 266 248 285 Z" fill="#D97706"/><polygon points="222,278 232,288 222,298 212,288" fill="#38BDF8"/></g>` },
-          { x: 145, y: 356, r: 24, orig: ART.starShape(145, 356, '#FB923C', 1.15), alt: `<g filter="url(#softShadow)"><path d="M128 362 Q145 336 162 362 Z" fill="#FBCFE8" stroke="#DB2777" stroke-width="2"/><circle cx="145" cy="356" r="5" fill="#FFF"/></g>` }
+          {
+            x: 245, y: 55, r: 24,
+            orig: BK.bird(245, 55, '#3B82F6'),
+            alt: BK.bird(245, 55, '#EF4444')
+          },
+          {
+            x: 152, y: 184, r: 22,
+            orig: `<polygon points="152,193 152,175 174,183" fill="#EF4444" stroke="${INK}" stroke-width="2"/>`,
+            alt: `<polygon points="152,193 152,175 174,183" fill="#FACC15" stroke="${INK}" stroke-width="2"/>`
+          },
+          {
+            x: 76, y: 302, r: 22,
+            orig: `<rect x="-14" y="-3" width="28" height="7" rx="3" fill="#EF4444" stroke="${INK}" stroke-width="1.8" transform="translate(76,302)"/>`,
+            alt: `<rect x="62" y="299" width="28" height="7" rx="3" fill="#22C55E" stroke="${INK}" stroke-width="1.8"/>`
+          },
+          {
+            x: 195, y: 332, r: 26,
+            orig: `<g transform="translate(195,342)"><ellipse cx="0" cy="4" rx="16" ry="10" fill="#CBD5E1" stroke="${INK}" stroke-width="2.2"/><circle cx="12" cy="-5" r="8" fill="#CBD5E1" stroke="${INK}" stroke-width="2.2"/><circle cx="12" cy="-22" r="8" fill="#F43F5E" stroke="${INK}" stroke-width="2"/></g>`,
+            alt: `<g transform="translate(195,342)"><ellipse cx="0" cy="4" rx="16" ry="10" fill="#CBD5E1" stroke="${INK}" stroke-width="2.2"/><circle cx="12" cy="-5" r="8" fill="#CBD5E1" stroke="${INK}" stroke-width="2.2"/><circle cx="12" cy="-22" r="8" fill="#FACC15" stroke="${INK}" stroke-width="2"/></g>`
+          },
+          {
+            x: 245, y: 285, r: 24,
+            orig: `<g transform="translate(245,285)"><rect x="-12" y="-10" width="24" height="22" rx="4" fill="#E0F2FE" stroke="${INK}" stroke-width="2"/><circle cx="0" cy="1" r="5" fill="#FACC15"/></g>`,
+            alt: ``
+          }
         ]
       },
 
-      // 5. 반짝반짝 우주 정거장
+      // 5. 강아지 소방관의 출동! 마을 소방서
       {
-        title: '🚀 5. 반짝반짝 우주 정거장',
+        title: '🚒 5. 강아지 소방관의 마을 소방서',
         bg: `
-          <rect width="300" height="400" fill="url(#gSkyNight)"/>
-          <circle cx="35" cy="35" r="2" fill="#FFF"/><circle cx="115" cy="28" r="2" fill="#FEF08A"/><circle cx="275" cy="42" r="2" fill="#FFF"/>
-          <path d="M0 320 Q150 295 300 320 L300 400 L0 400 Z" fill="#CBD5E1"/>
-          <circle cx="145" cy="355" r="14" fill="#94A3B8"/>
-          <circle cx="235" cy="365" r="18" fill="#94A3B8"/>
-          <g transform="translate(150,145)" filter="url(#softShadow)">
-            <path d="M0 -82 Q28 -35 28 55 L-28 55 Q-28 -35 0 -82 Z" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="3"/>
-            <path d="M0 -82 Q16 -55 21 -38 L-21 -38 Q-16 -55 0 -82 Z" fill="#EF4444"/>
-            <path d="M-28 22 L-48 62 L-28 52 Z" fill="#EF4444"/>
-            <path d="M28 22 L48 62 L28 52 Z" fill="#EF4444"/>
+          <rect width="300" height="400" fill="#BAE6FD"/>
+          ${BK.cloud(55, 42, 0.85)}
+          <!-- 뒷건물 & 소방서 -->
+          <rect x="18" y="105" width="64" height="175" rx="4" fill="#CBD5E1" stroke="${INK}" stroke-width="2.3"/>
+          <rect x="218" y="115" width="64" height="165" rx="4" fill="#E2E8F0" stroke="${INK}" stroke-width="2.3"/>
+          <g transform="translate(150,185)">
+            <rect x="-64" y="-65" width="128" height="160" fill="#FCA5A5" stroke="${INK}" stroke-width="2.5"/>
+            <rect x="-68" y="-75" width="136" height="14" rx="3" fill="#DC2626" stroke="${INK}" stroke-width="2.3"/>
+            <path d="M-42 95 L-42 25 Q0 5 42 25 L42 95 Z" fill="#1E293B" stroke="${INK}" stroke-width="2.3"/>
           </g>
-          <g transform="translate(215,285)" filter="url(#softShadow)">
-            <circle r="16" fill="#FFFFFF" stroke="#94A3B8" stroke-width="2.5"/>
-            <rect x="-10" y="-6" width="20" height="11" rx="5" fill="#38BDF8"/>
-            <rect x="-13" y="16" width="26" height="28" rx="8" fill="#FFFFFF" stroke="#94A3B8" stroke-width="2.5"/>
+          <!-- 도로 -->
+          <rect y="278" width="300" height="122" fill="#475569" stroke="${INK}" stroke-width="2.3"/>
+          <line x1="0" y1="340" x2="300" y2="340" stroke="#FACC15" stroke-width="4" stroke-dasharray="16 12"/>
+          <!-- 소방차 -->
+          <g transform="translate(155,268)">
+            <rect x="-68" y="-12" width="88" height="40" rx="6" fill="#EF4444" stroke="${INK}" stroke-width="2.4"/>
+            <rect x="18" y="-22" width="44" height="50" rx="8" fill="#DC2626" stroke="${INK}" stroke-width="2.4"/>
+            <rect x="30" y="-12" width="24" height="20" rx="3" fill="#BAE6FD" stroke="${INK}" stroke-width="2"/>
+            <circle cx="-42" cy="32" r="12" fill="#1E293B" stroke="${INK}" stroke-width="2.3"/>
+            <circle cx="36" cy="32" r="12" fill="#1E293B" stroke="${INK}" stroke-width="2.3"/>
           </g>
         `,
         diffs: [
-          { x: 64, y: 78, r: 28, orig: `<g filter="url(#softShadow)"><circle cx="64" cy="78" r="17" fill="#FB923C"/><ellipse cx="64" cy="78" rx="30" ry="7" fill="none" stroke="#FDE047" stroke-width="4" transform="rotate(-18 64 78)"/></g>`, alt: `<g filter="url(#softShadow)"><circle cx="64" cy="78" r="17" fill="#FB923C"/><ellipse cx="64" cy="78" rx="30" ry="7" fill="none" stroke="#F472B6" stroke-width="4" transform="rotate(-18 64 78)"/></g>` },
-          { x: 242, y: 88, r: 26, orig: `<g filter="url(#softShadow)"><ellipse cx="242" cy="94" rx="25" ry="8" fill="#94A3B8"/><path d="M228 90 Q242 68 256 90 Z" fill="#4ADE80"/></g>`, alt: `<g filter="url(#softShadow)"><ellipse cx="242" cy="94" rx="25" ry="8" fill="#94A3B8"/></g>` },
-          { x: 150, y: 138, r: 24, orig: `<circle cx="150" cy="138" r="14" fill="#38BDF8" stroke="#0284C7" stroke-width="3.5"/>`, alt: ART.heartShape(150, 138, '#F43F5E', 1.2) },
-          { x: 150, y: 224, r: 25, orig: `<path d="M135 202 Q150 250 165 202 Z" fill="#F97316"/>`, alt: `<path d="M135 202 Q150 250 165 202 Z" fill="#38BDF8"/>` },
-          { x: 68, y: 310, r: 26, orig: `<g><line x1="62" y1="335" x2="62" y2="288" stroke="#FFF" stroke-width="3"/><polygon points="62,288 94,298 62,308" fill="#EF4444"/></g>`, alt: `<g><line x1="62" y1="335" x2="62" y2="288" stroke="#FFF" stroke-width="3"/><polygon points="62,288 94,298 62,308" fill="#FACC15"/></g>` }
+          {
+            x: 150, y: 145, r: 24,
+            orig: `<g><circle cx="150" cy="145" r="15" fill="#FACC15" stroke="${INK}" stroke-width="2.2"/><path d="M150 135 L155 147 L145 147 Z" fill="#EF4444"/></g>`,
+            alt: `<g><circle cx="150" cy="145" r="15" fill="#38BDF8" stroke="${INK}" stroke-width="2.2"/><path d="M150 135 L155 147 L145 147 Z" fill="#FFF"/></g>`
+          },
+          {
+            x: 185, y: 238, r: 22,
+            orig: `<rect x="177" y="232" width="16" height="12" rx="4" fill="#3B82F6" stroke="${INK}" stroke-width="2"/>`,
+            alt: `<rect x="177" y="232" width="16" height="12" rx="4" fill="#FACC15" stroke="${INK}" stroke-width="2"/>`
+          },
+          {
+            x: 125, y: 246, r: 24,
+            orig: `<g stroke="#FFF" stroke-width="2.5"><line x1="90" y1="246" x2="160" y2="246"/><line x1="90" y1="252" x2="160" y2="252"/></g>`,
+            alt: `<g stroke="#FACC15" stroke-width="2.5"><line x1="90" y1="246" x2="160" y2="246"/><line x1="90" y1="252" x2="160" y2="252"/></g>`
+          },
+          {
+            x: 42, y: 268, r: 24,
+            orig: `<g transform="translate(42,268)"><rect x="-7" y="-8" width="14" height="22" rx="4" fill="#EF4444" stroke="${INK}" stroke-width="2"/><circle cx="0" cy="-10" r="7" fill="#EF4444" stroke="${INK}" stroke-width="2"/></g>`,
+            alt: `<g transform="translate(42,268)"><rect x="-7" y="-8" width="14" height="22" rx="4" fill="#FACC15" stroke="${INK}" stroke-width="2"/><circle cx="0" cy="-10" r="7" fill="#FACC15" stroke="${INK}" stroke-width="2"/></g>`
+          },
+          {
+            x: 245, y: 348, r: 26,
+            orig: `<g transform="translate(245,348)"><rect x="-12" y="8" width="24" height="24" rx="6" fill="#EF4444" stroke="${INK}" stroke-width="2.2"/><circle cx="0" cy="-4" r="14" fill="#FFF" stroke="${INK}" stroke-width="2.2"/><circle cx="-5" cy="-6" r="2.5" fill="${INK}"/><path d="M-16 -12 Q0 -24 16 -12 Z" fill="#FACC15" stroke="${INK}" stroke-width="2"/></g>`,
+            alt: `<g transform="translate(245,348)"><rect x="-12" y="8" width="24" height="24" rx="6" fill="#3B82F6" stroke="${INK}" stroke-width="2.2"/><circle cx="0" cy="-4" r="14" fill="#FFF" stroke="${INK}" stroke-width="2.2"/><circle cx="-5" cy="-6" r="2.5" fill="${INK}"/><path d="M-16 -12 Q0 -24 16 -12 Z" fill="#EF4444" stroke="${INK}" stroke-width="2"/></g>`
+          }
         ]
       },
 
-      // 6. 공룡 친구들의 화산섬
+      // 6. 고양이 선장과 햄스터의 보물섬 해적선
       {
-        title: '🦖 6. 공룡 친구들의 화산섬',
+        title: '🏴‍☠️ 6. 고양이 선장과 햄스터의 보물섬',
         bg: `
-          <rect width="300" height="400" fill="url(#gSkyWarm)"/>
-          <path d="M75 260 L125 110 L175 110 L225 260 Z" fill="url(#gWood)"/>
-          <path d="M125 110 L138 135 L150 120 L162 135 L175 110 Z" fill="#EF4444"/>
-          <path d="M0 255 Q150 230 300 255 L300 400 L0 400 Z" fill="url(#gMeadow)"/>
-          ${ART.palmTree(38, 215)}
-          ${ART.palmTree(262, 220)}
-          <g transform="translate(92,265)" filter="url(#softShadow)">
-            <ellipse cx="0" cy="22" rx="28" ry="18" fill="#22C55E"/>
-            <path d="M14 14 Q26 -25 32 -42 L42 -38 Q34 -10 24 20 Z" fill="#22C55E"/>
-            <ellipse cx="38" cy="-42" rx="12" ry="8" fill="#4ADE80"/>
-            <circle cx="42" cy="-44" r="2" fill="#0F172A"/>
+          <rect width="300" height="400" fill="#BAE6FD"/>
+          ${BK.sun(248, 52)}
+          <path d="M0 245 Q75 232 150 245 T300 245 L300 400 L0 400 Z" fill="#0284C7" stroke="${INK}" stroke-width="2.3"/>
+          <path d="M188 332 Q242 302 300 332 L300 400 L180 400 Z" fill="#FDE047" stroke="${INK}" stroke-width="2.3"/>
+          <!-- 야자수 -->
+          <g transform="translate(262,285)">
+            <path d="M-4 45 Q-8 10 4 -24 L11 -22 Q-1 10 5 45 Z" fill="#92400E" stroke="${INK}" stroke-width="2.2"/>
+            <path d="M6 -23 Q-16 -34 -30 -16 Q-14 -20 6 -23 Z" fill="#22C55E" stroke="${INK}" stroke-width="2"/>
+            <path d="M6 -23 Q26 -35 38 -16 Q20 -20 6 -23 Z" fill="#4ADE80" stroke="${INK}" stroke-width="2"/>
+          </g>
+          <!-- 해적선 -->
+          <g transform="translate(115,220)">
+            <path d="M-64 10 L64 10 L44 44 L-44 44 Z" fill="#92400E" stroke="${INK}" stroke-width="2.5"/>
+            <line x1="0" y1="10" x2="0" y2="-82" stroke="${INK}" stroke-width="4.5"/>
+            <path d="M-38 -68 Q0 -74 38 -68 Q32 -28 38 -4 Q0 -11 -38 -4 Q-32 -28 -38 -68 Z" fill="#FFFFFF" stroke="${INK}" stroke-width="2.3"/>
+          </g>
+          <!-- 고양이 선장 -->
+          <g transform="translate(95,212)">
+            <circle cx="0" cy="0" r="13" fill="#FDBA74" stroke="${INK}" stroke-width="2.2"/>
+            <path d="M-16 -8 Q0 -24 16 -8 Z" fill="#1E293B" stroke="${INK}" stroke-width="2"/>
+            <circle cx="-4" cy="-1" r="2" fill="${INK}"/><circle cx="4" cy="-1" r="2" fill="${INK}"/>
           </g>
         `,
         diffs: [
-          { x: 150, y: 76, r: 28, orig: `<g fill="#94A3B8" opacity="0.85"><circle cx="142" cy="84" r="11"/><circle cx="158" cy="76" r="14"/><circle cx="148" cy="62" r="11"/></g>`, alt: `<g>${ART.heartShape(145, 80, '#F43F5E', 1)}${ART.heartShape(162, 65, '#FB7185', 0.8)}</g>` },
-          { x: 225, y: 145, r: 25, orig: `<g filter="url(#softShadow)"><path d="M210 148 Q225 135 240 148 L232 154 L225 148 L218 154 Z" fill="#15803D"/></g>`, alt: ART.cuteBird(225, 145, '#F97316') },
-          { x: 78, y: 278, r: 24, orig: `<g fill="#15803D"><circle cx="78" cy="278" r="5"/><circle cx="92" cy="274" r="5"/></g>`, alt: `<g fill="#FACC15"><circle cx="78" cy="278" r="5"/><circle cx="92" cy="274" r="5"/></g>` },
-          { x: 222, y: 315, r: 28, orig: `<g filter="url(#softShadow)"><ellipse cx="222" cy="318" rx="15" ry="20" fill="#FEF9C3" stroke="#CA8A04" stroke-width="2.5"/><circle cx="218" cy="314" r="3" fill="#F59E0B"/><circle cx="227" cy="322" r="4" fill="#F59E0B"/></g>`, alt: `<g filter="url(#softShadow)"><path d="M207 318 Q207 338 222 338 Q237 338 237 318 L229 312 L222 320 L215 312 Z" fill="#FEF9C3" stroke="#CA8A04" stroke-width="2.5"/><circle cx="222" cy="306" r="8" fill="#4ADE80"/></g>` },
-          { x: 145, y: 358, r: 24, orig: ART.flower(145, 358, '#F97316'), alt: ART.flower(145, 358, '#A855F7') }
+          {
+            x: 115, y: 124, r: 24,
+            orig: `<polygon points="115,135 115,115 142,125" fill="#1E293B" stroke="${INK}" stroke-width="2"/>`,
+            alt: `<polygon points="115,135 115,115 142,125" fill="#EF4444" stroke="${INK}" stroke-width="2"/>`
+          },
+          {
+            x: 115, y: 182, r: 24,
+            orig: `<polygon points="115,168 119,178 129,178 121,185 124,195 115,189 106,195 109,185 101,178 111,178" fill="#EF4444" stroke="${INK}" stroke-width="2"/>`,
+            alt: `<path d="M115 193 C99 180 99 168 115 177 C131 168 131 180 115 193 Z" fill="#3B82F6" stroke="${INK}" stroke-width="2"/>`
+          },
+          {
+            x: 65, y: 315, r: 25,
+            orig: `<g transform="translate(65,315)"><ellipse cx="0" cy="0" rx="22" ry="12" fill="#94A3B8" stroke="${INK}" stroke-width="2.2"/><path d="M-18 -2 Q0 -16 18 -2" fill="none" stroke="${INK}" stroke-width="2"/></g>`,
+            alt: `<g transform="translate(65,315)"><ellipse cx="0" cy="0" rx="18" ry="10" fill="#F472B6" stroke="${INK}" stroke-width="2.2"/><path d="M-6 -10 Q0 -22 6 -10" fill="none" stroke="${INK}" stroke-width="2"/></g>`
+          },
+          {
+            x: 228, y: 356, r: 24,
+            orig: `<g transform="translate(228,356)"><rect x="-18" y="-10" width="36" height="22" rx="4" fill="#B45309" stroke="${INK}" stroke-width="2.2"/><circle cx="0" cy="0" r="4" fill="#FACC15" stroke="${INK}" stroke-width="1.5"/></g>`,
+            alt: `<g transform="translate(228,356)"><circle cx="0" cy="0" r="12" fill="#EF4444" stroke="${INK}" stroke-width="2.2"/><circle cx="-4" cy="-3" r="2" fill="#FFF"/></g>`
+          },
+          {
+            x: 75, y: 65, r: 24,
+            orig: BK.cloud(75, 65, 0.9),
+            alt: BK.bird(75, 65, '#FFFFFF')
+          }
         ]
       },
 
-      // 7. 알록달록 서커스 공연장
+      // 7. 아기 사자와 기린의 초원 사파리 탐험
       {
-        title: '🎪 7. 알록달록 서커스 공연장',
+        title: '🦁 7. 아기 사자와 기린의 사파리 탐험',
         bg: `
-          <rect width="300" height="400" fill="url(#gSkyWarm)"/>
-          <path d="M0 280 Q150 260 300 280 L300 400 L0 400 Z" fill="#FCA5A5"/>
-          <g transform="translate(150,165)" filter="url(#softShadow)">
-            <path d="M-95 100 L-80 0 L80 0 L95 100 Z" fill="#FFFFFF" stroke="#EF4444" stroke-width="3"/>
-            <path d="M-40 100 L-32 0 L0 0 L0 100 Z" fill="#EF4444"/>
-            <path d="M40 100 L32 0 L0 0 L0 100 Z" fill="#EF4444"/>
-            <path d="M-95 0 Q0 -85 95 0 Z" fill="#EF4444" stroke="#B91C1C" stroke-width="3"/>
-            <path d="M-35 0 Q0 -85 35 0 Z" fill="#FACC15"/>
+          <rect width="300" height="400" fill="#FEF3C7"/>
+          <path d="M0 245 Q150 215 300 245 L300 400 L0 400 Z" fill="#86EFAC" stroke="${INK}" stroke-width="2.3"/>
+          <ellipse cx="205" cy="332" rx="52" ry="20" fill="#38BDF8" stroke="${INK}" stroke-width="2.3"/>
+          ${BK.bushTree(45, 195, '#22C55E')}
+          <!-- 기린 -->
+          <g transform="translate(225,180)">
+            <path d="M-8 65 L-6 -45 L8 -45 L10 65 Z" fill="#FBBF24" stroke="${INK}" stroke-width="2.3"/>
+            <ellipse cx="6" cy="62" rx="24" ry="15" fill="#FBBF24" stroke="${INK}" stroke-width="2.3"/>
+            <circle cx="0" cy="-15" r="5" fill="#B45309"/><circle cx="2" cy="12" r="6" fill="#B45309"/>
+            <ellipse cx="2" cy="-52" rx="16" ry="11" fill="#FDE047" stroke="${INK}" stroke-width="2.3"/>
+            <circle cx="8" cy="-54" r="2.2" fill="${INK}"/>
           </g>
-          <g transform="translate(82,315)" filter="url(#softShadow)">
-            <circle cx="0" cy="32" r="18" fill="#3B82F6"/>
-            <ellipse cx="0" cy="0" rx="22" ry="18" fill="#94A3B8"/>
-            <path d="M18 -2 Q32 -6 28 10" fill="none" stroke="#94A3B8" stroke-width="7" stroke-linecap="round"/>
+          <!-- 아기 사자 -->
+          <g transform="translate(88,288)">
+            <circle r="24" fill="#EA580C" stroke="${INK}" stroke-width="2.3"/>
+            <circle r="16" fill="#FDBA74" stroke="${INK}" stroke-width="2"/>
+            <circle cx="-5" cy="-3" r="2.2" fill="${INK}"/><circle cx="5" cy="-3" r="2.2" fill="${INK}"/>
           </g>
         `,
         diffs: [
-          { x: 150, y: 74, r: 25, orig: `<g><line x1="150" y1="92" x2="150" y2="62" stroke="#78350F" stroke-width="3"/><polygon points="150,62 176,70 150,78" fill="#3B82F6"/></g>`, alt: `<g><line x1="150" y1="92" x2="150" y2="62" stroke="#78350F" stroke-width="3"/>${ART.starShape(150, 62, '#FACC15', 0.9)}</g>` },
-          { x: 48, y: 95, r: 24, orig: ART.starShape(48, 95, '#FACC15', 1), alt: ART.heartShape(48, 95, '#F43F5E', 1) },
-          { x: 82, y: 290, r: 24, orig: ART.partyHat(82, 290, '#FACC15'), alt: ART.crown(82, 292) },
-          { x: 222, y: 315, r: 28, orig: `<g filter="url(#softShadow)"><ellipse cx="222" cy="332" rx="16" ry="20" fill="#64748B"/><circle cx="222" cy="296" r="12" fill="#EF4444"/></g>`, alt: `<g filter="url(#softShadow)"><ellipse cx="222" cy="332" rx="16" ry="20" fill="#64748B"/><circle cx="222" cy="296" r="12" fill="#22C55E"/></g>` },
-          { x: 150, y: 242, r: 25, orig: `<path d="M132 265 Q150 225 168 265 Z" fill="#1E293B"/>`, alt: `<path d="M132 265 Q150 225 168 265 Z" fill="#FACC15"/>` }
+          {
+            x: 58, y: 54, r: 25,
+            orig: BK.sun(58, 54),
+            alt: `<g>${BK.sun(58, 54)}<rect x="44" y="47" width="12" height="7" rx="2" fill="#0F172A"/><rect x="60" y="47" width="12" height="7" rx="2" fill="#0F172A"/></g>`
+          },
+          {
+            x: 226, y: 108, r: 24,
+            orig: `<g stroke="${INK}" stroke-width="2.5"><line x1="220" y1="118" x2="217" y2="105"/><line x1="232" y1="118" x2="235" y2="105"/></g>`,
+            alt: `<polygon points="215,116 226,95 237,116" fill="#EF4444" stroke="${INK}" stroke-width="2"/>`
+          },
+          {
+            x: 145, y: 175, r: 24,
+            orig: BK.bird(145, 175, '#EF4444'),
+            alt: BK.bird(145, 175, '#3B82F6')
+          },
+          {
+            x: 88, y: 312, r: 22,
+            orig: `<circle cx="88" cy="310" r="5" fill="#FACC15" stroke="${INK}" stroke-width="1.8"/>`,
+            alt: `<polygon points="76,305 88,310 76,315 100,315 88,310 100,305" fill="#2563EB" stroke="${INK}" stroke-width="1.8"/>`
+          },
+          {
+            x: 205, y: 326, r: 24,
+            orig: `<g><ellipse cx="205" cy="326" rx="12" ry="8" fill="#FACC15" stroke="${INK}" stroke-width="2"/><circle cx="213" cy="319" r="5.5" fill="#FACC15" stroke="${INK}" stroke-width="2"/></g>`,
+            alt: `<g><ellipse cx="205" cy="326" rx="13" ry="8" fill="#22C55E" stroke="${INK}" stroke-width="2"/><circle cx="199" cy="318" r="4" fill="#22C55E" stroke="${INK}" stroke-width="1.8"/><circle cx="211" cy="318" r="4" fill="#22C55E" stroke="${INK}" stroke-width="1.8"/></g>`
+          }
         ]
       },
 
-      // 8. 칙칙폭폭 산골 기차역
+      // 8. 문어와 거북이의 산호초 바닷속 학교
       {
-        title: '🚂 8. 칙칙폭폭 산골 기차역',
+        title: '🐠 8. 문어와 거북이의 바닷속 학교',
         bg: `
-          <rect width="300" height="400" fill="url(#gSkyDay)"/>
-          <polygon points="0,250 75,115 155,250" fill="#94A3B8"/>
-          <polygon points="52,156 75,115 98,156" fill="#FFFFFF"/>
-          <polygon points="120,250 205,105 295,250" fill="#64748B"/>
-          <polygon points="178,152 205,105 232,152" fill="#FFFFFF"/>
-          <path d="M0 245 Q150 225 300 245 L300 400 L0 400 Z" fill="url(#gMeadow)"/>
-          <rect x="0" y="315" width="300" height="10" fill="#475569"/>
-          <g transform="translate(155,265)" filter="url(#softShadow)">
-            <rect x="-75" y="-15" width="52" height="45" rx="8" fill="#EF4444" stroke="#991B1B" stroke-width="2.5"/>
-            <rect x="-25" y="0" width="75" height="30" rx="8" fill="#3B82F6" stroke="#1E40AF" stroke-width="2.5"/>
-            <rect x="26" y="-22" width="14" height="22" rx="3" fill="#1E293B"/>
-            <circle cx="-50" cy="36" r="14" fill="#1E293B"/>
-            <circle cx="0" cy="36" r="12" fill="#1E293B"/>
-            <circle cx="34" cy="36" r="12" fill="#1E293B"/>
+          <rect width="300" height="400" fill="#7DD3FC"/>
+          <path d="M0 325 Q150 300 300 325 L300 400 L0 400 Z" fill="#FDE047" stroke="${INK}" stroke-width="2.3"/>
+          <path d="M272 340 Q255 290 276 245 Q292 205 270 170" fill="none" stroke="#16A34A" stroke-width="10" stroke-linecap="round"/>
+          <path d="M26 335 Q14 285 35 255 M36 335 Q52 290 42 260" fill="none" stroke="#F43F5E" stroke-width="8" stroke-linecap="round"/>
+          <!-- 노란 잠수함 -->
+          <g transform="translate(150,122)">
+            <ellipse rx="62" ry="32" fill="#FACC15" stroke="${INK}" stroke-width="2.5"/>
+            <rect x="-16" y="-46" width="32" height="18" rx="6" fill="#FACC15" stroke="${INK}" stroke-width="2.3"/>
+            <circle cx="-26" cy="0" r="10" fill="#E0F2FE" stroke="${INK}" stroke-width="2.2"/>
+            <circle cx="0" cy="0" r="10" fill="#E0F2FE" stroke="${INK}" stroke-width="2.2"/>
+            <circle cx="26" cy="0" r="10" fill="#E0F2FE" stroke="${INK}" stroke-width="2.2"/>
+          </g>
+          <!-- 아기 문어 -->
+          <g transform="translate(84,248)">
+            <circle r="21" fill="#F472B6" stroke="${INK}" stroke-width="2.3"/>
+            <path d="M-16 14 Q-24 32 -12 34 M-5 18 Q-7 36 1 36 M7 18 Q9 36 17 34 M17 14 Q26 30 18 34" fill="none" stroke="${INK}" stroke-width="5" stroke-linecap="round"/>
+            <circle cx="-6" cy="-2" r="2.3" fill="${INK}"/><circle cx="6" cy="-2" r="2.3" fill="${INK}"/>
           </g>
         `,
         diffs: [
-          { x: 188, y: 215, r: 26, orig: `<g fill="#FFF"><circle cx="188" cy="222" r="9"/><circle cx="202" cy="210" r="12"/></g>`, alt: `<g fill="#FBCFE8"><circle cx="188" cy="222" r="9"/><circle cx="202" cy="210" r="12"/><circle cx="218" cy="198" r="14"/></g>` },
-          { x: 105, y: 268, r: 24, orig: `<rect x="93" y="258" width="24" height="18" rx="4" fill="#FEF08A"/>`, alt: `<rect x="93" y="258" width="24" height="18" rx="4" fill="#BAE6FD"/>` },
-          { x: 258, y: 278, r: 26, orig: `<g filter="url(#softShadow)"><rect x="255" y="265" width="6" height="45" fill="#78350F"/><circle cx="258" cy="265" r="14" fill="#FACC15" stroke="#B45309" stroke-width="2.5"/></g>`, alt: `<g filter="url(#softShadow)"><rect x="255" y="265" width="6" height="45" fill="#78350F"/><circle cx="258" cy="265" r="14" fill="#EF4444" stroke="#991B1B" stroke-width="2.5"/></g>` },
-          { x: 65, y: 360, r: 26, orig: `<g filter="url(#softShadow)"><ellipse cx="65" cy="360" rx="18" ry="12" fill="#FFFFFF" stroke="#94A3B8" stroke-width="2"/><circle cx="80" cy="355" r="7" fill="#334155"/></g>`, alt: `<g filter="url(#softShadow)"><ellipse cx="65" cy="360" rx="18" ry="12" fill="#FDE68A" stroke="#D97706" stroke-width="2"/><circle cx="80" cy="355" r="7" fill="#78350F"/></g>` },
-          { x: 245, y: 55, r: 25, orig: ART.cloudPuff(245, 55, 0.85), alt: ART.sunSmile(245, 55) }
+          {
+            x: 150, y: 64, r: 22,
+            orig: `<path d="M148 76 L148 56 L165 56" fill="none" stroke="${INK}" stroke-width="4.5" stroke-linecap="round"/>`,
+            alt: `<path d="M148 76 L148 56 L131 56" fill="none" stroke="${INK}" stroke-width="4.5" stroke-linecap="round"/>`
+          },
+          {
+            x: 242, y: 88, r: 24,
+            orig: `<g><ellipse cx="242" cy="88" rx="17" ry="10" fill="#F97316" stroke="${INK}" stroke-width="2"/><polygon points="258,88 270,78 270,98" fill="#F97316" stroke="${INK}" stroke-width="2"/></g>`,
+            alt: `<g><ellipse cx="242" cy="88" rx="17" ry="10" fill="#2563EB" stroke="${INK}" stroke-width="2"/><polygon points="258,88 270,78 270,98" fill="#FACC15" stroke="${INK}" stroke-width="2"/></g>`
+          },
+          {
+            x: 84, y: 220, r: 22,
+            orig: `<polygon points="72,226 70,213 79,220 84,210 89,220 98,213 96,226" fill="#FACC15" stroke="${INK}" stroke-width="2"/>`,
+            alt: `<polygon points="72,216 84,222 72,228 96,228 84,222 96,216" fill="#38BDF8" stroke="${INK}" stroke-width="2"/>`
+          },
+          {
+            x: 222, y: 298, r: 26,
+            orig: `<g><rect x="196" y="294" width="52" height="32" rx="5" fill="#B45309" stroke="${INK}" stroke-width="2.2"/><path d="M196 294 Q222 276 248 294 Z" fill="#D97706" stroke="${INK}" stroke-width="2.2"/></g>`,
+            alt: `<g><rect x="196" y="294" width="52" height="32" rx="5" fill="#B45309" stroke="${INK}" stroke-width="2.2"/><path d="M196 285 Q222 266 248 285 Z" fill="#D97706" stroke="${INK}" stroke-width="2.2"/><polygon points="222,278 232,288 222,298 212,288" fill="#38BDF8" stroke="${INK}" stroke-width="1.8"/></g>`
+          },
+          {
+            x: 145, y: 356, r: 24,
+            orig: `<polygon points="145,342 149,352 159,352 151,359 154,369 145,363 136,369 139,359 131,352 141,352" fill="#FB923C" stroke="${INK}" stroke-width="2"/>`,
+            alt: `<path d="M128 362 Q145 336 162 362 Z" fill="#FBCFE8" stroke="${INK}" stroke-width="2"/>`
+          }
         ]
       },
 
-      // 9. 여름 바닷가 모래성 놀이
+      // 9. 토끼와 병아리의 즐거운 1학년 교실
       {
-        title: '🏖️ 9. 여름 바닷가 모래성 놀이',
+        title: '🏫 9. 토끼와 병아리의 즐거운 1학년 교실',
         bg: `
-          <rect width="300" height="400" fill="url(#gSkyDay)"/>
-          <rect y="185" width="300" height="90" fill="url(#gWater)"/>
-          <path d="M0 265 Q75 250 150 265 T300 265 L300 400 L0 400 Z" fill="url(#gSand)"/>
-          ${ART.sunSmile(248, 52)}
-          <g transform="translate(88,185)" filter="url(#softShadow)">
-            <path d="M-32 10 L32 10 L22 26 L-22 26 Z" fill="#B45309"/>
-            <path d="M0 -34 L0 8 L28 8 Z" fill="#FFFFFF"/>
-            <path d="M-4 -26 L-4 8 L-26 8 Z" fill="#F43F5E"/>
+          <rect width="300" height="400" fill="#FEF9C3"/>
+          <rect y="295" width="300" height="105" fill="url(#patWoodFloor)" stroke="${INK}" stroke-width="2.3"/>
+          <rect x="42" y="88" width="216" height="135" rx="10" fill="#15803D" stroke="${INK}" stroke-width="4"/>
+          <rect x="85" y="255" width="130" height="65" rx="6" fill="#D97706" stroke="${INK}" stroke-width="2.4"/>
+        `,
+        diffs: [
+          {
+            x: 150, y: 45, r: 22,
+            orig: `<g><circle cx="150" cy="45" r="20" fill="#FFFFFF" stroke="${INK}" stroke-width="2.5"/><line x1="150" y1="45" x2="150" y2="33" stroke="#E11D48" stroke-width="3"/></g>`,
+            alt: `<g><circle cx="150" cy="45" r="20" fill="#BAE6FD" stroke="${INK}" stroke-width="2.5"/><line x1="150" y1="45" x2="160" y2="45" stroke="#E11D48" stroke-width="3"/></g>`
+          },
+          {
+            x: 105, y: 152, r: 25,
+            orig: BK.sun(105, 152),
+            alt: `<path d="M105 166 C87 151 87 137 105 148 C123 137 123 151 105 166 Z" fill="#F472B6" stroke="${INK}" stroke-width="2.2"/>`
+          },
+          {
+            x: 195, y: 155, r: 24,
+            orig: BK.flower(195, 155, '#FACC15'),
+            alt: `<polygon points="195,140 199,150 210,150 201,157 204,168 195,161 186,168 189,157 180,150 191,150" fill="#38BDF8" stroke="${INK}" stroke-width="2"/>`
+          },
+          {
+            x: 118, y: 235, r: 24,
+            orig: `<g><circle cx="118" cy="232" r="14" fill="#38BDF8" stroke="${INK}" stroke-width="2"/><rect x="112" y="246" width="12" height="6" fill="#78350F" stroke="${INK}" stroke-width="1.8"/></g>`,
+            alt: `<g><rect x="106" y="232" width="24" height="18" rx="3" fill="#EF4444" stroke="${INK}" stroke-width="2"/><rect x="106" y="224" width="24" height="8" rx="2" fill="#3B82F6" stroke="${INK}" stroke-width="2"/></g>`
+          },
+          {
+            x: 248, y: 315, r: 25,
+            orig: `<rect x="234" y="302" width="28" height="32" rx="8" fill="#FACC15" stroke="${INK}" stroke-width="2.3"/>`,
+            alt: `<rect x="234" y="302" width="28" height="32" rx="8" fill="#EC4899" stroke="${INK}" stroke-width="2.3"/>`
+          }
+        ]
+      },
+
+      // 10. 너구리와 고슴도치의 별빛 숲속 캠핑
+      {
+        title: '⛺ 10. 너구리와 고슴도치의 별빛 캠핑',
+        bg: `
+          <rect width="300" height="400" fill="#1E1B4B"/>
+          <circle cx="42" cy="35" r="2" fill="#FFF"/><circle cx="145" cy="28" r="2.5" fill="#FEF08A"/><circle cx="275" cy="42" r="2" fill="#FFF"/>
+          <path d="M0 265 Q150 240 300 265 L300 400 L0 400 Z" fill="#166534" stroke="${INK}" stroke-width="2.3"/>
+          ${BK.pine(42, 210, false)}
+          ${BK.pine(258, 215, false)}
+          <!-- 캠핑 텐트 -->
+          <g transform="translate(105,275)">
+            <path d="M-55 35 L0 -42 L55 35 Z" fill="#F97316" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M-18 35 L0 -8 L18 35 Z" fill="#FEF3C7" stroke="${INK}" stroke-width="2.2"/>
           </g>
-          <g transform="translate(72,275)" filter="url(#softShadow)">
-            <line x1="0" y1="0" x2="0" y2="55" stroke="#78350F" stroke-width="4"/>
-            <path d="M-42 4 Q0 -34 42 4 Z" fill="#EF4444"/>
-            <path d="M-16 4 Q0 -34 16 4 Z" fill="#FFFFFF"/>
+          <!-- 장작 -->
+          <g transform="translate(215,315)">
+            <rect x="-22" y="12" width="44" height="8" rx="4" fill="#78350F" stroke="${INK}" stroke-width="2" transform="rotate(15)"/>
+            <rect x="-22" y="12" width="44" height="8" rx="4" fill="#92400E" stroke="${INK}" stroke-width="2" transform="rotate(-15)"/>
           </g>
         `,
         diffs: [
-          { x: 88, y: 145, r: 24, orig: `<polygon points="88,151 88,137 104,144" fill="#FACC15"/>`, alt: `<polygon points="88,151 88,137 72,144" fill="#22C55E"/>` },
-          { x: 185, y: 132, r: 24, orig: `<path d="M174 134 Q180 126 185 134 Q190 126 196 134" fill="none" stroke="#334155" stroke-width="2.5"/>`, alt: ART.cuteBird(185, 132, '#FFFFFF') },
-          { x: 205, y: 305, r: 30, orig: `<g filter="url(#softShadow)"><rect x="178" y="295" width="54" height="32" rx="4" fill="#F59E0B"/><rect x="193" y="275" width="24" height="22" rx="3" fill="#FBBF24"/></g>`, alt: `<g filter="url(#softShadow)"><rect x="178" y="295" width="54" height="32" rx="4" fill="#F59E0B"/><rect x="193" y="275" width="24" height="22" rx="3" fill="#FBBF24"/><polygon points="205,275 205,256 222,262 205,268" fill="#EF4444"/></g>` },
-          { x: 118, y: 356, r: 25, orig: `<g filter="url(#softShadow)"><ellipse cx="118" cy="358" rx="14" ry="9" fill="#EF4444"/><circle cx="106" cy="348" r="5" fill="#EF4444"/><circle cx="130" cy="348" r="5" fill="#EF4444"/></g>`, alt: `<g filter="url(#softShadow)"><ellipse cx="118" cy="358" rx="14" ry="9" fill="#F97316"/><circle cx="106" cy="348" r="5" fill="#F97316"/><circle cx="130" cy="348" r="5" fill="#F97316"/></g>` },
-          { x: 245, y: 358, r: 24, orig: `<circle cx="245" cy="358" r="14" fill="#3B82F6" stroke="#FFFFFF" stroke-width="3"/>`, alt: ART.starShape(245, 358, '#F97316', 1.1) }
+          {
+            x: 56, y: 55, r: 24,
+            orig: `<path d="M62 35 A20 20 0 1 0 72 72 A15 15 0 1 1 62 35 Z" fill="#FEF08A" stroke="${INK}" stroke-width="2"/>`,
+            alt: `<circle cx="56" cy="55" r="19" fill="#FEF08A" stroke="${INK}" stroke-width="2"/>`
+          },
+          {
+            x: 235, y: 65, r: 22,
+            orig: `<polygon points="235,51 239,61 249,61 241,68 244,78 235,72 226,78 229,68 221,61 231,61" fill="#FEF08A" stroke="${INK}" stroke-width="2"/>`,
+            alt: `<polygon points="235,51 239,61 249,61 241,68 244,78 235,72 226,78 229,68 221,61 231,61" fill="#38BDF8" stroke="${INK}" stroke-width="2"/>`
+          },
+          {
+            x: 105, y: 222, r: 22,
+            orig: `<polygon points="105,233 105,214 124,221" fill="#FACC15" stroke="${INK}" stroke-width="2"/>`,
+            alt: `<polygon points="105,233 105,214 124,221" fill="#38BDF8" stroke="${INK}" stroke-width="2"/>`
+          },
+          {
+            x: 215, y: 305, r: 24,
+            orig: `<path d="M200 322 Q215 282 230 322 Z" fill="#EF4444" stroke="${INK}" stroke-width="2"/>`,
+            alt: `<path d="M200 322 Q215 282 230 322 Z" fill="#38BDF8" stroke="${INK}" stroke-width="2"/>`
+          },
+          {
+            x: 145, y: 358, r: 24,
+            orig: `<g transform="translate(145,358)"><circle r="13" fill="#A16207" stroke="${INK}" stroke-width="2.2"/><circle cx="-4" cy="-3" r="2.5" fill="#FEF08A"/><circle cx="4" cy="-3" r="2.5" fill="#FEF08A"/></g>`,
+            alt: `<g transform="translate(145,358)"><circle r="13" fill="#FFFFFF" stroke="${INK}" stroke-width="2.2"/><ellipse cx="-5" cy="-16" rx="3.5" ry="9" fill="#FFFFFF" stroke="${INK}" stroke-width="2"/><ellipse cx="5" cy="-16" rx="3.5" ry="9" fill="#FFFFFF" stroke="${INK}" stroke-width="2"/></g>`
+          }
         ]
       },
 
-      // 10. 눈 내리는 겨울 눈사람 마을
+      // 11. 판다와 원숭이의 대나무 공원 소풍
       {
-        title: '⛄ 10. 눈 내리는 겨울 눈사람 마을',
-        bg: `
-          <rect width="300" height="400" fill="url(#gSkyWinter)"/>
-          <path d="M0 265 Q150 235 300 265 L300 400 L0 400 Z" fill="url(#gSnow)"/>
-          ${ART.pineTree(45, 225, true)}
-          ${ART.pineTree(258, 220, true)}
-          <g transform="translate(115,275)" filter="url(#softShadow)">
-            <circle cx="0" cy="28" r="32" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="3"/>
-            <circle cx="0" cy="-16" r="22" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="3"/>
-            <circle cx="-7" cy="-20" r="2.5" fill="#0F172A"/>
-            <circle cx="7" cy="-20" r="2.5" fill="#0F172A"/>
-            <polygon points="0,-16 14,-13 0,-10" fill="#F97316"/>
-            <rect x="-18" y="3" width="36" height="8" rx="4" fill="#EF4444"/>
-          </g>
-          <g transform="translate(222,295)" filter="url(#softShadow)">
-            <path d="M-42 20 Q-42 -26 0 -26 Q42 -26 42 20 Z" fill="#E0F2FE" stroke="#38BDF8" stroke-width="3"/>
-            <path d="M-14 20 Q-14 0 0 0 Q14 0 14 20 Z" fill="#0284C7"/>
-          </g>
-        `,
-        diffs: [
-          { x: 115, y: 230, r: 25, orig: `<g filter="url(#softShadow)"><rect x="99" y="228" width="32" height="6" rx="2" fill="#1E293B"/><rect x="105" y="210" width="20" height="18" rx="2" fill="#1E293B"/></g>`, alt: `<g filter="url(#softShadow)"><rect x="99" y="228" width="32" height="6" rx="2" fill="#EF4444"/><rect x="105" y="210" width="20" height="18" rx="2" fill="#EF4444"/></g>` },
-          { x: 115, y: 298, r: 24, orig: `<g fill="#0F172A"><circle cx="115" cy="292" r="3.5"/><circle cx="115" cy="306" r="3.5"/></g>`, alt: `<g fill="#EF4444"><circle cx="115" cy="292" r="3.5"/><circle cx="115" cy="306" r="3.5"/></g>` },
-          { x: 222, y: 260, r: 24, orig: ART.cuteBird(222, 260, '#3B82F6'), alt: `` },
-          { x: 68, y: 352, r: 26, orig: `<g filter="url(#softShadow)"><ellipse cx="68" cy="352" rx="13" ry="17" fill="#1E293B"/><ellipse cx="68" cy="354" rx="8" ry="12" fill="#FFFFFF"/></g>`, alt: `<g filter="url(#softShadow)"><ellipse cx="68" cy="352" rx="13" ry="17" fill="#1E293B"/><ellipse cx="68" cy="354" rx="8" ry="12" fill="#FFFFFF"/>${ART.ribbon(68, 336, '#F43F5E')}</g>` },
-          { x: 205, y: 362, r: 26, orig: `<path d="M182 365 L228 365 Q236 365 236 355" fill="none" stroke="#EF4444" stroke-width="5" stroke-linecap="round"/>`, alt: `<path d="M182 365 L228 365 Q236 365 236 355" fill="none" stroke="#22C55E" stroke-width="5" stroke-linecap="round"/>` }
-        ]
-      },
-
-      // 11. 별빛 아래 숲속 캠핑장
-      {
-        title: '⛺ 11. 별빛 아래 숲속 캠핑장',
-        bg: `
-          <rect width="300" height="400" fill="url(#gSkyNight)"/>
-          <path d="M0 265 Q150 240 300 265 L300 400 L0 400 Z" fill="#166534"/>
-          ${ART.pineTree(42, 210, false)}
-          ${ART.pineTree(258, 215, false)}
-          <g transform="translate(105,275)" filter="url(#softShadow)">
-            <path d="M-55 35 L0 -42 L55 35 Z" fill="#F97316" stroke="#C2410C" stroke-width="3"/>
-            <path d="M-18 35 L0 -8 L18 35 Z" fill="#FEF3C7"/>
-          </g>
-          <g transform="translate(215,315)" filter="url(#softShadow)">
-            <rect x="-22" y="12" width="44" height="8" rx="4" fill="#78350F" transform="rotate(15)"/>
-            <rect x="-22" y="12" width="44" height="8" rx="4" fill="#92400E" transform="rotate(-15)"/>
-          </g>
-        `,
-        diffs: [
-          { x: 56, y: 55, r: 26, orig: `<path d="M62 35 A20 20 0 1 0 72 72 A15 15 0 1 1 62 35 Z" fill="#FEF08A"/>`, alt: `<circle cx="56" cy="55" r="19" fill="#FEF08A"/>` },
-          { x: 235, y: 65, r: 24, orig: ART.starShape(235, 65, '#FEF08A', 1), alt: ART.starShape(235, 65, '#38BDF8', 1) },
-          { x: 105, y: 222, r: 24, orig: `<polygon points="105,233 105,214 124,221" fill="#FACC15"/>`, alt: `<polygon points="105,233 105,214 124,221" fill="#38BDF8"/>` },
-          { x: 215, y: 305, r: 25, orig: `<path d="M200 322 Q215 282 230 322 Z" fill="#EF4444"/>`, alt: `<path d="M200 322 Q215 282 230 322 Z" fill="#38BDF8"/>` },
-          { x: 145, y: 358, r: 25, orig: `<g filter="url(#softShadow)"><circle cx="145" cy="358" r="13" fill="#A16207"/><circle cx="140" cy="355" r="3" fill="#FEF08A"/><circle cx="150" cy="355" r="3" fill="#FEF08A"/></g>`, alt: `<g filter="url(#softShadow)"><circle cx="145" cy="358" r="13" fill="#FFFFFF"/><ellipse cx="140" cy="342" rx="3.5" ry="9" fill="#FFFFFF"/><ellipse cx="150" cy="342" rx="3.5" ry="9" fill="#FFFFFF"/></g>` }
-        ]
-      },
-
-      // 12. 즐거운 동물 농장 아침
-      {
-        title: '🚜 12. 즐거운 동물 농장 아침',
-        bg: `
-          <rect width="300" height="400" fill="url(#gSkyDay)"/>
-          <path d="M0 255 Q150 225 300 255 L300 400 L0 400 Z" fill="url(#gMeadow)"/>
-          ${ART.sunSmile(48, 48)}
-          <g transform="translate(88,185)" filter="url(#softShadow)">
-            <path d="M-24 75 L-14 -15 L14 -15 L24 75 Z" fill="#EF4444" stroke="#991B1B" stroke-width="2.5"/>
-            <path d="M-18 -15 Q0 -38 18 -15 Z" fill="#78350F"/>
-            <line x1="-38" y1="-42" x2="38" y2="22" stroke="#FEF3C7" stroke-width="6" stroke-linecap="round"/>
-            <line x1="-38" y1="22" x2="38" y2="-42" stroke="#FEF3C7" stroke-width="6" stroke-linecap="round"/>
-            <circle cx="0" cy="-10" r="6" fill="#FACC15"/>
-          </g>
-          <g transform="translate(215,275)" filter="url(#softShadow)">
-            <rect x="-32" y="-12" width="38" height="32" rx="6" fill="#16A34A"/>
-            <rect x="4" y="2" width="28" height="18" rx="5" fill="#22C55E"/>
-            <circle cx="-16" cy="24" r="15" fill="#1E293B"/>
-            <circle cx="20" cy="28" r="10" fill="#1E293B"/>
-          </g>
-        `,
-        diffs: [
-          { x: 225, y: 65, r: 25, orig: ART.cloudPuff(225, 65, 0.95), alt: ART.cuteBird(225, 65, '#F97316') },
-          { x: 88, y: 225, r: 24, orig: `<rect x="78" y="215" width="20" height="24" rx="4" fill="#FEF08A"/>`, alt: `<rect x="78" y="215" width="20" height="24" rx="4" fill="#38BDF8"/>` },
-          { x: 215, y: 252, r: 24, orig: `<rect x="228" y="254" width="6" height="22" fill="#1E293B"/>`, alt: `<rect x="228" y="254" width="6" height="22" fill="#EF4444"/>` },
-          { x: 85, y: 345, r: 28, orig: `<g filter="url(#softShadow)"><ellipse cx="85" cy="348" rx="22" ry="14" fill="#FFFFFF" stroke="#1E293B" stroke-width="2"/><circle cx="80" cy="346" r="5" fill="#1E293B"/><circle cx="105" cy="340" r="9" fill="#FFFFFF" stroke="#1E293B" stroke-width="2"/></g>`, alt: `<g filter="url(#softShadow)"><ellipse cx="85" cy="348" rx="22" ry="14" fill="#FBCFE8" stroke="#DB2777" stroke-width="2"/><circle cx="105" cy="340" r="9" fill="#FBCFE8" stroke="#DB2777" stroke-width="2"/></g>` },
-          { x: 220, y: 356, r: 24, orig: `<g filter="url(#softShadow)"><circle cx="220" cy="356" r="11" fill="#FACC15"/><polygon points="230,356 237,354 230,359" fill="#EF4444"/></g>`, alt: `<g filter="url(#softShadow)"><circle cx="220" cy="356" r="11" fill="#FFFFFF" stroke="#94A3B8" stroke-width="2"/><polygon points="230,356 237,354 230,359" fill="#F97316"/></g>` }
-        ]
-      },
-
-      // 13. 구름 위 무지개 동화 성
-      {
-        title: '🏰 13. 구름 위 무지개 동화 성',
-        bg: `
-          <rect width="300" height="400" fill="url(#gSkyPink)"/>
-          <path d="M25 230 A125 125 0 0 1 275 230" fill="none" stroke="#EF4444" stroke-width="8"/>
-          <path d="M33 230 A117 117 0 0 1 267 230" fill="none" stroke="#FACC15" stroke-width="8"/>
-          <path d="M41 230 A109 109 0 0 1 259 230" fill="none" stroke="#22C55E" stroke-width="8"/>
-          <path d="M49 230 A101 101 0 0 1 251 230" fill="none" stroke="#3B82F6" stroke-width="8"/>
-          <path d="M0 295 Q150 270 300 295 L300 400 L0 400 Z" fill="url(#gSnow)"/>
-          <g transform="translate(150,235)" filter="url(#softShadow)">
-            <rect x="-52" y="-10" width="104" height="75" rx="8" fill="#F8FAFC" stroke="#C084FC" stroke-width="3"/>
-            <rect x="-64" y="-32" width="24" height="97" rx="4" fill="#F3E8FF" stroke="#A855F7" stroke-width="2.5"/>
-            <rect x="40" y="-32" width="24" height="97" rx="4" fill="#F3E8FF" stroke="#A855F7" stroke-width="2.5"/>
-            <polygon points="-68,-32 -52,-58 -36,-32" fill="#EC4899"/>
-            <polygon points="36,-32 52,-58 68,-32" fill="#EC4899"/>
-            <path d="M-16 65 L-16 32 Q0 18 16 32 L16 65 Z" fill="#F472B6"/>
-          </g>
-        `,
-        diffs: [
-          { x: 150, y: 155, r: 25, orig: ART.starShape(150, 155, '#FACC15', 1.15), alt: ART.heartShape(150, 155, '#F43F5E', 1.15) },
-          { x: 98, y: 165, r: 24, orig: `<polygon points="98,177 98,155 116,162" fill="#3B82F6"/>`, alt: `<polygon points="98,177 98,155 116,162" fill="#FACC15"/>` },
-          { x: 202, y: 165, r: 24, orig: `<polygon points="202,177 202,155 220,162" fill="#3B82F6"/>`, alt: `` },
-          { x: 68, y: 342, r: 28, orig: `<g filter="url(#softShadow)"><ellipse cx="68" cy="346" rx="18" ry="12" fill="#FFFFFF" stroke="#A855F7" stroke-width="2"/><circle cx="82" cy="334" r="9" fill="#FFFFFF" stroke="#A855F7" stroke-width="2"/><polygon points="86,326 96,314 91,328" fill="#FACC15"/></g>`, alt: `<g filter="url(#softShadow)"><ellipse cx="68" cy="346" rx="18" ry="12" fill="#FBCFE8" stroke="#DB2777" stroke-width="2"/><circle cx="82" cy="334" r="9" fill="#FBCFE8" stroke="#DB2777" stroke-width="2"/></g>` },
-          { x: 228, y: 345, r: 25, orig: ART.crown(228, 345), alt: ART.butterfly(228, 345, '#38BDF8', '#A855F7') }
-        ]
-      },
-
-      // 14. 보물섬 해적선 대모험
-      {
-        title: '🏴‍☠️ 14. 보물섬 해적선 대모험',
-        bg: `
-          <rect width="300" height="400" fill="url(#gSkyDay)"/>
-          <path d="M0 245 Q75 232 150 245 T300 245 L300 400 L0 400 Z" fill="url(#gWater)"/>
-          <path d="M195 335 Q245 305 300 335 L300 400 L185 400 Z" fill="url(#gSand)"/>
-          ${ART.palmTree(262, 295)}
-          <g transform="translate(115,220)" filter="url(#softShadow)">
-            <path d="M-65 10 L65 10 L45 45 L-45 45 Z" fill="url(#gWood)" stroke="#451A03" stroke-width="3"/>
-            <line x1="0" y1="10" x2="0" y2="-85" stroke="#451A03" stroke-width="5"/>
-            <path d="M-38 -70 Q0 -76 38 -70 Q32 -30 38 -5 Q0 -12 -38 -5 Q-32 -30 -38 -70 Z" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
-          </g>
-        `,
-        diffs: [
-          { x: 115, y: 124, r: 24, orig: `<polygon points="115,135 115,115 142,125" fill="#1E293B"/>`, alt: `<polygon points="115,135 115,115 142,125" fill="#EF4444"/>` },
-          { x: 115, y: 182, r: 25, orig: ART.starShape(115, 182, '#EF4444', 1.1), alt: ART.heartShape(115, 182, '#3B82F6', 1.1) },
-          { x: 235, y: 72, r: 25, orig: ART.sunSmile(235, 72), alt: ART.cloudPuff(235, 72, 1) },
-          { x: 68, y: 315, r: 26, orig: `<g filter="url(#softShadow)"><ellipse cx="68" cy="315" rx="22" ry="12" fill="#94A3B8"/><path d="M48 312 Q68 296 88 312" fill="none" stroke="#64748B" stroke-width="3"/></g>`, alt: `<g filter="url(#softShadow)"><ellipse cx="68" cy="315" rx="18" ry="10" fill="#F472B6"/><path d="M62 306 Q68 292 74 306" fill="none" stroke="#38BDF8" stroke-width="3"/></g>` },
-          { x: 228, y: 356, r: 25, orig: `<g filter="url(#softShadow)"><rect x="210" y="346" width="36" height="22" rx="4" fill="#B45309"/><circle cx="228" cy="356" r="4" fill="#FACC15"/></g>`, alt: `<g filter="url(#softShadow)"><circle cx="228" cy="356" r="12" fill="#EF4444"/><circle cx="223" cy="353" r="2" fill="#FFF"/></g>` }
-        ]
-      },
-
-      // 15. 출동! 멋진 소방차와 마을
-      {
-        title: '🚒 15. 출동! 멋진 소방차와 마을',
-        bg: `
-          <rect width="300" height="400" fill="url(#gSkyDay)"/>
-          <rect x="22" y="115" width="58" height="175" rx="6" fill="#CBD5E1"/>
-          <rect x="92" y="85" width="68" height="205" rx="6" fill="#94A3B8"/>
-          <rect x="215" y="130" width="62" height="160" rx="6" fill="#CBD5E1"/>
-          <rect y="285" width="300" height="115" fill="#64748B"/>
-          <line x1="0" y1="342" x2="300" y2="342" stroke="#FACC15" stroke-width="4" stroke-dasharray="16 12"/>
-          <g transform="translate(148,255)" filter="url(#softShadow)">
-            <rect x="-72" y="-12" width="95" height="45" rx="8" fill="#EF4444" stroke="#991B1B" stroke-width="3"/>
-            <rect x="20" y="-22" width="48" height="55" rx="10" fill="#DC2626" stroke="#991B1B" stroke-width="3"/>
-            <rect x="34" y="-12" width="26" height="22" rx="4" fill="#BAE6FD"/>
-            <circle cx="-42" cy="36" r="14" fill="#1E293B"/>
-            <circle cx="38" cy="36" r="14" fill="#1E293B"/>
-          </g>
-        `,
-        diffs: [
-          { x: 185, y: 222, r: 24, orig: `<rect x="177" y="214" width="16" height="14" rx="5" fill="#3B82F6"/>`, alt: `<rect x="177" y="214" width="16" height="14" rx="5" fill="#FACC15"/>` },
-          { x: 122, y: 232, r: 26, orig: `<g stroke="#F8FAFC" stroke-width="3"><line x1="82" y1="232" x2="162" y2="232"/><line x1="82" y1="240" x2="162" y2="240"/></g>`, alt: `<g stroke="#FACC15" stroke-width="3"><line x1="82" y1="232" x2="162" y2="232"/><line x1="82" y1="240" x2="162" y2="240"/></g>` },
-          { x: 245, y: 65, r: 26, orig: `<g filter="url(#softShadow)"><ellipse cx="245" cy="68" rx="20" ry="11" fill="#FACC15"/><line x1="225" y1="54" x2="265" y2="54" stroke="#1E293B" stroke-width="3"/></g>`, alt: ART.cloudPuff(245, 65, 0.9) },
-          { x: 45, y: 272, r: 24, orig: `<g filter="url(#softShadow)"><rect x="38" y="260" width="14" height="24" rx="5" fill="#EF4444"/><circle cx="45" cy="258" r="7" fill="#EF4444"/></g>`, alt: `<g filter="url(#softShadow)"><rect x="38" y="260" width="14" height="24" rx="5" fill="#FACC15"/><circle cx="45" cy="258" r="7" fill="#FACC15"/></g>` },
-          { x: 255, y: 315, r: 25, orig: `<g filter="url(#softShadow)"><circle cx="255" cy="312" r="12" fill="#FFFFFF"/><circle cx="250" cy="309" r="3" fill="#0F172A"/><circle cx="260" cy="315" r="2.5" fill="#0F172A"/></g>`, alt: `<g filter="url(#softShadow)"><circle cx="255" cy="312" r="12" fill="#B45309"/><circle cx="251" cy="310" r="2" fill="#0F172A"/></g>` }
-        ]
-      },
-
-      // 16. 즐거운 1학년 우리 교실
-      {
-        title: '🏫 16. 즐거운 1학년 우리 교실',
-        bg: `
-          <rect width="300" height="400" fill="url(#gSkyWarm)"/>
-          <rect y="295" width="300" height="105" fill="#FDBA74"/>
-          <rect x="42" y="88" width="216" height="135" rx="12" fill="#15803D" stroke="#92400E" stroke-width="8" filter="url(#softShadow)"/>
-          <rect x="85" y="255" width="130" height="65" rx="8" fill="#D97706" stroke="#78350F" stroke-width="3" filter="url(#softShadow)"/>
-        `,
-        diffs: [
-          { x: 150, y: 45, r: 24, orig: `<g filter="url(#softShadow)"><circle cx="150" cy="45" r="20" fill="#FFFFFF" stroke="#F59E0B" stroke-width="4"/><line x1="150" y1="45" x2="150" y2="33" stroke="#E11D48" stroke-width="3"/></g>`, alt: `<g filter="url(#softShadow)"><circle cx="150" cy="45" r="20" fill="#BAE6FD" stroke="#0284C7" stroke-width="4"/><line x1="150" y1="45" x2="160" y2="45" stroke="#E11D48" stroke-width="3"/></g>` },
-          { x: 105, y: 152, r: 26, orig: ART.sunSmile(105, 152), alt: ART.heartShape(105, 152, '#F472B6', 1.3) },
-          { x: 195, y: 155, r: 26, orig: ART.flower(195, 155, '#FACC15'), alt: ART.starShape(195, 155, '#38BDF8', 1.2) },
-          { x: 118, y: 235, r: 24, orig: `<g filter="url(#softShadow)"><circle cx="118" cy="232" r="14" fill="#38BDF8"/><path d="M112 225 Q118 232 124 226" fill="#22C55E"/><rect x="112" y="246" width="12" height="6" fill="#78350F"/></g>`, alt: `<g filter="url(#softShadow)"><rect x="106" y="232" width="24" height="18" rx="3" fill="#EF4444"/><rect x="106" y="224" width="24" height="8" rx="2" fill="#3B82F6"/></g>` },
-          { x: 248, y: 315, r: 26, orig: `<g filter="url(#softShadow)"><rect x="234" y="302" width="28" height="32" rx="8" fill="#FACC15" stroke="#B45309" stroke-width="2.5"/></g>`, alt: `<g filter="url(#softShadow)"><rect x="234" y="302" width="28" height="32" rx="8" fill="#EC4899" stroke="#9D174D" stroke-width="2.5"/></g>` }
-        ]
-      },
-
-      // 17. 하늘을 나는 열기구 축제
-      {
-        title: '🎈 17. 하늘을 나는 열기구 축제',
-        bg: `
-          <rect width="300" height="400" fill="url(#gSkyDay)"/>
-          <path d="M0 315 Q90 280 180 315 T300 305 L300 400 L0 400 Z" fill="url(#gMeadow)"/>
-          ${ART.cloudPuff(55, 65, 0.9)}
-          ${ART.cloudPuff(245, 225, 0.85)}
-          <g transform="translate(125,135)" filter="url(#softShadow)">
-            <path d="M-45 -10 C-45 -65 45 -65 45 -10 C45 25 18 42 15 52 L-15 52 C-18 42 -45 25 -45 -10 Z" fill="#EF4444"/>
-            <path d="M-18 -10 C-18 -62 18 -62 18 -10 C18 25 8 42 6 52 L-6 52 C-8 42 -18 25 -18 -10 Z" fill="#FACC15"/>
-            <rect x="-14" y="62" width="28" height="20" rx="4" fill="#92400E"/>
-            <line x1="-12" y1="52" x2="-12" y2="62" stroke="#78350F" stroke-width="2"/>
-            <line x1="12" y1="52" x2="12" y2="62" stroke="#78350F" stroke-width="2"/>
-          </g>
-        `,
-        diffs: [
-          { x: 125, y: 125, r: 25, orig: ART.starShape(125, 125, '#3B82F6', 1.15), alt: ART.heartShape(125, 125, '#EC4899', 1.15) },
-          { x: 125, y: 205, r: 24, orig: `<rect x="111" y="197" width="28" height="20" rx="4" fill="#92400E"/>`, alt: `<rect x="111" y="197" width="28" height="20" rx="4" fill="#3B82F6"/>` },
-          { x: 232, y: 115, r: 28, orig: `<g filter="url(#softShadow)"><path d="M208 110 C208 80 256 80 256 110 C256 128 242 138 240 144 L224 144 C222 138 208 128 208 110 Z" fill="#3B82F6"/><rect x="224" y="150" width="16" height="12" rx="3" fill="#78350F"/></g>`, alt: `<g filter="url(#softShadow)"><path d="M208 110 C208 80 256 80 256 110 C256 128 242 138 240 144 L224 144 C222 138 208 128 208 110 Z" fill="#22C55E"/><rect x="224" y="150" width="16" height="12" rx="3" fill="#78350F"/></g>` },
-          { x: 52, y: 235, r: 24, orig: ART.cuteBird(52, 235, '#F97316'), alt: ART.butterfly(52, 235, '#A855F7', '#F472B6') },
-          { x: 175, y: 348, r: 26, orig: ART.roundTree(175, 330), alt: ART.pineTree(175, 335, false) }
-        ]
-      },
-
-      // 18. 동물 친구들의 생일 파티
-      {
-        title: '🎂 18. 동물 친구들의 생일 파티',
-        bg: `
-          <rect width="300" height="400" fill="url(#gSkyPink)"/>
-          <path d="M15 35 Q150 75 285 35" fill="none" stroke="#EC4899" stroke-width="3"/>
-          <polygon points="45,44 65,48 53,66" fill="#FACC15"/>
-          <polygon points="105,54 125,56 114,74" fill="#38BDF8"/>
-          <polygon points="175,56 195,54 186,74" fill="#4ADE80"/>
-          <polygon points="235,48 255,44 247,66" fill="#A855F7"/>
-          <rect y="295" width="300" height="105" fill="#FDE68A"/>
-          <g transform="translate(150,245)" filter="url(#softShadow)">
-            <rect x="-52" y="15" width="104" height="35" rx="8" fill="#FFF1F2" stroke="#FB7185" stroke-width="3"/>
-            <rect x="-36" y="-15" width="72" height="30" rx="8" fill="#FBCFE8" stroke="#F472B6" stroke-width="3"/>
-            <rect x="-20" y="-42" width="40" height="27" rx="6" fill="#FFFFFF" stroke="#F43F5E" stroke-width="3"/>
-          </g>
-        `,
-        diffs: [
-          { x: 150, y: 185, r: 24, orig: `<g><rect x="147" y="185" width="6" height="18" fill="#3B82F6"/><circle cx="150" cy="179" r="5" fill="#F97316"/></g>`, alt: `<g><rect x="141" y="185" width="5" height="18" fill="#3B82F6"/><rect x="154" y="185" width="5" height="18" fill="#EC4899"/><circle cx="143" cy="179" r="4" fill="#F97316"/><circle cx="156" cy="179" r="4" fill="#F97316"/></g>` },
-          { x: 150, y: 245, r: 24, orig: ART.heartShape(150, 245, '#F43F5E', 1), alt: ART.starShape(150, 245, '#FACC15', 1) },
-          { x: 58, y: 280, r: 28, orig: `<g filter="url(#softShadow)"><circle cx="58" cy="285" r="18" fill="#B45309"/><circle cx="45" cy="270" r="6" fill="#B45309"/><circle cx="71" cy="270" r="6" fill="#B45309"/>${ART.partyHat(58, 260, '#3B82F6')}</g>`, alt: `<g filter="url(#softShadow)"><circle cx="58" cy="285" r="18" fill="#B45309"/><circle cx="45" cy="270" r="6" fill="#B45309"/><circle cx="71" cy="270" r="6" fill="#B45309"/>${ART.crown(58, 262)}</g>` },
-          { x: 242, y: 318, r: 26, orig: `<g filter="url(#softShadow)"><rect x="224" y="305" width="36" height="32" rx="5" fill="#38BDF8"/><rect x="239" y="305" width="6" height="32" fill="#FACC15"/></g>`, alt: `<g filter="url(#softShadow)"><rect x="224" y="305" width="36" height="32" rx="5" fill="#A855F7"/><rect x="239" y="305" width="6" height="32" fill="#F43F5E"/></g>` },
-          { x: 65, y: 356, r: 25, orig: `<g filter="url(#softShadow)"><rect x="48" y="344" width="34" height="28" rx="5" fill="#4ADE80"/></g>`, alt: `` }
-        ]
-      },
-
-      // 19. 똑똑한 미래 로봇 연구소
-      {
-        title: '🤖 19. 똑똑한 미래 로봇 연구소',
-        bg: `
-          <rect width="300" height="400" fill="#E2E8F0"/>
-          <rect x="28" y="45" width="244" height="95" rx="14" fill="#0F172A" stroke="#64748B" stroke-width="4" filter="url(#softShadow)"/>
-          <path d="M48 95 L85 75 L120 105 L165 68 L210 95 L252 72" fill="none" stroke="#38BDF8" stroke-width="3.5" stroke-linecap="round"/>
-          <rect y="305" width="300" height="95" fill="#64748B"/>
-          <g transform="translate(150,235)" filter="url(#softShadow)">
-            <rect x="-38" y="-58" width="76" height="54" rx="14" fill="#F8FAFC" stroke="#3B82F6" stroke-width="4"/>
-            <rect x="-26" y="-46" width="52" height="30" rx="8" fill="#1E293B"/>
-            <circle cx="-11" cy="-31" r="5" fill="#4ADE80"/>
-            <circle cx="11" cy="-31" r="5" fill="#4ADE80"/>
-            <rect x="-44" y="2" width="88" height="68" rx="16" fill="#CBD5E1" stroke="#475569" stroke-width="3"/>
-          </g>
-        `,
-        diffs: [
-          { x: 150, y: 162, r: 24, orig: `<g><line x1="150" y1="177" x2="150" y2="158" stroke="#475569" stroke-width="4"/><circle cx="150" cy="154" r="7" fill="#EF4444"/></g>`, alt: `<g><line x1="150" y1="177" x2="150" y2="158" stroke="#475569" stroke-width="4"/>${ART.starShape(150, 152, '#FACC15', 0.9)}</g>` },
-          { x: 150, y: 268, r: 25, orig: ART.heartShape(150, 268, '#EF4444', 1.2), alt: `<rect x="134" y="256" width="32" height="24" rx="5" fill="#38BDF8"/>` },
-          { x: 65, y: 215, r: 26, orig: `<g filter="url(#softShadow)"><ellipse cx="65" cy="218" rx="18" ry="7" fill="#3B82F6"/><line x1="45" y1="208" x2="85" y2="208" stroke="#1E293B" stroke-width="3"/></g>`, alt: `` },
-          { x: 245, y: 285, r: 26, orig: `<g filter="url(#softShadow)"><rect x="232" y="268" width="26" height="38" rx="5" fill="#22C55E"/><rect x="239" y="262" width="12" height="6" fill="#94A3B8"/></g>`, alt: `<g filter="url(#softShadow)"><rect x="232" y="268" width="26" height="38" rx="5" fill="#F97316"/><rect x="239" y="262" width="12" height="6" fill="#94A3B8"/></g>` },
-          { x: 65, y: 342, r: 24, orig: `<circle cx="65" cy="342" r="16" fill="#FACC15" stroke="#B45309" stroke-width="3"/>`, alt: `<circle cx="65" cy="342" r="16" fill="#A855F7" stroke="#581C87" stroke-width="3"/>` }
-        ]
-      },
-
-      // 20. 다람쥐의 가을 단풍숲
-      {
-        title: '🍂 20. 다람쥐의 가을 단풍숲',
-        bg: `
-          <rect width="300" height="400" fill="url(#gSkyWarm)"/>
-          <path d="M0 265 Q150 240 300 265 L300 400 L0 400 Z" fill="#F59E0B"/>
-          ${ART.roundTree(58, 185, '#C2410C', '#EA580C', '#FB923C')}
-          ${ART.roundTree(242, 185, '#B91C1C', '#DC2626', '#F87171')}
-          <rect x="85" y="295" width="130" height="22" rx="10" fill="url(#gWood)" filter="url(#softShadow)"/>
-          <g transform="translate(150,268)" filter="url(#softShadow)">
-            <path d="M-12 18 Q-36 0 -22 -22 Q-8 -30 -4 -8 Z" fill="#B45309"/>
-            <circle cx="4" cy="4" r="15" fill="#D97706"/>
-            <circle cx="9" cy="0" r="2.5" fill="#0F172A"/>
-          </g>
-        `,
-        diffs: [
-          { x: 150, y: 274, r: 24, orig: `<ellipse cx="164" cy="276" rx="7" ry="9" fill="#78350F"/>`, alt: `<circle cx="164" cy="276" r="8" fill="#EF4444"/>` },
-          { x: 145, y: 115, r: 25, orig: `<path d="M135 115 Q145 102 155 115 Q145 126 135 115 Z" fill="#EF4444"/>`, alt: ART.butterfly(145, 115, '#FACC15', '#F97316') },
-          { x: 65, y: 335, r: 26, orig: `<g filter="url(#softShadow)"><ellipse cx="65" cy="338" rx="17" ry="12" fill="#78350F"/><circle cx="78" cy="340" r="7" fill="#FDE68A"/></g>`, alt: `<g filter="url(#softShadow)"><ellipse cx="65" cy="338" rx="17" ry="12" fill="#FFFFFF" stroke="#64748B" stroke-width="2"/><ellipse cx="60" cy="322" rx="4" ry="9" fill="#FFFFFF" stroke="#64748B" stroke-width="2"/></g>` },
-          { x: 235, y: 335, r: 26, orig: `<g filter="url(#softShadow)"><rect x="228" y="335" width="14" height="18" rx="4" fill="#FEF3C7"/><path d="M214 337 Q235 308 256 337 Z" fill="#EF4444"/></g>`, alt: `<g filter="url(#softShadow)"><rect x="228" y="335" width="14" height="18" rx="4" fill="#FEF3C7"/><path d="M214 337 Q235 308 256 337 Z" fill="#3B82F6"/></g>` },
-          { x: 150, y: 356, r: 24, orig: `<path d="M125 362 Q150 342 175 362 L168 374 L132 374 Z" fill="#92400E"/>`, alt: `` }
-        ]
-      },
-
-      // 21. 달콤한 빵집과 케이크 가게
-      {
-        title: '🧁 21. 달콤한 빵집과 케이크 가게',
-        bg: `
-          <rect width="300" height="400" fill="#FFFBEB"/>
-          <path d="M15 75 L285 75 L295 112 L5 112 Z" fill="#F43F5E" filter="url(#softShadow)"/>
-          <path d="M55 75 L95 75 L95 112 L50 112 Z" fill="#FFFFFF"/>
-          <path d="M135 75 L175 75 L175 112 L135 112 Z" fill="#FFFFFF"/>
-          <path d="M215 75 L255 75 L260 112 L215 112 Z" fill="#FFFFFF"/>
-          <rect x="25" y="215" width="250" height="14" rx="6" fill="#D97706"/>
-          <rect x="25" y="315" width="250" height="85" fill="#FDBA74"/>
-        `,
-        diffs: [
-          { x: 75, y: 185, r: 26, orig: `<g filter="url(#softShadow)"><path d="M60 192 L90 192 L85 212 L65 212 Z" fill="#F59E0B"/><path d="M58 192 Q75 168 92 192 Z" fill="#F472B6"/></g>`, alt: `<g filter="url(#softShadow)"><path d="M60 192 L90 192 L85 212 L65 212 Z" fill="#F59E0B"/><path d="M58 192 Q75 168 92 192 Z" fill="#34D399"/></g>` },
-          { x: 155, y: 175, r: 28, orig: `<g filter="url(#softShadow)"><circle cx="155" cy="182" r="18" fill="#FFFFFF" stroke="#94A3B8" stroke-width="2"/><path d="M140 168 Q155 145 170 168 Z" fill="#FFFFFF" stroke="#94A3B8" stroke-width="2"/></g>`, alt: `<g filter="url(#softShadow)"><circle cx="155" cy="182" r="18" fill="#B45309"/><circle cx="143" cy="168" r="6" fill="#B45309"/><circle cx="167" cy="168" r="6" fill="#B45309"/></g>` },
-          { x: 235, y: 188, r: 25, orig: `<path d="M215 196 Q235 172 255 196 Q235 206 215 196 Z" fill="#F59E0B"/>`, alt: `<circle cx="235" cy="192" r="16" fill="#EC4899"/><circle cx="235" cy="192" r="6" fill="#FFFBEB"/>` },
-          { x: 85, y: 282, r: 26, orig: `<g filter="url(#softShadow)"><rect x="74" y="268" width="22" height="32" rx="4" fill="#FFFFFF" stroke="#38BDF8" stroke-width="2.5"/></g>`, alt: `<g filter="url(#softShadow)"><rect x="74" y="268" width="22" height="32" rx="4" fill="#FBCFE8" stroke="#EC4899" stroke-width="2.5"/></g>` },
-          { x: 215, y: 282, r: 26, orig: `<g filter="url(#softShadow)"><circle cx="215" cy="285" r="16" fill="#EF4444"/><path d="M215 269 Q222 260 228 265" fill="none" stroke="#15803D" stroke-width="3"/></g>`, alt: `<g filter="url(#softShadow)"><path d="M198 288 Q215 270 232 288 Q215 302 198 288 Z" fill="#FACC15"/></g>` }
-        ]
-      },
-
-      // 22. 햇살 가득 해바라기 꽃밭
-      {
-        title: '🌻 22. 햇살 가득 해바라기 꽃밭',
-        bg: `
-          <rect width="300" height="400" fill="url(#gSkyDay)"/>
-          <path d="M0 275 Q150 245 300 275 L300 400 L0 400 Z" fill="url(#gMeadow)"/>
-          ${ART.sunSmile(52, 52)}
-          <g transform="translate(150,215)" filter="url(#softShadow)">
-            <path d="M0 20 L0 115" stroke="#15803D" stroke-width="8" stroke-linecap="round"/>
-            <circle r="34" fill="#FACC15" stroke="#EAB308" stroke-width="3"/>
-            <circle r="19" fill="#78350F"/>
-          </g>
-        `,
-        diffs: [
-          { x: 150, y: 215, r: 25, orig: `<g fill="#FEF08A"><circle cx="144" cy="211" r="2.5"/><circle cx="156" cy="211" r="2.5"/><path d="M144 219 Q150 225 156 219" fill="none" stroke="#FEF08A" stroke-width="2.5"/></g>`, alt: ART.sunglasses(150, 213) },
-          { x: 68, y: 225, r: 28, orig: `<g filter="url(#softShadow)"><rect x="52" y="218" width="28" height="24" rx="6" fill="#38BDF8"/><path d="M80 226 L98 214" stroke="#0284C7" stroke-width="5" stroke-linecap="round"/></g>`, alt: `<g filter="url(#softShadow)"><rect x="52" y="218" width="28" height="24" rx="6" fill="#F472B6"/><path d="M80 226 L98 214" stroke="#DB2777" stroke-width="5" stroke-linecap="round"/></g>` },
-          { x: 235, y: 155, r: 24, orig: ART.butterfly(235, 155, '#A855F7', '#F472B6'), alt: ART.cuteBird(235, 155, '#EF4444') },
-          { x: 75, y: 342, r: 25, orig: `<g filter="url(#softShadow)"><circle cx="75" cy="342" r="13" fill="#EF4444"/><circle cx="70" cy="339" r="2.5" fill="#0F172A"/><circle cx="80" cy="344" r="2.5" fill="#0F172A"/></g>`, alt: `<g filter="url(#softShadow)"><circle cx="75" cy="342" r="13" fill="#FACC15"/><circle cx="70" cy="339" r="2.5" fill="#0F172A"/><circle cx="80" cy="344" r="2.5" fill="#0F172A"/></g>` },
-          { x: 228, y: 342, r: 26, orig: `<g filter="url(#softShadow)"><circle cx="225" cy="340" r="13" fill="#F97316"/><path d="M210 350 L244 350" stroke="#FACC15" stroke-width="6" stroke-linecap="round"/></g>`, alt: ART.flower(228, 338, '#EC4899') }
-        ]
-      },
-
-      // 23. 하얀 등대가 있는 요트 항구
-      {
-        title: '⛵ 23. 하얀 등대가 있는 요트 항구',
-        bg: `
-          <rect width="300" height="400" fill="url(#gSkyDay)"/>
-          <path d="M0 250 Q75 238 150 250 T300 250 L300 400 L0 400 Z" fill="url(#gWater)"/>
-          <path d="M0 285 Q65 265 125 295 L125 400 L0 400 Z" fill="#94A3B8"/>
-          <g transform="translate(68,185)" filter="url(#softShadow)">
-            <path d="M-22 95 L-14 -35 L14 -35 L22 95 Z" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
-            <rect x="-17" y="-5" width="34" height="22" fill="#EF4444"/>
-            <rect x="-20" y="42" width="40" height="22" fill="#EF4444"/>
-            <rect x="-14" y="-55" width="28" height="20" rx="4" fill="#FEF08A" stroke="#F59E0B" stroke-width="2.5"/>
-            <polygon points="-18,-55 0,-75 18,-55" fill="#EF4444"/>
-          </g>
-          <g transform="translate(205,245)" filter="url(#softShadow)">
-            <path d="M-38 10 L38 10 L26 28 L-26 28 Z" fill="#FFFFFF" stroke="#3B82F6" stroke-width="2.5"/>
-            <path d="M0 -42 L0 8 L32 8 Z" fill="#38BDF8"/>
-          </g>
-        `,
-        diffs: [
-          { x: 112, y: 138, r: 25, orig: `<polygon points="86,134 135,122 135,148" fill="#FEF08A" opacity="0.75"/>`, alt: `` },
-          { x: 205, y: 192, r: 24, orig: `<polygon points="205,202 205,186 224,194" fill="#EF4444"/>`, alt: `<polygon points="205,202 205,186 224,194" fill="#FACC15"/>` },
-          { x: 185, y: 72, r: 24, orig: ART.cuteBird(185, 72, '#FFFFFF'), alt: ART.cloudPuff(185, 72, 0.85) },
-          { x: 68, y: 262, r: 24, orig: `<rect x="59" y="254" width="18" height="24" rx="4" fill="#1E293B"/>`, alt: `<rect x="59" y="254" width="18" height="24" rx="4" fill="#FACC15"/>` },
-          { x: 195, y: 338, r: 26, orig: `<g filter="url(#softShadow)"><circle cx="195" cy="338" r="15" fill="none" stroke="#EF4444" stroke-width="7"/><circle cx="195" cy="338" r="15" fill="none" stroke="#FFFFFF" stroke-width="7" stroke-dasharray="10 10"/></g>`, alt: `<g filter="url(#softShadow)"><ellipse cx="195" cy="338" rx="16" ry="10" fill="#F97316"/><polygon points="210,338 220,330 220,346" fill="#F97316"/></g>` }
-        ]
-      },
-
-      // 24. 대나무 숲속 판다 놀이터
-      {
-        title: '🐼 24. 대나무 숲속 판다 놀이터',
+        title: '🐼 11. 판다와 원숭이의 대나무 공원 소풍',
         bg: `
           <rect width="300" height="400" fill="#DCFCE7"/>
-          <path d="M0 275 Q150 250 300 275 L300 400 L0 400 Z" fill="url(#gMeadow)"/>
-          <g fill="#16A34A">
-            <rect x="28" y="40" width="12" height="245" rx="4"/>
-            <rect x="54" y="65" width="10" height="225" rx="4"/>
-            <rect x="242" y="45" width="12" height="240" rx="4"/>
-            <rect x="266" y="75" width="10" height="215" rx="4"/>
+          <path d="M0 275 Q150 250 300 275 L300 400 L0 400 Z" fill="#86EFAC" stroke="${INK}" stroke-width="2.3"/>
+          <g fill="#16A34A" stroke="${INK}" stroke-width="2.2">
+            <rect x="28" y="40" width="12" height="245" rx="3"/>
+            <rect x="54" y="65" width="10" height="225" rx="3"/>
+            <rect x="242" y="45" width="12" height="240" rx="3"/>
+            <rect x="266" y="75" width="10" height="215" rx="3"/>
           </g>
-          <g transform="translate(148,265)" filter="url(#softShadow)">
-            <circle cx="0" cy="24" r="26" fill="#FFFFFF" stroke="#1E293B" stroke-width="3"/>
-            <circle cx="0" cy="-14" r="22" fill="#FFFFFF" stroke="#1E293B" stroke-width="3"/>
-            <circle cx="-17" cy="-30" r="8" fill="#1E293B"/>
-            <circle cx="17" cy="-30" r="8" fill="#1E293B"/>
+          <g transform="translate(148,265)">
+            <circle cx="0" cy="24" r="26" fill="#FFFFFF" stroke="${INK}" stroke-width="2.5"/>
+            <circle cx="0" cy="-14" r="22" fill="#FFFFFF" stroke="${INK}" stroke-width="2.5"/>
+            <circle cx="-17" cy="-30" r="8" fill="#1E293B" stroke="${INK}" stroke-width="2.2"/>
+            <circle cx="17" cy="-30" r="8" fill="#1E293B" stroke="${INK}" stroke-width="2.2"/>
             <ellipse cx="-8" cy="-14" rx="5" ry="6" fill="#1E293B"/>
             <ellipse cx="8" cy="-14" rx="5" ry="6" fill="#1E293B"/>
           </g>
         `,
         diffs: [
-          { x: 148, y: 215, r: 24, orig: ``, alt: ART.ribbon(148, 215, '#F43F5E') },
-          { x: 148, y: 288, r: 25, orig: `<rect x="134" y="284" width="28" height="8" rx="4" fill="#22C55E"/>`, alt: `<circle cx="148" cy="288" r="10" fill="#EF4444"/>` },
-          { x: 148, y: 95, r: 26, orig: `<g filter="url(#softShadow)"><ellipse cx="148" cy="98" rx="16" ry="20" fill="#EF4444"/><rect x="140" y="76" width="16" height="5" fill="#FACC15"/></g>`, alt: `<g filter="url(#softShadow)"><ellipse cx="148" cy="98" rx="16" ry="20" fill="#FACC15"/><rect x="140" y="76" width="16" height="5" fill="#EF4444"/></g>` },
-          { x: 65, y: 342, r: 26, orig: `<g filter="url(#softShadow)"><circle cx="65" cy="342" r="14" fill="#EA580C"/><circle cx="56" cy="330" r="5" fill="#EA580C"/><circle cx="74" cy="330" r="5" fill="#EA580C"/></g>`, alt: ART.flower(65, 340, '#F43F5E') },
-          { x: 235, y: 342, r: 25, orig: `<ellipse cx="235" cy="346" rx="20" ry="10" fill="#94A3B8"/>`, alt: `<ellipse cx="235" cy="346" rx="20" ry="10" fill="#FDE047"/>` }
+          {
+            x: 148, y: 215, r: 22,
+            orig: ``,
+            alt: `<polygon points="136,209 148,215 136,221 160,221 148,215 160,209" fill="#F43F5E" stroke="${INK}" stroke-width="2"/>`
+          },
+          {
+            x: 148, y: 288, r: 24,
+            orig: `<rect x="134" y="284" width="28" height="8" rx="4" fill="#22C55E" stroke="${INK}" stroke-width="2"/>`,
+            alt: `<circle cx="148" cy="288" r="10" fill="#EF4444" stroke="${INK}" stroke-width="2"/>`
+          },
+          {
+            x: 148, y: 95, r: 25,
+            orig: `<g><ellipse cx="148" cy="98" rx="16" ry="20" fill="#EF4444" stroke="${INK}" stroke-width="2.2"/><rect x="140" y="76" width="16" height="5" fill="#FACC15" stroke="${INK}" stroke-width="1.8"/></g>`,
+            alt: `<g><ellipse cx="148" cy="98" rx="16" ry="20" fill="#FACC15" stroke="${INK}" stroke-width="2.2"/><rect x="140" y="76" width="16" height="5" fill="#EF4444" stroke="${INK}" stroke-width="1.8"/></g>`
+          },
+          {
+            x: 65, y: 342, r: 24,
+            orig: `<g transform="translate(65,342)"><circle r="14" fill="#EA580C" stroke="${INK}" stroke-width="2.2"/><circle cx="-9" cy="-12" r="5" fill="#EA580C" stroke="${INK}" stroke-width="2"/><circle cx="9" cy="-12" r="5" fill="#EA580C" stroke="${INK}" stroke-width="2"/></g>`,
+            alt: BK.flower(65, 340, '#F43F5E')
+          },
+          {
+            x: 235, y: 342, r: 24,
+            orig: `<ellipse cx="235" cy="346" rx="20" ry="10" fill="#94A3B8" stroke="${INK}" stroke-width="2"/>`,
+            alt: `<ellipse cx="235" cy="346" rx="20" ry="10" fill="#FDE047" stroke="${INK}" stroke-width="2"/>`
+          }
         ]
       },
 
-      // 25. 숲속 동물들의 음악회 무대
+      // 12. 아기 돼지와 젖소의 햇살 가득 농장
       {
-        title: '🎵 25. 숲속 동물들의 음악회 무대',
+        title: '🚜 12. 아기 돼지와 젖소의 햇살 가득 농장',
         bg: `
-          <rect width="300" height="400" fill="url(#gSkyWarm)"/>
-          <path d="M0 0 L65 0 Q45 140 0 220 Z" fill="#DC2626"/>
-          <path d="M300 0 L235 0 Q255 140 300 220 Z" fill="#DC2626"/>
-          <rect y="285" width="300" height="115" fill="url(#gWood)"/>
-          <g transform="translate(135,245)" filter="url(#softShadow)">
-            <path d="M-55 15 L55 15 L55 -15 Q15 -45 -25 -15 L-55 -15 Z" fill="#1E293B"/>
-            <rect x="-50" y="10" width="95" height="10" fill="#FFFFFF"/>
-            <rect x="-45" y="20" width="8" height="35" fill="#0F172A"/>
-            <rect x="35" y="20" width="8" height="35" fill="#0F172A"/>
+          <rect width="300" height="400" fill="#BAE6FD"/>
+          <path d="M0 255 Q150 225 300 255 L300 400 L0 400 Z" fill="#BEF264" stroke="${INK}" stroke-width="2.3"/>
+          ${BK.sun(48, 48)}
+          <!-- 풍차 -->
+          <g transform="translate(88,185)">
+            <path d="M-24 75 L-14 -15 L14 -15 L24 75 Z" fill="#EF4444" stroke="${INK}" stroke-width="2.4"/>
+            <path d="M-18 -15 Q0 -38 18 -15 Z" fill="#78350F" stroke="${INK}" stroke-width="2.3"/>
+            <line x1="-38" y1="-42" x2="38" y2="22" stroke="#FEF3C7" stroke-width="6" stroke-linecap="round"/>
+            <line x1="-38" y1="22" x2="38" y2="-42" stroke="#FEF3C7" stroke-width="6" stroke-linecap="round"/>
+            <circle cx="0" cy="-10" r="6" fill="#FACC15" stroke="${INK}" stroke-width="2"/>
+          </g>
+          <!-- 초록 트랙터 -->
+          <g transform="translate(215,275)">
+            <rect x="-32" y="-12" width="38" height="32" rx="6" fill="#16A34A" stroke="${INK}" stroke-width="2.3"/>
+            <rect x="4" y="2" width="28" height="18" rx="5" fill="#22C55E" stroke="${INK}" stroke-width="2.3"/>
+            <circle cx="-16" cy="24" r="15" fill="#1E293B" stroke="${INK}" stroke-width="2.2"/>
+            <circle cx="20" cy="28" r="10" fill="#1E293B" stroke="${INK}" stroke-width="2.2"/>
           </g>
         `,
         diffs: [
-          { x: 145, y: 95, r: 26, orig: `<g fill="#3B82F6"><circle cx="138" cy="104" r="6"/><rect x="142" y="82" width="4" height="22"/><path d="M142 82 L156 87 L156 93 L142 88 Z"/></g>`, alt: ART.heartShape(145, 95, '#EC4899', 1.2) },
-          { x: 145, y: 215, r: 24, orig: ART.cuteBird(145, 215, '#FACC15'), alt: ART.cuteBird(145, 215, '#38BDF8') },
-          { x: 238, y: 278, r: 26, orig: `<g filter="url(#softShadow)"><ellipse cx="238" cy="272" rx="18" ry="7" fill="#FEF3C7" stroke="#EF4444" stroke-width="3"/><rect x="220" y="272" width="36" height="24" fill="#EF4444"/></g>`, alt: `<g filter="url(#softShadow)"><ellipse cx="238" cy="272" rx="18" ry="7" fill="#FEF3C7" stroke="#3B82F6" stroke-width="3"/><rect x="220" y="272" width="36" height="24" fill="#3B82F6"/></g>` },
-          { x: 68, y: 342, r: 26, orig: `<g filter="url(#softShadow)"><circle cx="68" cy="342" r="14" fill="#22C55E"/><circle cx="62" cy="332" r="4" fill="#22C55E"/><circle cx="74" cy="332" r="4" fill="#22C55E"/></g>`, alt: `<g filter="url(#softShadow)"><circle cx="68" cy="342" r="14" fill="#F472B6"/><circle cx="62" cy="332" r="4" fill="#F472B6"/><circle cx="74" cy="332" r="4" fill="#F472B6"/></g>` },
-          { x: 215, y: 345, r: 25, orig: `<polygon points="198,345 225,335 225,355" fill="#FACC15"/>`, alt: ART.starShape(215, 345, '#FACC15', 1.15) }
+          {
+            x: 225, y: 65, r: 24,
+            orig: BK.cloud(225, 65, 0.9),
+            alt: BK.bird(225, 65, '#F97316')
+          },
+          {
+            x: 88, y: 225, r: 22,
+            orig: `<rect x="78" y="215" width="20" height="24" rx="4" fill="#FEF08A" stroke="${INK}" stroke-width="2"/>`,
+            alt: `<rect x="78" y="215" width="20" height="24" rx="4" fill="#38BDF8" stroke="${INK}" stroke-width="2"/>`
+          },
+          {
+            x: 215, y: 252, r: 22,
+            orig: `<rect x="228" y="254" width="6" height="22" fill="#1E293B" stroke="${INK}" stroke-width="1.8"/>`,
+            alt: `<rect x="228" y="254" width="6" height="22" fill="#EF4444" stroke="${INK}" stroke-width="1.8"/>`
+          },
+          {
+            x: 85, y: 345, r: 26,
+            orig: `<g><ellipse cx="85" cy="348" rx="22" ry="14" fill="#FFFFFF" stroke="${INK}" stroke-width="2.2"/><circle cx="80" cy="346" r="5" fill="#1E293B"/><circle cx="105" cy="340" r="9" fill="#FFFFFF" stroke="${INK}" stroke-width="2.2"/></g>`,
+            alt: `<g><ellipse cx="85" cy="348" rx="22" ry="14" fill="#FBCFE8" stroke="${INK}" stroke-width="2.2"/><circle cx="105" cy="340" r="9" fill="#FBCFE8" stroke="${INK}" stroke-width="2.2"/></g>`
+          },
+          {
+            x: 220, y: 356, r: 22,
+            orig: `<g><circle cx="220" cy="356" r="11" fill="#FACC15" stroke="${INK}" stroke-width="2"/><polygon points="230,356 237,354 230,359" fill="#EF4444"/></g>`,
+            alt: `<g><circle cx="220" cy="356" r="11" fill="#FFFFFF" stroke="${INK}" stroke-width="2"/><polygon points="230,356 237,354 230,359" fill="#F97316"/></g>`
+          }
+        ]
+      },
+
+      // 13. 코알라와 오리의 신나는 놀이공원
+      {
+        title: '🎡 13. 코알라와 오리의 신나는 놀이공원',
+        bg: `
+          <rect width="300" height="400" fill="#BAE6FD"/>
+          <path d="M0 290 Q150 265 300 290 L300 400 L0 400 Z" fill="#86EFAC" stroke="${INK}" stroke-width="2.3"/>
+          <path d="M0 325 Q150 305 300 325 L300 400 L0 400 Z" fill="#FDE68A" stroke="${INK}" stroke-width="2.3"/>
+          ${BK.cloud(62, 46, 0.9)}
+          <g transform="translate(155,155)">
+            <path d="M-45 135 L0 0 L45 135" fill="none" stroke="${INK}" stroke-width="7" stroke-linecap="round"/>
+            <circle r="76" fill="none" stroke="#F43F5E" stroke-width="6"/>
+            <circle r="54" fill="none" stroke="#FB7185" stroke-width="3"/>
+            <line x1="-76" y1="0" x2="76" y2="0" stroke="${INK}" stroke-width="2"/>
+            <line x1="0" y1="-76" x2="0" y2="76" stroke="${INK}" stroke-width="2"/>
+            <rect x="64" y="-9" width="24" height="18" rx="6" fill="#FACC15" stroke="${INK}" stroke-width="2"/>
+            <rect x="-88" y="-9" width="24" height="18" rx="6" fill="#10B981" stroke="${INK}" stroke-width="2"/>
+            <circle r="11" fill="#FACC15" stroke="${INK}" stroke-width="2.3"/>
+          </g>
+          <g transform="translate(65,310)">
+            <rect x="-28" y="-12" width="56" height="34" rx="8" fill="#F472B6" stroke="${INK}" stroke-width="2.3"/>
+            <circle cx="-16" cy="26" r="9" fill="#1E293B" stroke="${INK}" stroke-width="2"/>
+            <circle cx="16" cy="26" r="9" fill="#1E293B" stroke="${INK}" stroke-width="2"/>
+          </g>
+        `,
+        diffs: [
+          {
+            x: 155, y: 76, r: 22,
+            orig: `<rect x="143" y="67" width="24" height="18" rx="6" fill="#3B82F6" stroke="${INK}" stroke-width="2"/>`,
+            alt: `<rect x="143" y="67" width="24" height="18" rx="6" fill="#A855F7" stroke="${INK}" stroke-width="2"/>`
+          },
+          {
+            x: 248, y: 82, r: 25,
+            orig: `<g><line x1="248" y1="135" x2="248" y2="95" stroke="${INK}" stroke-width="2"/><circle cx="242" cy="82" r="11" fill="#EF4444" stroke="${INK}" stroke-width="2"/><circle cx="256" cy="86" r="11" fill="#3B82F6" stroke="${INK}" stroke-width="2"/></g>`,
+            alt: `<g><line x1="248" y1="135" x2="248" y2="95" stroke="${INK}" stroke-width="2"/><circle cx="242" cy="82" r="11" fill="#EF4444" stroke="${INK}" stroke-width="2"/><circle cx="256" cy="86" r="11" fill="#FACC15" stroke="${INK}" stroke-width="2"/><circle cx="248" cy="70" r="11" fill="#22C55E" stroke="${INK}" stroke-width="2"/></g>`
+          },
+          {
+            x: 65, y: 280, r: 24,
+            orig: `<circle cx="65" cy="280" r="16" fill="#FBCFE8" stroke="${INK}" stroke-width="2.2"/>`,
+            alt: `<circle cx="65" cy="280" r="16" fill="#BAE6FD" stroke="${INK}" stroke-width="2.2"/>`
+          },
+          {
+            x: 215, y: 315, r: 25,
+            orig: `<g><circle cx="215" cy="312" r="14" fill="#FDBA74" stroke="${INK}" stroke-width="2.2"/><circle cx="206" cy="300" r="5" fill="#FDBA74" stroke="${INK}" stroke-width="2"/><circle cx="224" cy="300" r="5" fill="#FDBA74" stroke="${INK}" stroke-width="2"/></g>`,
+            alt: `<g><circle cx="215" cy="312" r="14" fill="#FDBA74" stroke="${INK}" stroke-width="2.2"/><circle cx="206" cy="300" r="5" fill="#FDBA74" stroke="${INK}" stroke-width="2"/><circle cx="224" cy="300" r="5" fill="#FDBA74" stroke="${INK}" stroke-width="2"/><polygon points="204,298 215,278 226,298" fill="#3B82F6" stroke="${INK}" stroke-width="2"/></g>`
+          },
+          {
+            x: 145, y: 362, r: 24,
+            orig: BK.flower(145, 360, '#F43F5E'),
+            alt: BK.bird(145, 358, '#A855F7')
+          }
+        ]
+      },
+
+      // 14. 강아지 우주비행사의 달나라 정거장
+      {
+        title: '🚀 14. 강아지 우주비행사의 달나라 정거장',
+        bg: `
+          <rect width="300" height="400" fill="#1E1B4B"/>
+          <path d="M0 320 Q150 295 300 320 L300 400 L0 400 Z" fill="#CBD5E1" stroke="${INK}" stroke-width="2.3"/>
+          <circle cx="145" cy="355" r="14" fill="#94A3B8" stroke="${INK}" stroke-width="2"/>
+          <circle cx="235" cy="365" r="18" fill="#94A3B8" stroke="${INK}" stroke-width="2"/>
+          <g transform="translate(150,145)">
+            <path d="M0 -82 Q28 -35 28 55 L-28 55 Q-28 -35 0 -82 Z" fill="#F8FAFC" stroke="${INK}" stroke-width="2.5"/>
+            <path d="M0 -82 Q16 -55 21 -38 L-21 -38 Q-16 -55 0 -82 Z" fill="#EF4444" stroke="${INK}" stroke-width="2.2"/>
+            <path d="M-28 22 L-48 62 L-28 52 Z" fill="#EF4444" stroke="${INK}" stroke-width="2.2"/>
+            <path d="M28 22 L48 62 L28 52 Z" fill="#EF4444" stroke="${INK}" stroke-width="2.2"/>
+          </g>
+          <g transform="translate(215,285)">
+            <circle r="16" fill="#FFFFFF" stroke="${INK}" stroke-width="2.3"/>
+            <rect x="-10" y="-6" width="20" height="11" rx="5" fill="#38BDF8" stroke="${INK}" stroke-width="1.8"/>
+            <rect x="-13" y="16" width="26" height="28" rx="8" fill="#FFFFFF" stroke="${INK}" stroke-width="2.3"/>
+          </g>
+        `,
+        diffs: [
+          {
+            x: 64, y: 78, r: 26,
+            orig: `<g><circle cx="64" cy="78" r="17" fill="#FB923C" stroke="${INK}" stroke-width="2.2"/><ellipse cx="64" cy="78" rx="30" ry="7" fill="none" stroke="#FDE047" stroke-width="4" transform="rotate(-18 64 78)"/></g>`,
+            alt: `<g><circle cx="64" cy="78" r="17" fill="#FB923C" stroke="${INK}" stroke-width="2.2"/><ellipse cx="64" cy="78" rx="30" ry="7" fill="none" stroke="#F472B6" stroke-width="4" transform="rotate(-18 64 78)"/></g>`
+          },
+          {
+            x: 242, y: 88, r: 25,
+            orig: `<g><ellipse cx="242" cy="94" rx="25" ry="8" fill="#94A3B8" stroke="${INK}" stroke-width="2"/><path d="M228 90 Q242 68 256 90 Z" fill="#4ADE80" stroke="${INK}" stroke-width="2"/></g>`,
+            alt: `<g><ellipse cx="242" cy="94" rx="25" ry="8" fill="#94A3B8" stroke="${INK}" stroke-width="2"/></g>`
+          },
+          {
+            x: 150, y: 138, r: 22,
+            orig: `<circle cx="150" cy="138" r="14" fill="#38BDF8" stroke="${INK}" stroke-width="2.5"/>`,
+            alt: `<path d="M150 150 C134 137 134 125 150 134 C166 125 166 137 150 150 Z" fill="#F43F5E" stroke="${INK}" stroke-width="2.2"/>`
+          },
+          {
+            x: 150, y: 224, r: 24,
+            orig: `<path d="M135 202 Q150 250 165 202 Z" fill="#F97316" stroke="${INK}" stroke-width="2"/>`,
+            alt: `<path d="M135 202 Q150 250 165 202 Z" fill="#38BDF8" stroke="${INK}" stroke-width="2"/>`
+          },
+          {
+            x: 68, y: 310, r: 25,
+            orig: `<g><line x1="62" y1="335" x2="62" y2="288" stroke="#FFF" stroke-width="3"/><polygon points="62,288 94,298 62,308" fill="#EF4444" stroke="${INK}" stroke-width="2"/></g>`,
+            alt: `<g><line x1="62" y1="335" x2="62" y2="288" stroke="#FFF" stroke-width="3"/><polygon points="62,288 94,298 62,308" fill="#FACC15" stroke="${INK}" stroke-width="2"/></g>`
+          }
         ]
       }
     ];
 
     function buildRichScene(index) {
-      const sceneData = SPOT_SCENES_25[index % SPOT_SCENES_25.length];
+      const sceneData = SPOT_SCENES_14[index % SPOT_SCENES_14.length];
       return {
         title: sceneData.title,
         baseSvg: sceneData.bg,
@@ -1426,8 +1503,9 @@
     };
 
     function refillSpotQueue() {
-      const indices = Array.from({ length: SPOT_SCENES_25.length }, (_, i) => i);
-      spotState.orderQueue = shuffle(indices);
+      // 첫 판은 첨부 이미지 스타일의 1번 장면부터 시작, 이후 랜덤 순환
+      const rest = shuffle(Array.from({ length: SPOT_SCENES_14.length - 1 }, (_, i) => i + 1));
+      spotState.orderQueue = [0, ...rest];
       spotState.cursor = 0;
     }
 
@@ -1440,7 +1518,9 @@
 
     function loadNextSpotScene() {
       if (spotState.cursor >= spotState.orderQueue.length) {
-        refillSpotQueue();
+        const all = Array.from({ length: SPOT_SCENES_14.length }, (_, i) => i);
+        spotState.orderQueue = shuffle(all);
+        spotState.cursor = 0;
       }
       const nextIdx = spotState.orderQueue[spotState.cursor++];
       const scene = buildRichScene(nextIdx);
@@ -1490,8 +1570,8 @@
         : '';
 
       wrap.innerHTML = `
-        <svg viewBox="0 0 300 400" preserveAspectRatio="xMidYMid meet" class="w-full h-full block">
-          ${SHARED_SVG_DEFS}
+        <svg viewBox="0 0 300 400" preserveAspectRatio="xMidYMid meet" shape-rendering="geometricPrecision" class="w-full h-full block">
+          ${BOOK_DEFS}
           ${scene.baseSvg}
           ${diffsSvg}
           ${foundCirclesSvg}
@@ -1565,18 +1645,18 @@
     ];
 
     const PATTERN_STRUCTURES = [
-      'ABABAB',    // AB AB A □
-      'ABABABA',   // AB AB AB □
-      'AABAABA',   // AAB AAB □
-      'AABAABAA',  // AAB AAB A □
-      'ABBABBA',   // ABB ABB □
-      'ABBABBAB',  // ABB ABB A □
-      'AABBAABB',  // AABB AAB □
-      'ABCABCA',   // ABC ABC □
-      'ABCABCAB',  // ABC ABC A □
-      'ABACABAC',  // ABAC ABA □
-      'AABCAABC',  // AABC AAB □
-      'ABBCABBC'   // ABBC ABB □
+      'ABABAB',
+      'ABABABA',
+      'AABAABA',
+      'AABAABAA',
+      'ABBABBA',
+      'ABBABBAB',
+      'AABBAABB',
+      'ABCABCA',
+      'ABCABCAB',
+      'ABACABAC',
+      'AABCAABC',
+      'ABBCABBC'
     ];
 
     const patternState = {
