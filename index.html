@@ -43,12 +43,12 @@
       gap: 16px;
     }
 
-    /* 상단 제목 영역 */
+    /* 상단 제목 및 결과 보기 영역 */
     header {
       width: 100%;
       max-width: 1120px;
       background: linear-gradient(135deg, #fffbeb 0%, #eff6ff 50%, #fdf2f8 100%);
-      padding: 16px 26px;
+      padding: 16px 24px;
       border-radius: 24px;
       border: 3px solid #fde68a;
       box-shadow: 0 6px 16px rgba(245, 158, 11, 0.08);
@@ -56,7 +56,7 @@
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 14px;
     }
 
     .title-area h1 {
@@ -84,6 +84,46 @@
       font-size: clamp(0.95rem, 1.5vw, 1.1rem);
       color: var(--text-sub);
       font-weight: 600;
+    }
+
+    /* 상단 결과 보기 버튼 */
+    .btn-history-open {
+      background: #ffffff;
+      color: #1e293b;
+      border: 3px solid #f59e0b;
+      border-bottom-width: 6px;
+      border-radius: 20px;
+      padding: 12px 20px;
+      font-size: clamp(1.05rem, 1.7vw, 1.22rem);
+      font-weight: 900;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 6px 14px rgba(245, 158, 11, 0.16);
+      transition: transform 0.12s ease, background-color 0.12s ease;
+      white-space: nowrap;
+    }
+
+    .btn-history-open:hover {
+      background: #fffbeb;
+      transform: translateY(-2px);
+    }
+
+    .btn-history-open:active {
+      transform: translateY(3px);
+      border-bottom-width: 2px;
+    }
+
+    .history-count-badge {
+      background: #f59e0b;
+      color: #ffffff;
+      font-size: 0.95rem;
+      font-weight: 900;
+      padding: 3px 11px;
+      border-radius: 999px;
+      min-width: 32px;
+      text-align: center;
     }
 
     /* 중앙: 6개 숫자 카드 (한 줄 유지) */
@@ -390,16 +430,16 @@
       45% { transform: translateY(-14px); }
     }
 
-    /* 결과 모달 */
+    /* 공통 모달 배경 */
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.55);
-      backdrop-filter: blur(4px);
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(5px);
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 18px;
       z-index: 100;
     }
 
@@ -413,6 +453,7 @@
       to { opacity: 1; }
     }
 
+    /* 개별 결과 모달 */
     .modal-box {
       width: 100%;
       max-width: 580px;
@@ -426,7 +467,7 @@
     }
 
     @keyframes popUp {
-      from { transform: scale(0.9) translateY(16px); opacity: 0; }
+      from { transform: scale(0.92) translateY(16px); opacity: 0; }
       to { transform: scale(1) translateY(0); opacity: 1; }
     }
 
@@ -521,9 +562,9 @@
     }
 
     .modal-btn {
-      padding: 15px 28px;
+      padding: 15px 26px;
       border-radius: 18px;
-      font-size: 1.12rem;
+      font-size: 1.1rem;
       font-weight: 900;
       cursor: pointer;
       border: none;
@@ -550,6 +591,221 @@
       background: var(--retry);
       color: #ffffff;
       border-bottom: 5px solid #c2410c;
+    }
+
+    /* 전체 결과 보기 큰 모달 */
+    .history-modal-box {
+      width: 100%;
+      max-width: 1040px;
+      height: 88dvh;
+      background: #fffdf9;
+      border-radius: 32px;
+      border: 4px solid #fbbf24;
+      box-shadow: 0 28px 60px rgba(0, 0, 0, 0.25);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: popUp 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .history-header {
+      padding: 20px 28px;
+      background: linear-gradient(135deg, #fef3c7 0%, #eff6ff 100%);
+      border-bottom: 3px solid #fde68a;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .history-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .history-title-wrap h2 {
+      font-size: clamp(1.45rem, 2.6vw, 2rem);
+      font-weight: 900;
+      color: var(--text-main);
+    }
+
+    .history-total-pill {
+      background: #2563eb;
+      color: #ffffff;
+      font-size: 1rem;
+      font-weight: 900;
+      padding: 5px 14px;
+      border-radius: 999px;
+    }
+
+    .history-header-btns {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-history-clear {
+      padding: 11px 16px;
+      border-radius: 14px;
+      border: 2px solid #fecdd3;
+      border-bottom-width: 4px;
+      background: #fff1f2;
+      color: #e11d48;
+      font-size: 0.98rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .btn-history-close {
+      padding: 11px 22px;
+      border-radius: 16px;
+      border: none;
+      border-bottom: 5px solid #1e293b;
+      background: #334155;
+      color: #ffffff;
+      font-size: 1.08rem;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .btn-history-close:active,
+    .btn-history-clear:active {
+      transform: translateY(2px);
+    }
+
+    .history-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .history-empty {
+      margin: auto;
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-sub);
+    }
+
+    .history-empty-icon {
+      font-size: 4rem;
+      margin-bottom: 14px;
+    }
+
+    .history-empty h3 {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    .history-empty p {
+      font-size: 1.12rem;
+      font-weight: 600;
+    }
+
+    /* 결과 목록 개별 카드 */
+    .history-item {
+      background: #ffffff;
+      border: 3px solid #e2e8f0;
+      border-bottom-width: 6px;
+      border-radius: 24px;
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+    }
+
+    .history-item-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .history-order-badge {
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 1.05rem;
+      font-weight: 900;
+      padding: 6px 14px;
+      border-radius: 999px;
+    }
+
+    .btn-item-remove {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      color: #64748b;
+      border-radius: 10px;
+      padding: 4px 10px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .btn-item-remove:hover {
+      background: #fff1f2;
+      border-color: #fecdd3;
+      color: #e11d48;
+    }
+
+    .history-seq-row {
+      display: flex;
+      align-items: center;
+      gap: clamp(6px, 1vw, 12px);
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding: 4px 0;
+    }
+
+    .history-num-box {
+      flex: 1;
+      min-width: 56px;
+      max-width: 110px;
+      height: 68px;
+      border-radius: 18px;
+      border: 3px solid #cbd5e1;
+      border-bottom-width: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+      font-weight: 900;
+      color: var(--text-main);
+      background: #ffffff;
+    }
+
+    .history-num-box[data-color="0"] { border-color: #fda4af; background: #fff1f2; }
+    .history-num-box[data-color="1"] { border-color: #fdba74; background: #fff7ed; }
+    .history-num-box[data-color="2"] { border-color: #fde047; background: #fefce8; }
+    .history-num-box[data-color="3"] { border-color: #86efac; background: #f0fdf4; }
+    .history-num-box[data-color="4"] { border-color: #93c5fd; background: #eff6ff; }
+    .history-num-box[data-color="5"] { border-color: #d8b4fe; background: #faf5ff; }
+
+    .history-arrow {
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: #94a3b8;
+      flex-shrink: 0;
+    }
+
+    .history-rule-banner {
+      background: #f0fdf4;
+      border: 2.5px solid #86efac;
+      color: #166534;
+      border-radius: 16px;
+      padding: 13px 18px;
+      font-size: clamp(1.1rem, 1.8vw, 1.32rem);
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .confetti-piece {
@@ -599,6 +855,12 @@
         width: 100%;
         max-width: none;
       }
+      .history-body {
+        padding: 16px;
+      }
+      .history-arrow {
+        display: none;
+      }
     }
   </style>
 </head>
@@ -612,6 +874,11 @@
       </h1>
       <p>숫자 6개를 차례대로 적고 규칙을 설명한 뒤, 아래 <strong>[규칙 완성!]</strong> 버튼을 눌러 보세요.</p>
     </div>
+
+    <button type="button" class="btn-history-open" id="btnOpenHistory">
+      📋 결과 보기
+      <span class="history-count-badge" id="historyCountBadge">0</span>
+    </button>
   </header>
 
   <main>
@@ -644,7 +911,7 @@
     </div>
   </section>
 
-  <!-- 결과 모달 -->
+  <!-- 개별 판정 결과 모달 -->
   <div class="modal-backdrop" id="resultModal" role="dialog" aria-modal="true">
     <div class="modal-box" id="modalBox">
       <div class="result-icon" id="resultIcon">🎉</div>
@@ -655,12 +922,33 @@
     </div>
   </div>
 
+  <!-- 지금까지 입력한 결과 모아보기 큰 화면 모달 -->
+  <div class="modal-backdrop" id="historyModal" role="dialog" aria-modal="true">
+    <div class="history-modal-box">
+      <div class="history-header">
+        <div class="history-title-wrap">
+          <h2>🏆 우리 반이 만든 수 규칙 모음</h2>
+          <span class="history-total-pill" id="historyModalTotal">총 0개</span>
+        </div>
+        <div class="history-header-btns">
+          <button type="button" class="btn-history-clear" id="btnClearHistory">기록 모두 지우기</button>
+          <button type="button" class="btn-history-close" id="btnCloseHistory">닫기 ✕</button>
+        </div>
+      </div>
+
+      <div class="history-body" id="historyListBody"></div>
+    </div>
+  </div>
+
   <script>
     const TOTAL_SLOTS = 6;
+    const STORAGE_KEY = 'class_number_patterns_v1';
+
     let values = Array(TOTAL_SLOTS).fill('');
     let activeIndex = 0;
     let replaceOnNextDigit = true;
     let isChecking = false;
+    let historyRecords = loadHistory();
 
     const cardsContainer = document.getElementById('cardsContainer');
     const helperMsg = document.getElementById('helperMsg');
@@ -673,6 +961,141 @@
     const resultNumbers = document.getElementById('resultNumbers');
     const resultDesc = document.getElementById('resultDesc');
     const modalActions = document.getElementById('modalActions');
+
+    const btnOpenHistory = document.getElementById('btnOpenHistory');
+    const historyCountBadge = document.getElementById('historyCountBadge');
+    const historyModal = document.getElementById('historyModal');
+    const historyModalTotal = document.getElementById('historyModalTotal');
+    const historyListBody = document.getElementById('historyListBody');
+    const btnCloseHistory = document.getElementById('btnCloseHistory');
+    const btnClearHistory = document.getElementById('btnClearHistory');
+
+    function loadHistory() {
+      try {
+        const saved = sessionStorage.getItem(STORAGE_KEY);
+        return saved ? JSON.parse(saved) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveHistory() {
+      try {
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(historyRecords));
+      } catch (e) {}
+      updateHistoryBadge();
+    }
+
+    function updateHistoryBadge() {
+      historyCountBadge.textContent = historyRecords.length;
+      historyModalTotal.textContent = `총 ${historyRecords.length}개`;
+    }
+
+    function addHistoryRecord(nums, description) {
+      // 방금 등록한 것과 완전히 같은 숫자 배열이면 중복 추가 방지
+      if (historyRecords.length > 0) {
+        const last = historyRecords[historyRecords.length - 1];
+        if (JSON.stringify(last.nums) === JSON.stringify(nums)) {
+          return;
+        }
+      }
+      historyRecords.push({
+        id: Date.now() + Math.random(),
+        nums: [...nums],
+        description
+      });
+      saveHistory();
+    }
+
+    function renderHistoryModal() {
+      updateHistoryBadge();
+      historyListBody.innerHTML = '';
+
+      if (historyRecords.length === 0) {
+        historyListBody.innerHTML = `
+          <div class="history-empty">
+            <div class="history-empty-icon">📝</div>
+            <h3>아직 완성된 수 규칙이 없어요!</h3>
+            <p>숫자 6개를 넣고 <strong>[✨ 규칙 완성!]</strong> 버튼을 누르면 이곳에 차곡차곡 모입니다.</p>
+          </div>
+        `;
+        return;
+      }
+
+      historyRecords.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = 'history-item';
+
+        const topRow = document.createElement('div');
+        topRow.className = 'history-item-top';
+
+        const orderBadge = document.createElement('span');
+        orderBadge.className = 'history-order-badge';
+        orderBadge.textContent = `${index + 1}번째 발표`;
+
+        const delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'btn-item-remove';
+        delBtn.textContent = '삭제';
+        delBtn.addEventListener('click', () => {
+          historyRecords = historyRecords.filter(r => r.id !== item.id);
+          saveHistory();
+          renderHistoryModal();
+        });
+
+        topRow.appendChild(orderBadge);
+        topRow.appendChild(delBtn);
+
+        const seqRow = document.createElement('div');
+        seqRow.className = 'history-seq-row';
+
+        item.nums.forEach((num, idx) => {
+          const box = document.createElement('div');
+          box.className = 'history-num-box';
+          box.dataset.color = idx;
+          box.textContent = num;
+          seqRow.appendChild(box);
+
+          if (idx < item.nums.length - 1) {
+            const arrow = document.createElement('span');
+            arrow.className = 'history-arrow';
+            arrow.textContent = '→';
+            seqRow.appendChild(arrow);
+          }
+        });
+
+        const ruleBanner = document.createElement('div');
+        ruleBanner.className = 'history-rule-banner';
+        ruleBanner.textContent = `✨ ${item.description}`;
+
+        card.appendChild(topRow);
+        card.appendChild(seqRow);
+        card.appendChild(ruleBanner);
+        historyListBody.appendChild(card);
+      });
+    }
+
+    btnOpenHistory.addEventListener('click', () => {
+      renderHistoryModal();
+      historyModal.classList.add('open');
+    });
+
+    btnCloseHistory.addEventListener('click', () => {
+      historyModal.classList.remove('open');
+    });
+
+    historyModal.addEventListener('click', (e) => {
+      if (e.target === historyModal) {
+        historyModal.classList.remove('open');
+      }
+    });
+
+    btnClearHistory.addEventListener('click', () => {
+      if (historyRecords.length === 0) return;
+      historyRecords = [];
+      saveHistory();
+      renderHistoryModal();
+    });
 
     function renderCards() {
       cardsContainer.innerHTML = '';
@@ -734,7 +1157,7 @@
     }
 
     function inputDigit(digit) {
-      if (isChecking || resultModal.classList.contains('open')) return;
+      if (isChecking || resultModal.classList.contains('open') || historyModal.classList.contains('open')) return;
       hideHelper();
 
       let current = values[activeIndex];
@@ -754,7 +1177,7 @@
     }
 
     function handleBackspace() {
-      if (isChecking || resultModal.classList.contains('open')) return;
+      if (isChecking || resultModal.classList.contains('open') || historyModal.classList.contains('open')) return;
       hideHelper();
 
       let current = values[activeIndex];
@@ -799,6 +1222,10 @@
     document.getElementById('btnNext').addEventListener('click', moveNext);
 
     document.addEventListener('keydown', (e) => {
+      if (historyModal.classList.contains('open')) {
+        if (e.key === 'Escape') historyModal.classList.remove('open');
+        return;
+      }
       if (resultModal.classList.contains('open')) {
         if (e.key === 'Escape') closeModal();
         return;
@@ -834,7 +1261,7 @@
       renderCards();
     });
 
-    // 초등 수 규칙 종합 판별 함수 (6개 숫자 배열)
+    // 초등 수 규칙 종합 판별 함수
     function evaluatePattern(nums) {
       const [a0, a1, a2, a3, a4, a5] = nums;
       const diffs = [a1 - a0, a2 - a1, a3 - a2, a4 - a3, a5 - a4];
@@ -847,7 +1274,7 @@
         };
       }
 
-      // 2. 일정한 수만큼 커지거나 작아지는 규칙 (ABCDEF 등차수열: 1,2,3,4,5,6 / 10,20,30,40,50,60 / 6,5,4,3,2,1 등)
+      // 2. 일정한 수만큼 커지거나 작아지는 규칙 (ABCDEF 등차수열)
       if (diffs.every(d => d === diffs[0])) {
         const step = diffs[0];
         if (step > 0) {
@@ -863,7 +1290,7 @@
         }
       }
 
-      // 3. ABAB 반복 (ABABAB: 예 1, 2, 1, 2, 1, 2)
+      // 3. ABAB 반복 (ABABAB)
       if (a0 === a2 && a2 === a4 && a1 === a3 && a3 === a5 && a0 !== a1) {
         return {
           valid: true,
@@ -871,7 +1298,7 @@
         };
       }
 
-      // 4. AAB 반복 (AABAAB: 예 1, 1, 2, 1, 1, 2)
+      // 4. AAB 반복 (AABAAB)
       if (a0 === a1 && a0 === a3 && a3 === a4 && a2 === a5 && a0 !== a2) {
         return {
           valid: true,
@@ -879,7 +1306,7 @@
         };
       }
 
-      // 5. ABB 반복 (ABBABB: 예 1, 2, 2, 1, 2, 2)
+      // 5. ABB 반복 (ABBABB)
       if (a1 === a2 && a4 === a5 && a1 === a4 && a0 === a3 && a0 !== a1) {
         return {
           valid: true,
@@ -887,7 +1314,7 @@
         };
       }
 
-      // 6. ABC 반복 (ABCABC: 예 1, 2, 3, 1, 2, 3)
+      // 6. ABC 반복 (ABCABC)
       if (a0 === a3 && a1 === a4 && a2 === a5) {
         return {
           valid: true,
@@ -895,7 +1322,7 @@
         };
       }
 
-      // 7. AAABBB 반복 (예: 1, 1, 1, 2, 2, 2)
+      // 7. AAABBB 반복
       if (a0 === a1 && a1 === a2 && a3 === a4 && a4 === a5 && a0 !== a3) {
         return {
           valid: true,
@@ -903,7 +1330,7 @@
         };
       }
 
-      // 8. AABBCC (같은 수가 두 번씩 나오며 일정하게 커지거나 작아지는 규칙: 예 1, 1, 2, 2, 3, 3)
+      // 8. AABBCC
       if (a0 === a1 && a2 === a3 && a4 === a5 && (a2 - a0 === a4 - a2) && a2 !== a0) {
         const step = a2 - a0;
         const dir = step > 0 ? `${step}씩 커지는` : `${Math.abs(step)}씩 작아지는`;
@@ -913,7 +1340,7 @@
         };
       }
 
-      // 9. ABBCCC (1개, 2개, 3개씩 개수가 늘어나며 나오는 규칙: 예 1, 2, 2, 3, 3, 3)
+      // 9. ABBCCC
       if (a1 === a2 && a3 === a4 && a4 === a5 && a0 !== a1 && a1 !== a3) {
         return {
           valid: true,
@@ -921,7 +1348,7 @@
         };
       }
 
-      // 10. AAABBC (3개, 2개, 1개씩 개수가 줄어들며 나오는 규칙: 예 1, 1, 1, 2, 2, 3)
+      // 10. AAABBC
       if (a0 === a1 && a1 === a2 && a3 === a4 && a0 !== a3 && a3 !== a5) {
         return {
           valid: true,
@@ -929,7 +1356,7 @@
         };
       }
 
-      // 11. ABCCBA (거울처럼 앞뒤가 대칭되는 규칙: 예 1, 2, 3, 3, 2, 1)
+      // 11. ABCCBA (거울 대칭)
       if (a0 === a5 && a1 === a4 && a2 === a3) {
         return {
           valid: true,
@@ -937,7 +1364,7 @@
         };
       }
 
-      // 12. 2개씩 묶음이 일정하게 커지거나 작아지는 규칙 (예: 1, 2, 2, 3, 3, 4 / 10, 11, 20, 21, 30, 31)
+      // 12. 2개씩 묶음이 일정하게 변하는 규칙
       if ((a2 - a0 === a4 - a2) && (a3 - a1 === a5 - a3) && (a2 - a0 === a3 - a1) && a2 !== a0) {
         const step = a2 - a0;
         const dir = step > 0 ? `${step}씩 커지는` : `${Math.abs(step)}씩 작아지는`;
@@ -947,7 +1374,7 @@
         };
       }
 
-      // 13. 3개씩 묶음이 일정하게 커지거나 작아지는 규칙 (예: 1, 2, 3, 2, 3, 4 / 1, 2, 3, 11, 12, 13)
+      // 13. 3개씩 묶음이 일정하게 변하는 규칙
       if ((a3 - a0 === a4 - a1) && (a4 - a1 === a5 - a2) && a3 !== a0) {
         const step = a3 - a0;
         const dir = step > 0 ? `${step}씩 커지는` : `${Math.abs(step)}씩 작아지는`;
@@ -957,7 +1384,7 @@
         };
       }
 
-      // 14. 일정한 배로 커지는 규칙 (예: 1, 2, 4, 8, 16, 32)
+      // 14. 일정한 배로 커지는 규칙
       if (a0 > 0 && a1 % a0 === 0) {
         const ratio = a1 / a0;
         if (
@@ -974,7 +1401,7 @@
         }
       }
 
-      // 15. 앞의 두 수를 더해서 다음 수가 되는 규칙 (예: 1, 1, 2, 3, 5, 8)
+      // 15. 앞의 두 수를 더해서 다음 수가 되는 규칙
       if (
         a2 === a0 + a1 &&
         a3 === a1 + a2 &&
@@ -987,7 +1414,7 @@
         };
       }
 
-      // 16. 커지는 폭이 점점 커지거나 점점 줄어드는 규칙 (예: +1, +2, +3, +4, +5 / +5, +4, +3, +2, +1)
+      // 16. 커지는 폭이 점점 커지거나 줄어드는 규칙
       const diffLabels = diffs.map(d => (d >= 0 ? `+${d}` : `${d}`)).join(', ');
       if (diffs[0] > 0 && diffs[0] < diffs[1] && diffs[1] < diffs[2] && diffs[2] < diffs[3] && diffs[3] < diffs[4]) {
         return {
@@ -1002,7 +1429,7 @@
         };
       }
 
-      // 17. 작아지는 폭이 점점 커지거나 점점 줄어드는 규칙 (예: -1, -2, -3, -4, -5 / -5, -4, -3, -2, -1)
+      // 17. 작아지는 폭이 점점 커지거나 줄어드는 규칙
       if (diffs[0] < 0 && diffs[0] > diffs[1] && diffs[1] > diffs[2] && diffs[2] > diffs[3] && diffs[3] > diffs[4]) {
         return {
           valid: true,
@@ -1016,7 +1443,7 @@
         };
       }
 
-      // 18. 두 가지 변화가 번갈아 나타나는 규칙 (예: +3, -1, +3, -1, +3)
+      // 18. 두 가지 변화가 번갈아 나타나는 규칙
       if (diffs[0] === diffs[2] && diffs[2] === diffs[4] && diffs[1] === diffs[3]) {
         const s1 = diffs[0] >= 0 ? `+${diffs[0]}` : `${diffs[0]}`;
         const s2 = diffs[1] >= 0 ? `+${diffs[1]}` : `${diffs[1]}`;
@@ -1026,7 +1453,7 @@
         };
       }
 
-      // 19. 홀수 번째 자리와 짝수 번째 자리가 각각 일정한 규칙으로 변하는 경우
+      // 19. 홀수 번째 자리와 짝수 번째 자리가 각각 일정하게 변하는 경우
       if ((a2 - a0 === a4 - a2) && (a3 - a1 === a5 - a3)) {
         return {
           valid: true,
@@ -1034,7 +1461,7 @@
         };
       }
 
-      // 20. 십의 자리와 일의 자리를 서로 바꾼 짝꿍 규칙 (예: 12, 21, 34, 43, 56, 65)
+      // 20. 십의 자리와 일의 자리를 바꾼 짝꿍 규칙
       const isSwappedPair = (x, y) => {
         if (x < 10 || y < 10) return false;
         const x10 = Math.floor(x / 10), x1 = x % 10;
@@ -1048,7 +1475,7 @@
         };
       }
 
-      // 21. 각 자리 숫자의 합이 모두 같은 규칙 (예: 14, 41, 23, 32, 50, 5)
+      // 21. 각 자리 숫자의 합이 모두 같은 규칙
       const digitSum = n => Math.floor(n / 10) + (n % 10);
       const targetSum = digitSum(a0);
       if (nums.every(n => digitSum(n) === targetSum)) {
@@ -1058,7 +1485,7 @@
         };
       }
 
-      // 22. 숫자가 차례대로 점점 커지는 규칙 (ABCDEF 순차 증가)
+      // 22. 차례대로 점점 커지는 규칙 (ABCDEF)
       if (a0 < a1 && a1 < a2 && a2 < a3 && a3 < a4 && a4 < a5) {
         return {
           valid: true,
@@ -1066,7 +1493,7 @@
         };
       }
 
-      // 23. 숫자가 차례대로 점점 작아지는 규칙 (순차 감소)
+      // 23. 차례대로 점점 작아지는 규칙
       if (a0 > a1 && a1 > a2 && a2 > a3 && a3 > a4 && a4 > a5) {
         return {
           valid: true,
@@ -1107,6 +1534,8 @@
       modalActions.innerHTML = '';
 
       if (result.valid) {
+        addHistoryRecord(nums, result.description);
+
         modalBox.classList.add('success');
         resultIcon.textContent = '🎉';
         resultTitle.textContent = '성공! 멋진 규칙이에요!';
@@ -1123,12 +1552,22 @@
           renderCards();
         });
 
+        const btnViewAll = document.createElement('button');
+        btnViewAll.className = 'modal-btn secondary';
+        btnViewAll.textContent = '📋 결과 보기';
+        btnViewAll.addEventListener('click', () => {
+          closeModal();
+          renderHistoryModal();
+          historyModal.classList.add('open');
+        });
+
         const btnStay = document.createElement('button');
         btnStay.className = 'modal-btn secondary';
         btnStay.textContent = '화면 계속 보기';
         btnStay.addEventListener('click', closeModal);
 
         modalActions.appendChild(btnNew);
+        modalActions.appendChild(btnViewAll);
         modalActions.appendChild(btnStay);
         launchConfetti();
       } else {
@@ -1189,6 +1628,7 @@
       }, 650);
     });
 
+    updateHistoryBadge();
     renderCards();
   </script>
 </body>
