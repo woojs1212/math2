@@ -2,2021 +2,1043 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>1학년 1팀 vs 2팀 대결 미니게임 모음집</title>
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts: Jua & Noto Sans KR -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@700;900&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>우리 반 수 규칙 발표판</title>
   <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+    :root {
+      --bg-color: #faf8f4;
+      --grid-dot: #e5e0d5;
+      --card-bg: #ffffff;
+      --text-main: #22252a;
+      --text-sub: #666c75;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --success-soft: #f0fdf4;
+      --retry: #ea580c;
+      --retry-soft: #fff7ed;
+      --border-soft: #e2e8f0;
+    }
+
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
       user-select: none;
-      -webkit-user-select: none;
-      -webkit-touch-callout: none;
-      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      font-family: 'Jua', 'Noto Sans KR', sans-serif;
-      background-color: #FFFDF7;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+      background-color: var(--bg-color);
+      background-image: radial-gradient(var(--grid-dot) 1.5px, transparent 1.5px);
+      background-size: 24px 24px;
+      color: var(--text-main);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 20px 32px;
+    }
+
+    /* 상단 헤더 */
+    header {
+      width: 100%;
+      max-width: 1040px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(6px);
+      padding: 16px 24px;
+      border-radius: 20px;
+      border: 2px solid #ece7dd;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+
+    .title-area h1 {
+      font-size: clamp(1.35rem, 2.5vw, 1.85rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .title-badge {
+      background: #fef3c7;
+      color: #b45309;
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid #fde68a;
+    }
+
+    .title-area p {
+      margin-top: 4px;
+      font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+      color: var(--text-sub);
+      font-weight: 500;
+    }
+
+    .btn-reset-top {
+      background: #ffffff;
+      color: var(--text-sub);
+      border: 2px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 10px 18px;
+      font-size: 0.98rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-reset-top:hover {
+      background: #f8fafc;
+      color: var(--text-main);
+      border-color: #cbd5e1;
+    }
+
+    .btn-reset-top:active {
+      transform: translateY(1px);
+    }
+
+    /* 메인 영역 */
+    main {
+      width: 100%;
+      max-width: 1040px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+      margin: auto 0;
+      padding: 16px 0;
+    }
+
+    /* 6개 숫자 카드 영역 */
+    .cards-wrapper {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(8px, 1.5vw, 16px);
+      flex-wrap: wrap;
+    }
+
+    .card-group {
+      display: flex;
+      align-items: center;
+      gap: clamp(8px, 1.5vw, 16px);
+    }
+
+    .arrow-sep {
+      font-size: clamp(1.2rem, 2vw, 1.7rem);
+      color: #cbd5e1;
+      font-weight: 800;
+    }
+
+    .num-card {
+      width: clamp(96px, 13vw, 142px);
+      height: clamp(118px, 16vw, 172px);
+      background: var(--card-bg);
+      border: 3px solid #e2e8f0;
+      border-bottom-width: 7px;
+      border-radius: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.04);
+    }
+
+    .num-card:hover {
+      border-color: #93c5fd;
+      transform: translateY(-2px);
+    }
+
+    .num-card.active {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+      transform: translateY(-4px);
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.16);
+    }
+
+    .num-card.filled:not(.active) {
+      border-color: #cbd5e1;
+      background: #ffffff;
+    }
+
+    .card-index {
+      position: absolute;
+      top: 10px;
+      left: 14px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #94a3b8;
+    }
+
+    .num-card.active .card-index {
+      color: var(--primary);
+    }
+
+    .card-value {
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+
+    .card-placeholder {
+      font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+      font-weight: 700;
+      color: #cbd5e1;
+    }
+
+    .num-card.active .card-placeholder {
+      color: #93c5fd;
+      animation: blink 1.1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.25; }
+    }
+
+    /* 안내 메시지 (입력 부족 시에만 잠깐 표시) */
+    .helper-msg {
+      min-height: 26px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--retry);
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .helper-msg.show {
+      opacity: 1;
+    }
+
+    /* 숫자 패드 (터치/클릭 겸용) */
+    .keypad-box {
+      background: #ffffff;
+      border: 2px solid #ece7dd;
+      border-radius: 22px;
+      padding: 14px 18px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .keypad-hint {
+      font-size: 0.86rem;
+      color: var(--text-sub);
+      font-weight: 600;
+    }
+
+    .keypad-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .key-btn {
+      min-width: 48px;
+      height: 48px;
+      padding: 0 12px;
+      border-radius: 14px;
+      border: 2px solid #e2e8f0;
+      border-bottom-width: 4px;
+      background: #f8fafc;
+      color: var(--text-main);
+      font-size: 1.2rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.1s ease;
+    }
+
+    .key-btn:hover {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+    }
+
+    .key-btn:active {
+      transform: translateY(2px);
+      border-bottom-width: 2px;
+    }
+
+    .key-btn.action-del {
+      background: #fff1f2;
+      border-color: #fecdd3;
+      color: #e11d48;
+      font-size: 0.98rem;
+    }
+
+    .key-btn.action-next {
+      background: #f0f9ff;
+      border-color: #bae6fd;
+      color: #0284c7;
+      font-size: 0.98rem;
+    }
+
+    /* 규칙 완성 버튼 */
+    .submit-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-complete {
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      border-bottom: 6px solid #1e40af;
+      border-radius: 22px;
+      padding: 18px 52px;
+      font-size: clamp(1.25rem, 2.2vw, 1.55rem);
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.25);
+      transition: all 0.15s ease;
+    }
+
+    .btn-complete:hover {
+      background: var(--primary-hover);
+      transform: translateY(-2px);
+    }
+
+    .btn-complete:active {
+      transform: translateY(3px);
+      border-bottom-width: 2px;
+    }
+
+    .btn-complete:disabled {
+      opacity: 0.7;
+      cursor: wait;
+    }
+
+    /* 카드 확인 애니메이션 */
+    .num-card.checking {
+      animation: bounceCard 0.45s ease;
+    }
+
+    @keyframes bounceCard {
+      0%, 100% { transform: translateY(0); }
+      45% { transform: translateY(-12px); border-color: var(--accent); }
+    }
+
+    /* 결과 모달 */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 100;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-box {
+      width: 100%;
+      max-width: 560px;
+      background: #ffffff;
+      border-radius: 30px;
+      padding: 36px 28px 30px;
+      text-align: center;
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.18);
+      border: 4px solid #e2e8f0;
+      position: relative;
       overflow: hidden;
-      margin: 0;
-      padding: 0;
-      height: 100vh;
-      width: 100vw;
+      animation: popUp 0.28s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    @keyframes popIn {
-      0% { transform: scale(0.82); opacity: 0; }
-      70% { transform: scale(1.05); opacity: 1; }
-      100% { transform: scale(1); opacity: 1; }
+    @keyframes popUp {
+      from { transform: scale(0.9) translateY(16px); opacity: 0; }
+      to { transform: scale(1) translateY(0); opacity: 1; }
     }
 
-    @keyframes shakeWrong {
-      0%, 100% { transform: translateX(0); }
-      20% { transform: translateX(-8px); }
-      40% { transform: translateX(8px); }
-      60% { transform: translateX(-5px); }
-      80% { transform: translateX(5px); }
+    .modal-box.success {
+      border-color: #86efac;
     }
 
-    @keyframes floatScore {
-      0% { transform: translateY(6px) scale(0.75); opacity: 0; }
-      25% { transform: translateY(-10px) scale(1.15); opacity: 1; }
-      80% { transform: translateY(-26px) scale(1); opacity: 1; }
-      100% { transform: translateY(-40px) scale(0.95); opacity: 0; }
+    .modal-box.retry {
+      border-color: #fdba74;
     }
 
-    .animate-pop {
-      animation: popIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    .result-icon {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
     }
 
-    .animate-shake {
-      animation: shakeWrong 0.35s ease-in-out;
+    .modal-box.success .result-icon {
+      background: var(--success-soft);
+      border: 3px solid #bbf7d0;
     }
 
-    .animate-float-score {
-      animation: floatScore 0.85s ease-out forwards;
+    .modal-box.retry .result-icon {
+      background: var(--retry-soft);
+      border: 3px solid #fed7aa;
     }
 
-    .touch-btn {
-      transition: transform 0.06s ease, filter 0.08s ease;
+    .result-title {
+      font-size: clamp(1.6rem, 3vw, 2.1rem);
+      font-weight: 800;
+      margin-bottom: 10px;
+      letter-spacing: -0.02em;
     }
-    .touch-btn:active {
-      transform: scale(0.94) translateY(2px);
-      filter: brightness(0.95);
+
+    .modal-box.success .result-title {
+      color: var(--success);
+    }
+
+    .modal-box.retry .result-title {
+      color: var(--retry);
+    }
+
+    .result-numbers {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 18px 0;
+    }
+
+    .mini-num {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 8px 14px;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .result-desc {
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: var(--text-main);
+      background: #f8fafc;
+      padding: 14px 18px;
+      border-radius: 16px;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .modal-box.success .result-desc {
+      background: var(--success-soft);
+      color: #166534;
+    }
+
+    .modal-box.retry .result-desc {
+      background: var(--retry-soft);
+      color: #9a3412;
+    }
+
+    .modal-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .modal-btn {
+      padding: 14px 28px;
+      border-radius: 16px;
+      font-size: 1.08rem;
+      font-weight: 800;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.12s ease;
+    }
+
+    .modal-btn:active {
+      transform: translateY(2px);
+    }
+
+    .modal-btn.primary-success {
+      background: var(--success);
+      color: #ffffff;
+      border-bottom: 4px solid #15803d;
+    }
+
+    .modal-btn.secondary {
+      background: #f1f5f9;
+      color: var(--text-main);
+      border-bottom: 4px solid #cbd5e1;
+    }
+
+    .modal-btn.primary-retry {
+      background: var(--retry);
+      color: #ffffff;
+      border-bottom: 4px solid #c2410c;
+    }
+
+    /* 폭죽 조각 */
+    .confetti-piece {
+      position: fixed;
+      width: 10px;
+      height: 14px;
+      top: -20px;
+      z-index: 150;
+      border-radius: 3px;
+      pointer-events: none;
+      animation: fall linear forwards;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(105vh) rotate(720deg);
+        opacity: 0.9;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .arrow-sep {
+        display: none;
+      }
+      .cards-wrapper {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        max-width: 360px;
+        gap: 12px;
+      }
+      .card-group {
+        justify-content: center;
+      }
+      .num-card {
+        width: 100%;
+        height: 106px;
+      }
     }
   </style>
 </head>
-<body class="flex flex-col h-screen w-screen bg-[#FFFDF7] text-slate-800">
+<body>
 
-  <!-- ==================== 상단 통합 게임 선택 및 점수/타이머 헤더 ==================== -->
-  <header class="relative z-20 flex flex-wrap items-center justify-between gap-2 px-3 sm:px-5 py-2 bg-white border-b-4 border-amber-200 shadow-sm shrink-0">
-    <!-- 1팀 점수 -->
-    <div class="relative flex items-center gap-2 bg-blue-600 text-white px-3.5 sm:px-5 py-1.5 rounded-2xl border-b-4 border-blue-800 shadow">
-      <span class="text-lg sm:text-2xl">💙 1팀</span>
-      <div class="bg-white text-blue-700 px-3 py-0.5 rounded-xl text-2xl sm:text-3xl font-bold">
-        <span id="score-t1">0</span><span class="text-sm sm:text-lg ml-0.5">점</span>
-      </div>
-      <div id="popup-t1" class="pointer-events-none absolute -bottom-8 right-2 z-30"></div>
+  <header>
+    <div class="title-area">
+      <h1>
+        우리 반 수 규칙 발표판
+        <span class="title-badge">0 ~ 99</span>
+      </h1>
+      <p>숫자 6개를 적고 규칙을 설명한 뒤, <strong>[규칙 완성!]</strong> 버튼을 눌러 확인해 보세요.</p>
     </div>
-
-    <!-- 중앙: 게임 선택 탭 + 타이머 + 일시정지/설정 -->
-    <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-center">
-      <nav class="flex items-center gap-1 bg-slate-100 p-1 rounded-2xl border-2 border-slate-200" id="game-tabs">
-        <button type="button" data-game="spot" class="game-tab-btn px-3 sm:px-4 py-1.5 rounded-xl bg-amber-400 text-amber-950 font-bold text-sm sm:text-lg shadow-sm cursor-pointer">
-          🔍 1. 틀린 그림 찾기
-        </button>
-        <button type="button" data-game="pattern" class="game-tab-btn px-3 sm:px-4 py-1.5 rounded-xl text-slate-600 hover:bg-white text-sm sm:text-lg cursor-pointer">
-          🧩 2. 다음 그림 맞히기
-        </button>
-        <button type="button" data-game="clock" class="game-tab-btn px-3 sm:px-4 py-1.5 rounded-xl text-slate-600 hover:bg-white text-sm sm:text-lg cursor-pointer">
-          ⏰ 3. 몇 시 몇 분?
-        </button>
-      </nav>
-
-      <!-- 타이머 표시 -->
-      <div id="timer-box" class="flex items-center gap-1.5 bg-slate-900 text-white px-3.5 sm:px-5 py-1.5 rounded-2xl border-4 border-amber-400 shadow">
-        <span id="timer-label" class="hidden md:inline text-amber-300 text-sm">⏱ 남은 시간</span>
-        <span id="timer-display" class="text-xl sm:text-3xl tracking-wider">02:00</span>
-      </div>
-
-      <button id="pause-btn" type="button" class="px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 active:scale-95 text-amber-950 border-2 border-amber-400 text-sm sm:text-base font-bold cursor-pointer">
-        ⏸ 멈춤
-      </button>
-
-      <button id="open-setup-btn" type="button" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 border-2 border-slate-300 text-sm sm:text-base cursor-pointer">
-        ⚙️ 시간/재시작
-      </button>
-    </div>
-
-    <!-- 2팀 점수 -->
-    <div class="relative flex items-center gap-2 bg-rose-600 text-white px-3.5 sm:px-5 py-1.5 rounded-2xl border-b-4 border-rose-800 shadow">
-      <div id="popup-t2" class="pointer-events-none absolute -bottom-8 left-2 z-30"></div>
-      <div class="bg-white text-rose-700 px-3 py-0.5 rounded-xl text-2xl sm:text-3xl font-bold">
-        <span id="score-t2">0</span><span class="text-sm sm:text-lg ml-0.5">점</span>
-      </div>
-      <span class="text-lg sm:text-2xl">2팀 ❤️</span>
-    </div>
+    <button type="button" class="btn-reset-top" id="btnResetAll">모두 지우기</button>
   </header>
 
-  <!-- ==================== 메인 게임 스테이지 ==================== -->
-  <main class="relative flex-1 w-full h-full overflow-hidden">
+  <main>
+    <!-- 6개 숫자 카드 -->
+    <section class="cards-wrapper" id="cardsContainer" aria-label="수 규칙 입력 칸"></section>
 
-    <!-- ===================================================================== -->
-    <!-- [게임 1] 틀린 그림 찾기 (가운데 기준 그림 / 왼쪽 1팀 / 오른쪽 2팀) -->
-    <!-- ===================================================================== -->
-    <section id="stage-spot" class="w-full h-full flex flex-col p-2 sm:p-3 gap-2">
-      <!-- 상단 스테이지 진행 바 -->
-      <div class="flex items-center justify-between bg-white rounded-2xl px-4 py-1.5 border-2 border-amber-300 shadow-sm shrink-0">
-        <span id="spot-theme-title" class="text-base sm:text-xl text-amber-900 font-bold">🎨 동화 장면 1</span>
-        <div class="flex items-center gap-2">
-          <span class="text-sm sm:text-lg text-slate-700 font-bold">함께 찾은 곳</span>
-          <div id="spot-dots" class="flex items-center gap-1.5"></div>
-          <span id="spot-found-text" class="text-base sm:text-xl font-bold text-emerald-700 ml-1">0/5</span>
-        </div>
-        <button id="spot-skip-btn" type="button" class="px-3 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs sm:text-sm font-bold cursor-pointer">
-          다음 그림 ⏭
-        </button>
-      </div>
+    <div class="helper-msg" id="helperMsg">빈칸에 0부터 99까지의 숫자를 모두 입력해 주세요!</div>
 
-      <!-- 3단 분할: 왼쪽(1팀 터치) | 가운데(원본 그림) | 오른쪽(2팀 터치) -->
-      <div class="flex-1 grid grid-cols-3 gap-2 sm:gap-3 min-h-0">
-        <!-- 1팀 그림 영역 -->
-        <div class="flex flex-col bg-blue-50/90 rounded-3xl border-4 border-blue-400 p-2 shadow-md min-h-0">
-          <div class="text-center text-blue-800 text-base sm:text-xl font-bold pb-1 shrink-0">💙 1팀 그림 (여기를 터치!)</div>
-          <div id="spot-board-t1" class="relative flex-1 bg-white rounded-2xl border-2 border-blue-200 overflow-hidden cursor-pointer"></div>
-        </div>
-
-        <!-- 가운데 기준 그림 영역 -->
-        <div class="flex flex-col bg-amber-50/90 rounded-3xl border-4 border-amber-400 p-2 shadow-md min-h-0">
-          <div class="text-center text-amber-900 text-base sm:text-xl font-bold pb-1 shrink-0">⭐ 기준 그림 (비교해요!)</div>
-          <div id="spot-board-center" class="relative flex-1 bg-white rounded-2xl border-2 border-amber-200 overflow-hidden"></div>
-        </div>
-
-        <!-- 2팀 그림 영역 -->
-        <div class="flex flex-col bg-rose-50/90 rounded-3xl border-4 border-rose-400 p-2 shadow-md min-h-0">
-          <div class="text-center text-rose-800 text-base sm:text-xl font-bold pb-1 shrink-0">❤️ 2팀 그림 (여기를 터치!)</div>
-          <div id="spot-board-t2" class="relative flex-1 bg-white rounded-2xl border-2 border-rose-200 overflow-hidden cursor-pointer"></div>
-        </div>
+    <!-- 숫자 입력 키패드 -->
+    <section class="keypad-box" aria-label="숫자 패드">
+      <div class="keypad-hint">키보드로 직접 치거나 아래 숫자 버튼을 눌러 입력하세요 (0 ~ 99)</div>
+      <div class="keypad-row">
+        <button type="button" class="key-btn" data-num="1">1</button>
+        <button type="button" class="key-btn" data-num="2">2</button>
+        <button type="button" class="key-btn" data-num="3">3</button>
+        <button type="button" class="key-btn" data-num="4">4</button>
+        <button type="button" class="key-btn" data-num="5">5</button>
+        <button type="button" class="key-btn" data-num="6">6</button>
+        <button type="button" class="key-btn" data-num="7">7</button>
+        <button type="button" class="key-btn" data-num="8">8</button>
+        <button type="button" class="key-btn" data-num="9">9</button>
+        <button type="button" class="key-btn" data-num="0">0</button>
+        <button type="button" class="key-btn action-del" id="btnBackspace">← 지우기</button>
+        <button type="button" class="key-btn action-next" id="btnNext">다음 칸 →</button>
       </div>
     </section>
 
-    <!-- ===================================================================== -->
-    <!-- [게임 2] 다음 그림 맞히기 (양 팀 독립 진행 + 규칙 힌트 숨김 + 패스 버튼) -->
-    <!-- ===================================================================== -->
-    <section id="stage-pattern" class="hidden w-full h-full grid grid-cols-2 divide-x-4 divide-slate-300">
-      <!-- 1팀 영역 -->
-      <div class="flex flex-col justify-between h-full bg-gradient-to-b from-sky-50 to-blue-100/80 p-3 sm:p-5 overflow-hidden">
-        <div class="flex items-center justify-between bg-white/90 rounded-2xl px-4 py-2 border-2 border-blue-200 shrink-0">
-          <span class="text-lg sm:text-2xl text-blue-800 font-bold">💙 1팀 다음 그림 맞히기</span>
-          <span class="text-sm sm:text-base text-blue-600 font-bold">맞히면 +10점!</span>
-        </div>
-
-        <div class="flex-1 flex flex-col items-center justify-center my-2 min-w-0">
-          <div id="pat-seq-t1" class="w-full flex items-center justify-center gap-1 sm:gap-1.5 flex-nowrap px-1"></div>
-          <p id="pat-msg-t1" class="mt-3 text-base sm:text-xl text-blue-800 font-bold text-center">빈칸(□)에 알맞은 그림을 아래에서 고르세요!</p>
-        </div>
-
-        <div class="flex items-stretch gap-2 bg-white/95 p-3 rounded-3xl border-4 border-blue-300 shadow-lg shrink-0">
-          <div id="pat-choices-t1" class="flex-1 grid grid-cols-4 gap-2"></div>
-          <button id="pat-pass-t1" type="button" class="touch-btn px-3 sm:px-4 rounded-2xl bg-slate-200 hover:bg-slate-300 border-b-4 border-slate-400 text-slate-800 text-sm sm:text-lg font-bold flex flex-col items-center justify-center shadow cursor-pointer shrink-0">
-            <span class="text-xl sm:text-2xl">⏭</span>
-            <span>패스</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- 2팀 영역 -->
-      <div class="flex flex-col justify-between h-full bg-gradient-to-b from-rose-50 to-red-100/80 p-3 sm:p-5 overflow-hidden">
-        <div class="flex items-center justify-between bg-white/90 rounded-2xl px-4 py-2 border-2 border-rose-200 shrink-0">
-          <span class="text-lg sm:text-2xl text-rose-800 font-bold">❤️ 2팀 다음 그림 맞히기</span>
-          <span class="text-sm sm:text-base text-rose-600 font-bold">맞히면 +10점!</span>
-        </div>
-
-        <div class="flex-1 flex flex-col items-center justify-center my-2 min-w-0">
-          <div id="pat-seq-t2" class="w-full flex items-center justify-center gap-1 sm:gap-1.5 flex-nowrap px-1"></div>
-          <p id="pat-msg-t2" class="mt-3 text-base sm:text-xl text-rose-800 font-bold text-center">빈칸(□)에 알맞은 그림을 아래에서 고르세요!</p>
-        </div>
-
-        <div class="flex items-stretch gap-2 bg-white/95 p-3 rounded-3xl border-4 border-rose-300 shadow-lg shrink-0">
-          <div id="pat-choices-t2" class="flex-1 grid grid-cols-4 gap-2"></div>
-          <button id="pat-pass-t2" type="button" class="touch-btn px-3 sm:px-4 rounded-2xl bg-slate-200 hover:bg-slate-300 border-b-4 border-slate-400 text-slate-800 text-sm sm:text-lg font-bold flex flex-col items-center justify-center shadow cursor-pointer shrink-0">
-            <span class="text-xl sm:text-2xl">⏭</span>
-            <span>패스</span>
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================================================================== -->
-    <!-- [게임 3] 몇 시 몇 분? (N시 / N시 30분 전용 선착순 대결) -->
-    <!-- ===================================================================== -->
-    <section id="stage-clock" class="hidden relative w-full h-full grid grid-cols-2 divide-x-4 divide-slate-300">
-      <div id="clock-wait-overlay" class="hidden absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-900/75 backdrop-blur-sm p-4 text-center">
-        <div id="clock-winner-banner" class="bg-emerald-500 text-white px-8 py-4 rounded-3xl border-4 border-white shadow-2xl text-3xl sm:text-5xl mb-4 animate-pop">
-          ⭕ 1팀 정답! +10점!
-        </div>
-        <div class="bg-white rounded-3xl border-8 border-amber-400 px-10 py-6 shadow-2xl">
-          <p class="text-2xl sm:text-3xl text-slate-700 mb-2">🏃‍♂️ 다음 친구 준비!</p>
-          <div id="clock-countdown-num" class="text-6xl sm:text-8xl text-amber-500 font-black">2</div>
-        </div>
-      </div>
-
-      <!-- 1팀 시계 영역 -->
-      <div class="flex flex-col justify-between h-full bg-gradient-to-b from-sky-50 to-blue-100/80 p-3 sm:p-5 overflow-hidden">
-        <div class="flex items-center justify-between bg-white/90 rounded-2xl px-4 py-1.5 border-2 border-blue-200 shrink-0">
-          <span class="text-lg sm:text-2xl text-blue-800 font-bold">💙 1팀 시계 보기</span>
-          <span class="text-sm sm:text-base text-blue-600 font-bold">먼저 맞히면 +10점!</span>
-        </div>
-
-        <div class="flex-1 flex flex-col items-center justify-center min-h-0 my-1">
-          <div id="clock-face-t1" class="w-48 h-48 sm:w-64 sm:h-64 md:w-72 md:h-72 flex items-center justify-center"></div>
-          <p id="clock-msg-t1" class="mt-2 text-base sm:text-xl text-blue-800 font-bold">알맞은 시각 버튼을 먼저 누르세요!</p>
-        </div>
-
-        <div id="clock-choices-t1" class="grid grid-cols-2 gap-2.5 sm:gap-3 bg-white/95 p-3 rounded-3xl border-4 border-blue-300 shadow-lg shrink-0"></div>
-      </div>
-
-      <!-- 2팀 시계 영역 -->
-      <div class="flex flex-col justify-between h-full bg-gradient-to-b from-rose-50 to-red-100/80 p-3 sm:p-5 overflow-hidden">
-        <div class="flex items-center justify-between bg-white/90 rounded-2xl px-4 py-1.5 border-2 border-rose-200 shrink-0">
-          <span class="text-lg sm:text-2xl text-rose-800 font-bold">❤️ 2팀 시계 보기</span>
-          <span class="text-sm sm:text-base text-rose-600 font-bold">먼저 맞히면 +10점!</span>
-        </div>
-
-        <div class="flex-1 flex flex-col items-center justify-center min-h-0 my-1">
-          <div id="clock-face-t2" class="w-48 h-48 sm:w-64 sm:h-64 md:w-72 md:h-72 flex items-center justify-center"></div>
-          <p id="clock-msg-t2" class="mt-2 text-base sm:text-xl text-rose-800 font-bold">알맞은 시각 버튼을 먼저 누르세요!</p>
-        </div>
-
-        <div id="clock-choices-t2" class="grid grid-cols-2 gap-2.5 sm:gap-3 bg-white/95 p-3 rounded-3xl border-4 border-rose-300 shadow-lg shrink-0"></div>
-      </div>
-    </section>
-
-    <!-- ==================== 일시정지(멈춤) 오버레이 ==================== -->
-    <div id="pause-overlay" class="hidden fixed inset-0 z-40 flex items-center justify-center bg-slate-900/70 backdrop-blur-sm p-4">
-      <div class="max-w-md w-full bg-white rounded-3xl border-8 border-amber-300 p-8 text-center shadow-2xl animate-pop">
-        <div class="text-6xl mb-3">⏸</div>
-        <h2 class="text-3xl sm:text-4xl text-slate-800 mb-3">잠깐 멈춤!</h2>
-        <p class="text-lg text-slate-600 mb-6">준비가 되면 계속하기 버튼을 눌러 주세요.</p>
-        <button id="resume-btn" type="button" class="w-full py-4 rounded-2xl bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white text-2xl sm:text-3xl border-b-8 border-emerald-700 shadow-lg cursor-pointer">
-          ▶ 계속하기
-        </button>
-      </div>
+    <!-- 규칙 완성 버튼 -->
+    <div class="submit-area">
+      <button type="button" class="btn-complete" id="btnComplete">규칙 완성!</button>
     </div>
-
-    <!-- ==================== 시작 및 제한시간 설정 모달 ==================== -->
-    <div id="setup-overlay" class="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/70 backdrop-blur-sm p-4">
-      <div class="max-w-xl w-full bg-white rounded-3xl border-8 border-amber-300 p-6 sm:p-8 text-center shadow-2xl animate-pop">
-        <div class="inline-block px-4 py-1 rounded-full bg-amber-100 text-amber-900 text-base sm:text-lg mb-2 border-2 border-amber-300">
-          🏫 초등학교 1학년 1팀 vs 2팀 동시 대결
-        </div>
-        <h1 class="text-3xl sm:text-5xl text-slate-800 mb-5">
-          신나는 교실 대결 게임!
-        </h1>
-
-        <div class="space-y-4 mb-6 text-left bg-slate-50 p-4 sm:p-5 rounded-2xl border-2 border-slate-200">
-          <div>
-            <label class="block text-base sm:text-lg text-slate-700 mb-2">🎮 대결할 게임 선택</label>
-            <div class="grid grid-cols-3 gap-2" id="modal-game-options">
-              <button type="button" data-game="spot" class="modal-game-btn py-2.5 px-1 rounded-xl border-4 border-amber-500 bg-amber-100 text-amber-950 text-sm sm:text-lg font-bold cursor-pointer">
-                🔍 틀린 그림 찾기
-              </button>
-              <button type="button" data-game="pattern" class="modal-game-btn py-2.5 px-1 rounded-xl border-2 border-slate-300 bg-white text-slate-700 text-sm sm:text-lg cursor-pointer">
-                🧩 다음 그림 맞히기
-              </button>
-              <button type="button" data-game="clock" class="modal-game-btn py-2.5 px-1 rounded-xl border-2 border-slate-300 bg-white text-slate-700 text-sm sm:text-lg cursor-pointer">
-                ⏰ 몇 시 몇 분?
-              </button>
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-base sm:text-lg text-slate-700 mb-2">⏱ 제한 시간 선택</label>
-            <div class="grid grid-cols-3 gap-2" id="modal-time-options">
-              <button type="button" data-sec="60" class="modal-time-btn py-2.5 rounded-xl border-2 border-slate-300 bg-white text-slate-700 text-lg sm:text-xl cursor-pointer">
-                1분
-              </button>
-              <button type="button" data-sec="120" class="modal-time-btn py-2.5 rounded-xl border-4 border-blue-500 bg-blue-100 text-blue-950 text-lg sm:text-xl font-bold cursor-pointer">
-                2분 (기본)
-              </button>
-              <button type="button" data-sec="180" class="modal-time-btn py-2.5 rounded-xl border-2 border-slate-300 bg-white text-slate-700 text-lg sm:text-xl cursor-pointer">
-                3분
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <button id="start-match-btn" type="button" class="w-full py-4 sm:py-5 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-500 to-rose-600 hover:brightness-110 active:scale-95 text-white text-2xl sm:text-4xl border-b-8 border-indigo-900 shadow-xl transition cursor-pointer">
-          🚀 대결 시작하기!
-        </button>
-      </div>
-    </div>
-
-    <!-- ==================== 종료 및 최종 점수 결과 모달 ==================== -->
-    <div id="result-overlay" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/75 backdrop-blur-sm p-4">
-      <div class="max-w-2xl w-full bg-white rounded-3xl border-8 border-amber-400 p-6 sm:p-10 text-center shadow-2xl animate-pop">
-        <div class="text-5xl sm:text-6xl mb-2">🏆</div>
-        <h2 id="final-winner-text" class="text-3xl sm:text-5xl text-slate-800 mb-6">
-          1팀 승리! 축하합니다!
-        </h2>
-
-        <div class="grid grid-cols-2 gap-4 mb-8">
-          <div id="final-card-t1" class="rounded-3xl bg-blue-50 border-4 border-blue-400 p-6">
-            <div class="text-2xl text-blue-800 mb-1">💙 1팀</div>
-            <div class="text-5xl sm:text-6xl text-blue-600 font-bold"><span id="final-score-t1">0</span>점</div>
-          </div>
-          <div id="final-card-t2" class="rounded-3xl bg-rose-50 border-4 border-rose-400 p-6">
-            <div class="text-2xl text-rose-800 mb-1">❤️ 2팀</div>
-            <div class="text-5xl sm:text-6xl text-rose-600 font-bold"><span id="final-score-t2">0</span>점</div>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <button id="replay-same-btn" type="button" class="py-4 rounded-2xl bg-amber-400 hover:bg-amber-500 active:scale-95 text-amber-950 text-xl sm:text-2xl border-b-8 border-amber-600 shadow-lg cursor-pointer">
-            🔄 같은 게임 다시 하기
-          </button>
-          <button id="choose-other-btn" type="button" class="py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xl sm:text-2xl border-b-8 border-indigo-900 shadow-lg cursor-pointer">
-            🎮 다른 게임 고르기
-          </button>
-        </div>
-      </div>
-    </div>
-
   </main>
 
+  <!-- 결과 모달 -->
+  <div class="modal-backdrop" id="resultModal" role="dialog" aria-modal="true">
+    <div class="modal-box" id="modalBox">
+      <div class="result-icon" id="resultIcon">🎉</div>
+      <h2 class="result-title" id="resultTitle">성공! 멋진 규칙이에요!</h2>
+      <div class="result-numbers" id="resultNumbers"></div>
+      <p class="result-desc" id="resultDesc"></p>
+      <div class="modal-actions" id="modalActions"></div>
+    </div>
+  </div>
+
   <script>
-    const appState = {
-      currentGame: 'spot',
-      durationSec: 120,
-      timeLeft: 120,
-      isRunning: false,
-      isManualPaused: false,
-      isTimerPaused: false,
-      timerId: null,
-      scores: { t1: 0, t2: 0 }
-    };
+    const TOTAL_SLOTS = 6;
+    let values = Array(TOTAL_SLOTS).fill('');
+    let activeIndex = 0;
+    let replaceOnNextDigit = true;
+    let isChecking = false;
 
-    const clockState = {
-      hour: 12,
-      minute: 30,
-      lastKey: '',
-      locked: false,
-      waitTimer: null
-    };
+    const cardsContainer = document.getElementById('cardsContainer');
+    const helperMsg = document.getElementById('helperMsg');
+    const btnComplete = document.getElementById('btnComplete');
+    const btnResetAll = document.getElementById('btnResetAll');
+    const resultModal = document.getElementById('resultModal');
+    const modalBox = document.getElementById('modalBox');
+    const resultIcon = document.getElementById('resultIcon');
+    const resultTitle = document.getElementById('resultTitle');
+    const resultNumbers = document.getElementById('resultNumbers');
+    const resultDesc = document.getElementById('resultDesc');
+    const modalActions = document.getElementById('modalActions');
 
-    function randInt(min, max) {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
+    // 카드 렌더링
+    function renderCards() {
+      cardsContainer.innerHTML = '';
+      for (let i = 0; i < TOTAL_SLOTS; i++) {
+        const group = document.createElement('div');
+        group.className = 'card-group';
 
-    function shuffle(arr) {
-      const copy = [...arr];
-      for (let i = copy.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [copy[i], copy[j]] = [copy[j], copy[i]];
-      }
-      return copy;
-    }
+        const card = document.createElement('div');
+        card.className = 'num-card';
+        if (i === activeIndex) card.classList.add('active');
+        if (values[i] !== '') card.classList.add('filled');
+        card.dataset.index = i;
 
-    function resetScores() {
-      appState.scores = { t1: 0, t2: 0 };
-      document.getElementById('score-t1').textContent = '0';
-      document.getElementById('score-t2').textContent = '0';
-    }
+        const indexLabel = document.createElement('span');
+        indexLabel.className = 'card-index';
+        indexLabel.textContent = `${i + 1}번째`;
 
-    function addTeamScore(teamKey, points = 10) {
-      appState.scores[teamKey] += points;
-      document.getElementById(`score-${teamKey}`).textContent = appState.scores[teamKey];
-
-      const popupWrap = document.getElementById(`popup-${teamKey}`);
-      const badge = document.createElement('div');
-      badge.className = 'animate-float-score whitespace-nowrap px-3 py-1 rounded-full bg-amber-400 text-amber-950 font-bold text-lg sm:text-2xl border-2 border-white shadow-lg';
-      badge.textContent = `+${points}점!`;
-      popupWrap.appendChild(badge);
-      setTimeout(() => badge.remove(), 900);
-    }
-
-    function formatTime(sec) {
-      const m = Math.floor(sec / 60);
-      const s = sec % 60;
-      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-    }
-
-    function updateTimerUI() {
-      const el = document.getElementById('timer-display');
-      const box = document.getElementById('timer-box');
-      const label = document.getElementById('timer-label');
-      el.textContent = formatTime(appState.timeLeft);
-
-      if (appState.isManualPaused) {
-        label.textContent = '⏸ 일시정지';
-        box.classList.add('border-amber-300');
-        box.classList.remove('border-amber-400', 'border-rose-500', 'border-sky-400');
-      } else if (appState.isTimerPaused) {
-        label.textContent = '⏸ 교대 대기';
-        box.classList.add('border-sky-400');
-        box.classList.remove('border-amber-400', 'border-rose-500', 'border-amber-300');
-      } else if (appState.timeLeft <= 15 && appState.timeLeft > 0) {
-        label.textContent = '⏱ 남은 시간';
-        el.classList.add('text-rose-400');
-        box.classList.add('border-rose-500');
-        box.classList.remove('border-amber-400', 'border-sky-400', 'border-amber-300');
-      } else {
-        label.textContent = '⏱ 남은 시간';
-        el.classList.remove('text-rose-400');
-        box.classList.add('border-amber-400');
-        box.classList.remove('border-rose-500', 'border-sky-400', 'border-amber-300');
-      }
-    }
-
-    function switchStageView(gameId) {
-      appState.currentGame = gameId;
-      ['spot', 'pattern', 'clock'].forEach((id) => {
-        const stage = document.getElementById(`stage-${id}`);
-        if (id === gameId) stage.classList.remove('hidden');
-        else stage.classList.add('hidden');
-      });
-
-      document.querySelectorAll('.game-tab-btn').forEach((btn) => {
-        if (btn.dataset.game === gameId) {
-          btn.className = 'game-tab-btn px-3 sm:px-4 py-1.5 rounded-xl bg-amber-400 text-amber-950 font-bold text-sm sm:text-lg shadow-sm cursor-pointer';
+        const valueSpan = document.createElement('span');
+        if (values[i] !== '') {
+          valueSpan.className = 'card-value';
+          valueSpan.textContent = values[i];
         } else {
-          btn.className = 'game-tab-btn px-3 sm:px-4 py-1.5 rounded-xl text-slate-600 hover:bg-white text-sm sm:text-lg cursor-pointer';
+          valueSpan.className = 'card-placeholder';
+          valueSpan.textContent = '?';
         }
-      });
 
-      document.querySelectorAll('.modal-game-btn').forEach((btn) => {
-        if (btn.dataset.game === gameId) {
-          btn.className = 'modal-game-btn py-2.5 px-1 rounded-xl border-4 border-amber-500 bg-amber-100 text-amber-950 text-sm sm:text-lg font-bold cursor-pointer';
-        } else {
-          btn.className = 'modal-game-btn py-2.5 px-1 rounded-xl border-2 border-slate-300 bg-white text-slate-700 text-sm sm:text-lg cursor-pointer';
+        card.appendChild(indexLabel);
+        card.appendChild(valueSpan);
+
+        card.addEventListener('click', () => {
+          if (isChecking) return;
+          activeIndex = i;
+          replaceOnNextDigit = true;
+          hideHelper();
+          renderCards();
+        });
+
+        group.appendChild(card);
+
+        if (i < TOTAL_SLOTS - 1) {
+          const arrow = document.createElement('span');
+          arrow.className = 'arrow-sep';
+          arrow.textContent = '→';
+          group.appendChild(arrow);
         }
-      });
+
+        cardsContainer.appendChild(group);
+      }
     }
 
-    function startMatch() {
-      clearInterval(appState.timerId);
-      clearTimeout(clockState.waitTimer);
-
-      resetScores();
-
-      appState.timeLeft = appState.durationSec;
-      appState.isRunning = true;
-      appState.isManualPaused = false;
-      appState.isTimerPaused = false;
-      updateTimerUI();
-
-      document.getElementById('setup-overlay').classList.add('hidden');
-      document.getElementById('result-overlay').classList.add('hidden');
-      document.getElementById('pause-overlay').classList.add('hidden');
-      document.getElementById('clock-wait-overlay').classList.add('hidden');
-
-      switchStageView(appState.currentGame);
-
-      if (appState.currentGame === 'spot') initSpotGame();
-      else if (appState.currentGame === 'pattern') initPatternGame();
-      else if (appState.currentGame === 'clock') initClockGame();
-
-      appState.timerId = setInterval(() => {
-        if (!appState.isRunning || appState.isManualPaused || appState.isTimerPaused) return;
-        appState.timeLeft -= 1;
-        updateTimerUI();
-        if (appState.timeLeft <= 0) {
-          finishMatch();
-        }
-      }, 1000);
+    function showHelper(text) {
+      helperMsg.textContent = text;
+      helperMsg.classList.add('show');
     }
 
-    function finishMatch() {
-      clearInterval(appState.timerId);
-      clearTimeout(clockState.waitTimer);
-      appState.isRunning = false;
-      appState.isManualPaused = false;
-      appState.isTimerPaused = false;
+    function hideHelper() {
+      helperMsg.classList.remove('show');
+    }
 
-      const s1 = appState.scores.t1;
-      const s2 = appState.scores.t2;
+    // 숫자 입력 처리 (0 ~ 99 제한)
+    function inputDigit(digit) {
+      if (isChecking || resultModal.classList.contains('open')) return;
+      hideHelper();
 
-      document.getElementById('final-score-t1').textContent = s1;
-      document.getElementById('final-score-t2').textContent = s2;
+      let current = values[activeIndex];
 
-      const title = document.getElementById('final-winner-text');
-      const card1 = document.getElementById('final-card-t1');
-      const card2 = document.getElementById('final-card-t2');
-      card1.classList.remove('ring-8', 'ring-amber-400', 'scale-105');
-      card2.classList.remove('ring-8', 'ring-amber-400', 'scale-105');
-
-      if (s1 > s2) {
-        title.textContent = '🎉 1팀 승리! 축하합니다!';
-        title.className = 'text-3xl sm:text-5xl text-blue-600 mb-6';
-        card1.classList.add('ring-8', 'ring-amber-400', 'scale-105');
-      } else if (s2 > s1) {
-        title.textContent = '🎉 2팀 승리! 축하합니다!';
-        title.className = 'text-3xl sm:text-5xl text-rose-600 mb-6';
-        card2.classList.add('ring-8', 'ring-amber-400', 'scale-105');
+      if (replaceOnNextDigit || current === '') {
+        values[activeIndex] = digit;
+        replaceOnNextDigit = false;
+      } else if (current === '0') {
+        values[activeIndex] = digit;
+      } else if (current.length < 2) {
+        values[activeIndex] = current + digit;
       } else {
-        title.textContent = '🤝 우와! 사이좋은 무승부!';
-        title.className = 'text-3xl sm:text-5xl text-amber-600 mb-6';
+        // 이미 두 자리(최대 99)가 입력된 경우 더 이상 늘어나지 않음
+        showHelper('숫자는 0부터 99까지만 입력할 수 있어요!');
       }
 
-      document.getElementById('result-overlay').classList.remove('hidden');
+      renderCards();
     }
 
-    // =========================================================================
-    // [게임 1] 틀린 그림 찾기 - 그림책풍 진한 잉크 외곽선 + 꽉 찬 디테일 일러스트
-    // =========================================================================
-    const INK = '#2B2118';
+    // 지우기 처리
+    function handleBackspace() {
+      if (isChecking || resultModal.classList.contains('open')) return;
+      hideHelper();
 
-    const BOOK_DEFS = `
-      <defs>
-        <pattern id="patPaving" width="24" height="14" patternUnits="userSpaceOnUse">
-          <rect width="24" height="14" fill="#CBD5E1"/>
-          <path d="M0 7 H24 M12 0 V7 M6 7 V14 M18 7 V14" stroke="#64748B" stroke-width="1.2"/>
-        </pattern>
-        <pattern id="patWoodFloor" width="30" height="16" patternUnits="userSpaceOnUse">
-          <rect width="30" height="16" fill="#FDE68A"/>
-          <path d="M0 8 H30 M15 0 V8 M5 8 V16" stroke="#B45309" stroke-width="1.2"/>
-        </pattern>
-        <pattern id="patBrick" width="20" height="12" patternUnits="userSpaceOnUse">
-          <rect width="20" height="12" fill="#FDE047"/>
-          <path d="M0 6 H20 M10 0 V6 M5 6 V12 M15 6 V12" stroke="#D97706" stroke-width="1"/>
-        </pattern>
-      </defs>
-    `;
-
-    const BK = {
-      cloud: (x, y, s = 1) => `
-        <g transform="translate(${x},${y}) scale(${s})">
-          <path d="M-26 9 Q-34 9 -34 1 Q-34 -7 -23 -8 Q-20 -20 -6 -20 Q6 -20 10 -10 Q20 -13 26 -5 Q33 2 26 9 Z"
-                fill="#FFFFFF" stroke="${INK}" stroke-width="2.3" stroke-linejoin="round"/>
-          <path d="M-23 6 Q0 8 23 6" fill="none" stroke="#E2E8F0" stroke-width="2.5" stroke-linecap="round"/>
-        </g>`,
-      sun: (x, y) => `
-        <g transform="translate(${x},${y})">
-          <g stroke="${INK}" stroke-width="2.2" stroke-linecap="round">
-            <line x1="0" y1="-28" x2="0" y2="-22"/><line x1="0" y1="22" x2="0" y2="28"/>
-            <line x1="-28" y1="0" x2="-22" y2="0"/><line x1="22" y1="0" x2="28" y2="0"/>
-            <line x1="-19" y1="-19" x2="-15" y2="-15"/><line x1="15" y1="15" x2="19" y2="19"/>
-            <line x1="19" y1="-19" x2="15" y2="-15"/><line x1="-15" y1="15" x2="-19" y2="19"/>
-          </g>
-          <circle r="18" fill="#FACC15" stroke="${INK}" stroke-width="2.4"/>
-          <ellipse cx="-7" cy="2" rx="3" ry="1.8" fill="#FB7185"/>
-          <ellipse cx="7" cy="2" rx="3" ry="1.8" fill="#FB7185"/>
-          <circle cx="-5" cy="-2" r="2" fill="${INK}"/>
-          <circle cx="5" cy="-2" r="2" fill="${INK}"/>
-          <path d="M-4 3 Q0 7 4 3" fill="none" stroke="${INK}" stroke-width="2" stroke-linecap="round"/>
-        </g>`,
-      grass: (x, y) => `
-        <path d="M${x} ${y} l-4 -7 M${x} ${y} l0 -9 M${x} ${y} l4 -7" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/>`,
-      bareTree: (x, y, scale = 1) => `
-        <g transform="translate(${x},${y}) scale(${scale})">
-          <path d="M-9 55 L-6 -5 L-26 -28 L-21 -32 L-5 -15 L-3 -42 L3 -42 L4 -14 L22 -32 L27 -27 L6 -4 L9 55 Z"
-                fill="#85583F" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>
-          <path d="M-14 -16 L-12 -28 M13 -15 L12 -27" stroke="${INK}" stroke-width="2.2" stroke-linecap="round"/>
-        </g>`,
-      bushTree: (x, y, c = '#4ADE80') => `
-        <g transform="translate(${x},${y})">
-          <rect x="-6" y="12" width="12" height="32" rx="3" fill="#92400E" stroke="${INK}" stroke-width="2.3"/>
-          <path d="M-24 14 Q-32 0 -18 -10 Q-14 -26 2 -24 Q18 -26 22 -10 Q34 0 24 14 Z"
-                fill="${c}" stroke="${INK}" stroke-width="2.3" stroke-linejoin="round"/>
-          <path d="M-12 -8 Q-6 -14 2 -10" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" opacity="0.65"/>
-        </g>`,
-      pine: (x, y, snow = false) => `
-        <g transform="translate(${x},${y})">
-          <rect x="-6" y="18" width="12" height="24" rx="2" fill="#92400E" stroke="${INK}" stroke-width="2.3"/>
-          <path d="M-28 20 L0 -8 L28 20 Z" fill="${snow ? '#E2E8F0' : '#16A34A'}" stroke="${INK}" stroke-width="2.3" stroke-linejoin="round"/>
-          <path d="M-22 3 L0 -23 L22 3 Z" fill="${snow ? '#F1F5F9' : '#22C55E'}" stroke="${INK}" stroke-width="2.3" stroke-linejoin="round"/>
-          <path d="M-16 -14 L0 -36 L16 -14 Z" fill="${snow ? '#FFFFFF' : '#4ADE80'}" stroke="${INK}" stroke-width="2.3" stroke-linejoin="round"/>
-        </g>`,
-      flower: (x, y, c = '#F43F5E') => `
-        <g transform="translate(${x},${y})">
-          <path d="M0 5 L0 22" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/>
-          <circle cx="-5" cy="-2" r="4.5" fill="${c}" stroke="${INK}" stroke-width="1.8"/>
-          <circle cx="5" cy="-2" r="4.5" fill="${c}" stroke="${INK}" stroke-width="1.8"/>
-          <circle cx="-3" cy="5" r="4.5" fill="${c}" stroke="${INK}" stroke-width="1.8"/>
-          <circle cx="3" cy="5" r="4.5" fill="${c}" stroke="${INK}" stroke-width="1.8"/>
-          <circle cx="0" cy="-5" r="4.5" fill="${c}" stroke="${INK}" stroke-width="1.8"/>
-          <circle cx="0" cy="0" r="4" fill="#FACC15" stroke="${INK}" stroke-width="1.8"/>
-        </g>`,
-      bird: (x, y, c = '#EF4444') => `
-        <g transform="translate(${x},${y})">
-          <path d="M-11 2 Q-11 -10 0 -10 Q11 -10 11 1 Q11 10 0 10 Q-10 10 -11 2 Z" fill="${c}" stroke="${INK}" stroke-width="2.2"/>
-          <polygon points="10,-2 18,1 10,4" fill="#FACC15" stroke="${INK}" stroke-width="1.8"/>
-          <circle cx="4" cy="-3" r="2" fill="${INK}"/>
-          <path d="M-3 0 Q3 -4 6 2" fill="none" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/>
-        </g>`
-    };
-
-    const SPOT_SCENES_14 = [
-      // 1. 첨부 이미지 스타일 그대로 재현! 해빙기 안전 학교 앞 코끼리와 병아리
-      {
-        title: '🐘 1. 코끼리와 병아리의 학교 앞 안전 순찰',
-        bg: `
-          <rect width="300" height="400" fill="#87CEFA"/>
-          ${BK.cloud(195, 36, 0.9)}
-          ${BK.cloud(105, 118, 0.75)}
-          <!-- 뒷산 & 흙언덕 -->
-          <path d="M0 110 Q75 88 155 112 Q225 90 300 108 L300 185 L0 185 Z" fill="#84B866" stroke="${INK}" stroke-width="2.3"/>
-          <path d="M0 130 Q140 120 300 155 L300 220 L0 220 Z" fill="#D2B48C" stroke="${INK}" stroke-width="2.3"/>
-          <!-- 보도블록 광장 -->
-          <path d="M0 245 L105 168 L300 168 L300 400 L0 400 Z" fill="url(#patPaving)" stroke="${INK}" stroke-width="2.3"/>
-          <!-- 왼쪽 옹벽 & 눈더미/고드름 -->
-          <path d="M0 185 L105 185 L105 280 L0 335 Z" fill="#C4B5A0" stroke="${INK}" stroke-width="2.3"/>
-          <path d="M0 182 Q35 176 62 186 Q85 180 108 188 Q102 198 85 196 Q68 194 64 218 Q58 218 55 196 Q25 202 0 195 Z"
-                fill="#F0F9FF" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>
-          <!-- 웅덩이와 녹은 눈 -->
-          <ellipse cx="48" cy="162" rx="16" ry="5" fill="#7DD3FC" stroke="${INK}" stroke-width="1.8"/>
-          <path d="M18 332 Q55 302 115 315 Q148 322 125 342 Q75 352 18 332 Z" fill="#E0F2FE" stroke="${INK}" stroke-width="2.2"/>
-          <ellipse cx="82" cy="326" rx="22" ry="7" fill="#38BDF8" stroke="${INK}" stroke-width="1.8"/>
-          <!-- 왼쪽 큰 나무 & 표지판 -->
-          ${BK.bareTree(34, 128, 1.05)}
-          <g transform="translate(36,308)">
-            <rect x="-4" y="25" width="8" height="32" fill="#92400E" stroke="${INK}" stroke-width="2.2"/>
-            <rect x="-25" y="-12" width="50" height="40" rx="3" fill="#FDE68A" stroke="${INK}" stroke-width="2.4"/>
-            <text x="0" y="5" text-anchor="middle" font-size="11" font-weight="900" fill="${INK}">해빙기</text>
-            <text x="0" y="20" text-anchor="middle" font-size="11" font-weight="900" fill="${INK}">안전</text>
-          </g>
-          <!-- 노란 스쿨버스 -->
-          <g transform="translate(182,155)">
-            <rect x="-32" y="-14" width="62" height="32" rx="6" fill="#FACC15" stroke="${INK}" stroke-width="2.3"/>
-            <rect x="-28" y="-8" width="22" height="12" rx="2" fill="#BAE6FD" stroke="${INK}" stroke-width="1.8"/>
-            <rect x="-2" y="-8" width="12" height="12" rx="2" fill="#BAE6FD" stroke="${INK}" stroke-width="1.8"/>
-            <rect x="13" y="-8" width="12" height="12" rx="2" fill="#BAE6FD" stroke="${INK}" stroke-width="1.8"/>
-            <line x1="-32" y1="9" x2="30" y2="9" stroke="${INK}" stroke-width="2.5"/>
-            <circle cx="-18" cy="19" r="6.5" fill="#334155" stroke="${INK}" stroke-width="2"/>
-            <circle cx="16" cy="19" r="6.5" fill="#334155" stroke="${INK}" stroke-width="2"/>
-          </g>
-          <!-- 학교 건물 -->
-          <g transform="translate(255,130)">
-            <rect x="-42" y="-15" width="84" height="68" fill="#FEF3C7" stroke="${INK}" stroke-width="2.4"/>
-            <polygon points="-48,-15 0,-48 48,-15" fill="#EF4444" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>
-            <polygon points="-16,-15 0,-42 16,-15" fill="#FEF3C7" stroke="${INK}" stroke-width="2.3"/>
-            <!-- 창문들 -->
-            <rect x="-35" y="-5" width="16" height="14" fill="#7DD3FC" stroke="${INK}" stroke-width="1.8"/>
-            <rect x="-35" y="16" width="16" height="14" fill="#7DD3FC" stroke="${INK}" stroke-width="1.8"/>
-            <rect x="-12" y="0" width="24" height="12" fill="#7DD3FC" stroke="${INK}" stroke-width="1.8"/>
-            <!-- 현관 -->
-            <rect x="-13" y="25" width="26" height="28" fill="#64748B" stroke="${INK}" stroke-width="2"/>
-            <rect x="-17" y="21" width="34" height="6" fill="#EF4444" stroke="${INK}" stroke-width="2"/>
-          </g>
-          <!-- 오른쪽 끄트머리 눈더미 -->
-          <path d="M258 242 Q280 232 300 245 L300 278 Q272 276 258 262 Z" fill="#F0F9FF" stroke="${INK}" stroke-width="2.2"/>
-          <!-- 노란 병아리 캐릭터 -->
-          <g transform="translate(182,268)">
-            <!-- 경광봉 2개 -->
-            <line x1="-18" y1="8" x2="-28" y2="-16" stroke="#FB7185" stroke-width="5" stroke-linecap="round"/>
-            <line x1="-18" y1="8" x2="-28" y2="-16" stroke="${INK}" stroke-width="1.5" stroke-linecap="round"/>
-            <line x1="18" y1="8" x2="28" y2="-16" stroke="#FB7185" stroke-width="5" stroke-linecap="round"/>
-            <line x1="18" y1="8" x2="28" y2="-16" stroke="${INK}" stroke-width="1.5" stroke-linecap="round"/>
-            <!-- 몸통 & 줄무늬 조끼 -->
-            <ellipse cx="0" cy="14" rx="18" ry="16" fill="#FACC15" stroke="${INK}" stroke-width="2.3"/>
-            <rect x="-15" y="4" width="30" height="18" rx="4" fill="#F97316" stroke="${INK}" stroke-width="2"/>
-            <line x1="-14" y1="10" x2="14" y2="10" stroke="#FEF08A" stroke-width="2.5"/>
-            <line x1="-14" y1="16" x2="14" y2="16" stroke="#FEF08A" stroke-width="2.5"/>
-            <!-- 머리 & 꼬깔모자 -->
-            <circle cx="0" cy="-8" r="16" fill="#FACC15" stroke="${INK}" stroke-width="2.3"/>
-            <polygon points="-9,-21 0,-36 9,-21" fill="#F97316" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>
-            <ellipse cx="-9" cy="-5" rx="3" ry="2" fill="#FB7185"/>
-            <ellipse cx="9" cy="-5" rx="3" ry="2" fill="#FB7185"/>
-            <circle cx="-6" cy="-9" r="2.2" fill="${INK}"/>
-            <circle cx="6" cy="-9" r="2.2" fill="${INK}"/>
-            <polygon points="-3,-6 3,-6 0,-2" fill="#F97316" stroke="${INK}" stroke-width="1.5"/>
-            <!-- 발 -->
-            <ellipse cx="-7" cy="31" rx="6" ry="3" fill="#F97316" stroke="${INK}" stroke-width="2"/>
-            <ellipse cx="7" cy="31" rx="6" ry="3" fill="#F97316" stroke="${INK}" stroke-width="2"/>
-          </g>
-        `,
-        diffs: [
-          // 1. 뒤쪽 언덕의 쓰러진 나무 vs 서 있는 나무
-          {
-            x: 112, y: 108, r: 26,
-            orig: `<g transform="translate(112,115) rotate(48)"><path d="M-4 22 L-3 -18 L-14 -30 L-10 -33 L-1 -23 L2 -36 L6 -35 L3 -20 L15 -28 L17 -24 L3 -14 L4 22 Z" fill="#85583F" stroke="${INK}" stroke-width="2"/></g>`,
-            alt: `<g transform="translate(94,108)"><path d="M-4 24 L-3 -14 L-14 -26 L-10 -29 L-1 -19 L1 -32 L5 -32 L3 -17 L14 -26 L17 -22 L3 -12 L4 24 Z" fill="#85583F" stroke="${INK}" stroke-width="2"/></g>`
-          },
-          // 2. 학교 지붕 시계 바늘 방향
-          {
-            x: 255, y: 104, r: 22,
-            orig: `<g><circle cx="255" cy="104" r="9" fill="#FFF" stroke="${INK}" stroke-width="2"/><path d="M255 104 L255 98 M255 104 L251 107" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/></g>`,
-            alt: `<g><circle cx="255" cy="104" r="9" fill="#FFF" stroke="${INK}" stroke-width="2"/><path d="M255 104 L255 97 M255 104 L260 104" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/></g>`
-          },
-          // 3. 옹벽의 지그재그 균열 유무
-          {
-            x: 68, y: 245, r: 26,
-            orig: `<path d="M58 216 L68 232 L60 245 L72 260 L64 275 M68 232 L80 228" fill="none" stroke="${INK}" stroke-width="2.3" stroke-linecap="round"/>`,
-            alt: ``
-          },
-          // 4. 코끼리 안전조끼 색깔 (노란색 vs 빨간색)
-          {
-            x: 118, y: 248, r: 32,
-            orig: `
-              <g transform="translate(118,242)">
-                <rect x="-20" y="18" width="40" height="36" rx="10" fill="#93C5FD" stroke="${INK}" stroke-width="2.4"/>
-                <rect x="-21" y="18" width="42" height="28" rx="6" fill="#FACC15" stroke="${INK}" stroke-width="2.3"/>
-                <line x1="-20" y1="27" x2="20" y2="27" stroke="#FFF" stroke-width="3"/>
-                <line x1="-20" y1="36" x2="20" y2="36" stroke="#FFF" stroke-width="3"/>
-                <circle cx="-26" cy="-6" r="14" fill="#93C5FD" stroke="${INK}" stroke-width="2.4"/>
-                <circle cx="26" cy="-6" r="14" fill="#93C5FD" stroke="${INK}" stroke-width="2.4"/>
-                <circle cx="0" cy="-6" r="24" fill="#93C5FD" stroke="${INK}" stroke-width="2.4"/>
-                <path d="M-6 2 Q-12 18 -3 20 Q2 20 1 8" fill="#93C5FD" stroke="${INK}" stroke-width="2.3"/>
-                <circle cx="-8" cy="-8" r="2.5" fill="${INK}"/><circle cx="8" cy="-8" r="2.5" fill="${INK}"/>
-                <ellipse cx="14" cy="-2" rx="4" ry="2.5" fill="#FB7185"/>
-                <circle cx="-34" cy="12" r="14" fill="#E0F2FE" stroke="${INK}" stroke-width="3"/>
-                <line x1="-26" y1="23" x2="-20" y2="35" stroke="${INK}" stroke-width="4" stroke-linecap="round"/>
-              </g>`,
-            alt: `
-              <g transform="translate(118,242)">
-                <rect x="-20" y="18" width="40" height="36" rx="10" fill="#93C5FD" stroke="${INK}" stroke-width="2.4"/>
-                <rect x="-21" y="18" width="42" height="28" rx="6" fill="#EF4444" stroke="${INK}" stroke-width="2.3"/>
-                <line x1="-20" y1="27" x2="20" y2="27" stroke="#FFF" stroke-width="3"/>
-                <line x1="-20" y1="36" x2="20" y2="36" stroke="#FFF" stroke-width="3"/>
-                <circle cx="-26" cy="-6" r="14" fill="#93C5FD" stroke="${INK}" stroke-width="2.4"/>
-                <circle cx="26" cy="-6" r="14" fill="#93C5FD" stroke="${INK}" stroke-width="2.4"/>
-                <circle cx="0" cy="-6" r="24" fill="#93C5FD" stroke="${INK}" stroke-width="2.4"/>
-                <path d="M-6 2 Q-12 18 -3 20 Q2 20 1 8" fill="#93C5FD" stroke="${INK}" stroke-width="2.3"/>
-                <circle cx="-8" cy="-8" r="2.5" fill="${INK}"/><circle cx="8" cy="-8" r="2.5" fill="${INK}"/>
-                <ellipse cx="14" cy="-2" rx="4" ry="2.5" fill="#FB7185"/>
-                <circle cx="-34" cy="12" r="14" fill="#E0F2FE" stroke="${INK}" stroke-width="3"/>
-                <line x1="-26" y1="23" x2="-20" y2="35" stroke="${INK}" stroke-width="4" stroke-linecap="round"/>
-              </g>`
-          },
-          // 5. 오른쪽 아래 배수구 낙엽 더미 vs 깨끗한 격자
-          {
-            x: 256, y: 365, r: 28,
-            orig: `
-              <g>
-                <polygon points="222,385 248,342 296,342 280,385" fill="#94A3B8" stroke="${INK}" stroke-width="2.3"/>
-                <ellipse cx="255" cy="364" rx="26" ry="13" fill="#92400E" stroke="${INK}" stroke-width="2"/>
-                <ellipse cx="246" cy="360" rx="10" ry="5" fill="#D97706" stroke="${INK}" stroke-width="1.6"/>
-                <ellipse cx="268" cy="368" rx="11" ry="5" fill="#B45309" stroke="${INK}" stroke-width="1.6"/>
-              </g>`,
-            alt: `
-              <g>
-                <polygon points="222,385 248,342 296,342 280,385" fill="#94A3B8" stroke="${INK}" stroke-width="2.3"/>
-                <line x1="245" y1="352" x2="282" y2="352" stroke="${INK}" stroke-width="2.5"/>
-                <line x1="238" y1="364" x2="276" y2="364" stroke="${INK}" stroke-width="2.5"/>
-                <line x1="232" y1="376" x2="270" y2="376" stroke="${INK}" stroke-width="2.5"/>
-              </g>`
-          }
-        ]
-      },
-
-      // 2. 아기 곰과 토끼의 달콤한 숲속 빵집
-      {
-        title: '🧁 2. 아기 곰과 토끼의 숲속 빵집',
-        bg: `
-          <rect width="300" height="400" fill="#BAE6FD"/>
-          ${BK.cloud(62, 42, 0.95)}
-          ${BK.cloud(245, 55, 0.8)}
-          <!-- 초록 언덕 -->
-          <path d="M0 195 Q90 165 185 190 Q245 170 300 188 L300 275 L0 275 Z" fill="#86EFAC" stroke="${INK}" stroke-width="2.3"/>
-          ${BK.bushTree(32, 185, '#4ADE80')}
-          ${BK.bushTree(272, 185, '#22C55E')}
-          <!-- 돌바닥 길 -->
-          <rect y="265" width="300" height="135" fill="url(#patPaving)" stroke="${INK}" stroke-width="2.3"/>
-          <!-- 빵집 건물 -->
-          <g transform="translate(150,185)">
-            <rect x="42" y="-82" width="18" height="35" fill="#DC2626" stroke="${INK}" stroke-width="2.3"/>
-            <rect x="-78" y="-25" width="156" height="105" fill="#FEF3C7" stroke="${INK}" stroke-width="2.5"/>
-            <polygon points="-88,-25 0,-75 88,-25" fill="#F97316" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
-            <!-- 줄무늬 차양 -->
-            <path d="M-84 12 L84 12 L90 32 L-90 32 Z" fill="#EF4444" stroke="${INK}" stroke-width="2.3"/>
-            <rect x="-55" y="12" width="22" height="20" fill="#FFF" stroke="${INK}" stroke-width="1.8"/>
-            <rect x="-11" y="12" width="22" height="20" fill="#FFF" stroke="${INK}" stroke-width="1.8"/>
-            <rect x="33" y="12" width="22" height="20" fill="#FFF" stroke="${INK}" stroke-width="1.8"/>
-            <!-- 출입문 & 진열창 -->
-            <rect x="-62" y="38" width="32" height="42" rx="4" fill="#92400E" stroke="${INK}" stroke-width="2.2"/>
-            <circle cx="-36" cy="60" r="2.5" fill="#FACC15"/>
-            <rect x="-18" y="38" width="82" height="32" rx="4" fill="#E0F2FE" stroke="${INK}" stroke-width="2.2"/>
-            <ellipse cx="4" cy="62" rx="10" ry="6" fill="#F59E0B" stroke="${INK}" stroke-width="1.8"/>
-            <ellipse cx="32" cy="62" rx="10" ry="6" fill="#F472B6" stroke="${INK}" stroke-width="1.8"/>
-          </g>
-          <!-- 아기 곰 제빵사 -->
-          <g transform="translate(88,315)">
-            <rect x="-16" y="12" width="32" height="32" rx="8" fill="#B45309" stroke="${INK}" stroke-width="2.3"/>
-            <rect x="-12" y="15" width="24" height="26" rx="4" fill="#FFFFFF" stroke="${INK}" stroke-width="2"/>
-            <circle cx="-14" cy="-16" r="6.5" fill="#B45309" stroke="${INK}" stroke-width="2.2"/>
-            <circle cx="14" cy="-16" r="6.5" fill="#B45309" stroke="${INK}" stroke-width="2.2"/>
-            <circle cx="0" cy="-4" r="18" fill="#B45309" stroke="${INK}" stroke-width="2.3"/>
-            <ellipse cx="0" cy="1" rx="7" ry="5" fill="#FDE68A" stroke="${INK}" stroke-width="1.8"/>
-            <circle cx="-6" cy="-6" r="2.2" fill="${INK}"/><circle cx="6" cy="-6" r="2.2" fill="${INK}"/>
-          </g>
-          <!-- 아기 토끼 손님 -->
-          <g transform="translate(215,322)">
-            <ellipse cx="-6" cy="-28" rx="4.5" ry="14" fill="#FFF" stroke="${INK}" stroke-width="2.2"/>
-            <ellipse cx="6" cy="-28" rx="4.5" ry="14" fill="#FFF" stroke="${INK}" stroke-width="2.2"/>
-            <rect x="-14" y="10" width="28" height="28" rx="8" fill="#F472B6" stroke="${INK}" stroke-width="2.2"/>
-            <circle cx="0" cy="-4" r="15" fill="#FFF" stroke="${INK}" stroke-width="2.3"/>
-            <circle cx="-5" cy="-6" r="2" fill="${INK}"/><circle cx="5" cy="-6" r="2" fill="${INK}"/>
-            <ellipse cx="-8" cy="-1" rx="3" ry="1.8" fill="#FDA4AF"/>
-            <ellipse cx="8" cy="-1" rx="3" ry="1.8" fill="#FDA4AF"/>
-          </g>
-        `,
-        diffs: [
-          {
-            x: 202, y: 85, r: 24,
-            orig: `<g fill="#FFF" stroke="${INK}" stroke-width="2"><circle cx="202" cy="92" r="7"/><circle cx="212" cy="80" r="9"/></g>`,
-            alt: ``
-          },
-          {
-            x: 150, y: 142, r: 24,
-            orig: `<g><circle cx="150" cy="142" r="14" fill="#FFF" stroke="${INK}" stroke-width="2.2"/><ellipse cx="150" cy="144" rx="8" ry="5" fill="#F59E0B" stroke="${INK}" stroke-width="1.8"/></g>`,
-            alt: `<g><circle cx="150" cy="142" r="14" fill="#FFF" stroke="${INK}" stroke-width="2.2"/><path d="M150 150 C140 142 140 134 150 140 C160 134 160 142 150 150 Z" fill="#EF4444" stroke="${INK}" stroke-width="1.6"/></g>`
-          },
-          {
-            x: 88, y: 286, r: 24,
-            orig: `<path d="M76 294 L76 284 Q72 276 82 276 Q88 272 94 276 Q104 276 100 284 L100 294 Z" fill="#FFF" stroke="${INK}" stroke-width="2.2"/>`,
-            alt: `<polygon points="78,294 88,274 98,294" fill="#3B82F6" stroke="${INK}" stroke-width="2.2"/>`
-          },
-          {
-            x: 244, y: 334, r: 24,
-            orig: `<g><rect x="232" y="328" width="24" height="18" rx="4" fill="#D97706" stroke="${INK}" stroke-width="2"/><path d="M235 328 Q244 316 253 328" fill="none" stroke="${INK}" stroke-width="2.2"/></g>`,
-            alt: `<g><rect x="232" y="328" width="24" height="18" rx="4" fill="#38BDF8" stroke="${INK}" stroke-width="2"/><path d="M235 328 Q244 316 253 328" fill="none" stroke="${INK}" stroke-width="2.2"/></g>`
-          },
-          {
-            x: 42, y: 365, r: 24,
-            orig: BK.flower(42, 362, '#F43F5E'),
-            alt: BK.flower(42, 362, '#FACC15')
-          }
-        ]
-      },
-
-      // 3. 여우 기관사와 다람쥐의 산골 기차역
-      {
-        title: '🚂 3. 여우 기관사와 다람쥐의 산골 기차역',
-        bg: `
-          <rect width="300" height="400" fill="#DBEAFE"/>
-          <!-- 설산 -->
-          <polygon points="0,210 68,95 142,210" fill="#94A3B8" stroke="${INK}" stroke-width="2.3"/>
-          <polygon points="48,129 68,95 88,129" fill="#FFFFFF" stroke="${INK}" stroke-width="2"/>
-          <polygon points="110,210 198,85 285,210" fill="#64748B" stroke="${INK}" stroke-width="2.3"/>
-          <polygon points="172,122 198,85 224,122" fill="#FFFFFF" stroke="${INK}" stroke-width="2"/>
-          <!-- 초록 들판 -->
-          <path d="M0 205 Q150 185 300 205 L300 285 L0 285 Z" fill="#86EFAC" stroke="${INK}" stroke-width="2.3"/>
-          <!-- 기찻길 -->
-          <rect y="280" width="300" height="120" fill="#E7E5E4" stroke="${INK}" stroke-width="2.3"/>
-          <rect y="302" width="300" height="8" fill="#475569" stroke="${INK}" stroke-width="2"/>
-          <!-- 기차역 건물 -->
-          <g transform="translate(68,185)">
-            <rect x="-48" y="-12" width="96" height="58" fill="#FEF3C7" stroke="${INK}" stroke-width="2.3"/>
-            <polygon points="-55,-12 0,-42 55,-12" fill="#2563EB" stroke="${INK}" stroke-width="2.3"/>
-            <rect x="-12" y="14" width="24" height="32" fill="#92400E" stroke="${INK}" stroke-width="2"/>
-            <rect x="-38" y="6" width="18" height="16" fill="#BAE6FD" stroke="${INK}" stroke-width="1.8"/>
-            <rect x="20" y="6" width="18" height="16" fill="#BAE6FD" stroke="${INK}" stroke-width="1.8"/>
-          </g>
-          <!-- 증기 기관차 -->
-          <g transform="translate(195,268)">
-            <rect x="-58" y="-18" width="44" height="42" rx="6" fill="#EF4444" stroke="${INK}" stroke-width="2.4"/>
-            <rect x="-16" y="-4" width="66" height="28" rx="6" fill="#3B82F6" stroke="${INK}" stroke-width="2.4"/>
-            <rect x="28" y="-24" width="12" height="20" fill="#1E293B" stroke="${INK}" stroke-width="2"/>
-            <rect x="-46" y="-10" width="20" height="15" rx="2" fill="#FEF08A" stroke="${INK}" stroke-width="1.8"/>
-            <circle cx="-36" cy="28" r="11" fill="#334155" stroke="${INK}" stroke-width="2.2"/>
-            <circle cx="4" cy="28" r="9" fill="#334155" stroke="${INK}" stroke-width="2.2"/>
-            <circle cx="34" cy="28" r="9" fill="#334155" stroke="${INK}" stroke-width="2.2"/>
-          </g>
-          <!-- 여우 기관사 & 다람쥐 -->
-          <g transform="translate(82,348)">
-            <rect x="-13" y="8" width="26" height="26" rx="6" fill="#2563EB" stroke="${INK}" stroke-width="2.2"/>
-            <polygon points="-14,-12 -8,-25 -2,-12" fill="#F97316" stroke="${INK}" stroke-width="2"/>
-            <polygon points="14,-12 8,-25 2,-12" fill="#F97316" stroke="${INK}" stroke-width="2"/>
-            <circle cx="0" cy="-4" r="15" fill="#F97316" stroke="${INK}" stroke-width="2.2"/>
-            <circle cx="-5" cy="-5" r="2" fill="${INK}"/><circle cx="5" cy="-5" r="2" fill="${INK}"/>
-          </g>
-        `,
-        diffs: [
-          {
-            x: 245, y: 55, r: 24,
-            orig: BK.cloud(245, 55, 0.85),
-            alt: BK.sun(245, 55)
-          },
-          {
-            x: 68, y: 162, r: 22,
-            orig: `<circle cx="68" cy="162" r="10" fill="#FFF" stroke="${INK}" stroke-width="2"/>`,
-            alt: `<polygon points="68,151 71,159 79,159 73,164 75,172 68,167 61,172 63,164 57,159 65,159" fill="#FACC15" stroke="${INK}" stroke-width="1.8"/>`
-          },
-          {
-            x: 235, y: 224, r: 25,
-            orig: `<g fill="#FFF" stroke="${INK}" stroke-width="2"><circle cx="232" cy="230" r="8"/><circle cx="244" cy="218" r="10"/></g>`,
-            alt: `<g fill="#FBCFE8" stroke="${INK}" stroke-width="2"><circle cx="232" cy="230" r="8"/><circle cx="244" cy="218" r="10"/><circle cx="258" cy="206" r="11"/></g>`
-          },
-          {
-            x: 118, y: 344, r: 24,
-            orig: `<g><line x1="108" y1="356" x2="108" y2="332" stroke="${INK}" stroke-width="2.5"/><polygon points="108,332 132,339 108,346" fill="#22C55E" stroke="${INK}" stroke-width="2"/></g>`,
-            alt: `<g><line x1="108" y1="356" x2="108" y2="332" stroke="${INK}" stroke-width="2.5"/><polygon points="108,332 132,339 108,346" fill="#EF4444" stroke="${INK}" stroke-width="2"/></g>`
-          },
-          {
-            x: 215, y: 355, r: 26,
-            orig: `<g transform="translate(215,355)"><circle cx="0" cy="0" r="14" fill="#D97706" stroke="${INK}" stroke-width="2.2"/><rect x="18" y="-2" width="18" height="14" rx="3" fill="#B45309" stroke="${INK}" stroke-width="2"/></g>`,
-            alt: `<g transform="translate(215,355)"><circle cx="0" cy="0" r="14" fill="#D97706" stroke="${INK}" stroke-width="2.2"/><rect x="18" y="-2" width="18" height="14" rx="3" fill="#FACC15" stroke="${INK}" stroke-width="2"/></g>`
-          }
-        ]
-      },
-
-      // 4. 펭귄과 물개의 반짝이는 얼음 마을
-      {
-        title: '🐧 4. 펭귄과 물개의 반짝이는 얼음 마을',
-        bg: `
-          <rect width="300" height="400" fill="#BAE6FD"/>
-          ${BK.cloud(72, 48, 0.9)}
-          <path d="M0 185 Q95 155 185 182 Q245 162 300 180 L300 265 L0 265 Z" fill="#E0F2FE" stroke="${INK}" stroke-width="2.3"/>
-          <path d="M0 245 Q150 225 300 245 L300 400 L0 400 Z" fill="#FFFFFF" stroke="${INK}" stroke-width="2.3"/>
-          ${BK.pine(36, 185, true)}
-          ${BK.pine(265, 180, true)}
-          <!-- 얼음 연못 -->
-          <ellipse cx="195" cy="348" rx="58" ry="22" fill="#38BDF8" stroke="${INK}" stroke-width="2.3"/>
-          <!-- 이글루 -->
-          <g transform="translate(152,225)">
-            <path d="M-52 24 Q-52 -32 0 -32 Q52 -32 52 24 Z" fill="#E0F2FE" stroke="${INK}" stroke-width="2.5"/>
-            <path d="M-45 -5 H45 M-34 -19 H34 M-50 10 H50 M0 -32 V24 M-24 -24 V24 M24 -24 V24" stroke="#7DD3FC" stroke-width="1.8"/>
-            <path d="M-16 24 Q-16 0 0 0 Q16 0 16 24 Z" fill="#0284C7" stroke="${INK}" stroke-width="2.3"/>
-          </g>
-          <!-- 아기 펭귄 -->
-          <g transform="translate(76,315)">
-            <ellipse cx="0" cy="8" rx="18" ry="22" fill="#1E293B" stroke="${INK}" stroke-width="2.3"/>
-            <ellipse cx="0" cy="11" rx="11" ry="16" fill="#FFFFFF"/>
-            <circle cx="0" cy="-14" r="15" fill="#1E293B" stroke="${INK}" stroke-width="2.3"/>
-            <circle cx="-5" cy="-16" r="2.2" fill="#FFF"/><circle cx="5" cy="-16" r="2.2" fill="#FFF"/>
-            <polygon points="-4,-12 4,-12 0,-7" fill="#FACC15" stroke="${INK}" stroke-width="1.6"/>
-          </g>
-        `,
-        diffs: [
-          {
-            x: 245, y: 55, r: 24,
-            orig: BK.bird(245, 55, '#3B82F6'),
-            alt: BK.bird(245, 55, '#EF4444')
-          },
-          {
-            x: 152, y: 184, r: 22,
-            orig: `<polygon points="152,193 152,175 174,183" fill="#EF4444" stroke="${INK}" stroke-width="2"/>`,
-            alt: `<polygon points="152,193 152,175 174,183" fill="#FACC15" stroke="${INK}" stroke-width="2"/>`
-          },
-          {
-            x: 76, y: 302, r: 22,
-            orig: `<rect x="-14" y="-3" width="28" height="7" rx="3" fill="#EF4444" stroke="${INK}" stroke-width="1.8" transform="translate(76,302)"/>`,
-            alt: `<rect x="62" y="299" width="28" height="7" rx="3" fill="#22C55E" stroke="${INK}" stroke-width="1.8"/>`
-          },
-          {
-            x: 195, y: 332, r: 26,
-            orig: `<g transform="translate(195,342)"><ellipse cx="0" cy="4" rx="16" ry="10" fill="#CBD5E1" stroke="${INK}" stroke-width="2.2"/><circle cx="12" cy="-5" r="8" fill="#CBD5E1" stroke="${INK}" stroke-width="2.2"/><circle cx="12" cy="-22" r="8" fill="#F43F5E" stroke="${INK}" stroke-width="2"/></g>`,
-            alt: `<g transform="translate(195,342)"><ellipse cx="0" cy="4" rx="16" ry="10" fill="#CBD5E1" stroke="${INK}" stroke-width="2.2"/><circle cx="12" cy="-5" r="8" fill="#CBD5E1" stroke="${INK}" stroke-width="2.2"/><circle cx="12" cy="-22" r="8" fill="#FACC15" stroke="${INK}" stroke-width="2"/></g>`
-          },
-          {
-            x: 245, y: 285, r: 24,
-            orig: `<g transform="translate(245,285)"><rect x="-12" y="-10" width="24" height="22" rx="4" fill="#E0F2FE" stroke="${INK}" stroke-width="2"/><circle cx="0" cy="1" r="5" fill="#FACC15"/></g>`,
-            alt: ``
-          }
-        ]
-      },
-
-      // 5. 강아지 소방관의 출동! 마을 소방서
-      {
-        title: '🚒 5. 강아지 소방관의 마을 소방서',
-        bg: `
-          <rect width="300" height="400" fill="#BAE6FD"/>
-          ${BK.cloud(55, 42, 0.85)}
-          <!-- 뒷건물 & 소방서 -->
-          <rect x="18" y="105" width="64" height="175" rx="4" fill="#CBD5E1" stroke="${INK}" stroke-width="2.3"/>
-          <rect x="218" y="115" width="64" height="165" rx="4" fill="#E2E8F0" stroke="${INK}" stroke-width="2.3"/>
-          <g transform="translate(150,185)">
-            <rect x="-64" y="-65" width="128" height="160" fill="#FCA5A5" stroke="${INK}" stroke-width="2.5"/>
-            <rect x="-68" y="-75" width="136" height="14" rx="3" fill="#DC2626" stroke="${INK}" stroke-width="2.3"/>
-            <path d="M-42 95 L-42 25 Q0 5 42 25 L42 95 Z" fill="#1E293B" stroke="${INK}" stroke-width="2.3"/>
-          </g>
-          <!-- 도로 -->
-          <rect y="278" width="300" height="122" fill="#475569" stroke="${INK}" stroke-width="2.3"/>
-          <line x1="0" y1="340" x2="300" y2="340" stroke="#FACC15" stroke-width="4" stroke-dasharray="16 12"/>
-          <!-- 소방차 -->
-          <g transform="translate(155,268)">
-            <rect x="-68" y="-12" width="88" height="40" rx="6" fill="#EF4444" stroke="${INK}" stroke-width="2.4"/>
-            <rect x="18" y="-22" width="44" height="50" rx="8" fill="#DC2626" stroke="${INK}" stroke-width="2.4"/>
-            <rect x="30" y="-12" width="24" height="20" rx="3" fill="#BAE6FD" stroke="${INK}" stroke-width="2"/>
-            <circle cx="-42" cy="32" r="12" fill="#1E293B" stroke="${INK}" stroke-width="2.3"/>
-            <circle cx="36" cy="32" r="12" fill="#1E293B" stroke="${INK}" stroke-width="2.3"/>
-          </g>
-        `,
-        diffs: [
-          {
-            x: 150, y: 145, r: 24,
-            orig: `<g><circle cx="150" cy="145" r="15" fill="#FACC15" stroke="${INK}" stroke-width="2.2"/><path d="M150 135 L155 147 L145 147 Z" fill="#EF4444"/></g>`,
-            alt: `<g><circle cx="150" cy="145" r="15" fill="#38BDF8" stroke="${INK}" stroke-width="2.2"/><path d="M150 135 L155 147 L145 147 Z" fill="#FFF"/></g>`
-          },
-          {
-            x: 185, y: 238, r: 22,
-            orig: `<rect x="177" y="232" width="16" height="12" rx="4" fill="#3B82F6" stroke="${INK}" stroke-width="2"/>`,
-            alt: `<rect x="177" y="232" width="16" height="12" rx="4" fill="#FACC15" stroke="${INK}" stroke-width="2"/>`
-          },
-          {
-            x: 125, y: 246, r: 24,
-            orig: `<g stroke="#FFF" stroke-width="2.5"><line x1="90" y1="246" x2="160" y2="246"/><line x1="90" y1="252" x2="160" y2="252"/></g>`,
-            alt: `<g stroke="#FACC15" stroke-width="2.5"><line x1="90" y1="246" x2="160" y2="246"/><line x1="90" y1="252" x2="160" y2="252"/></g>`
-          },
-          {
-            x: 42, y: 268, r: 24,
-            orig: `<g transform="translate(42,268)"><rect x="-7" y="-8" width="14" height="22" rx="4" fill="#EF4444" stroke="${INK}" stroke-width="2"/><circle cx="0" cy="-10" r="7" fill="#EF4444" stroke="${INK}" stroke-width="2"/></g>`,
-            alt: `<g transform="translate(42,268)"><rect x="-7" y="-8" width="14" height="22" rx="4" fill="#FACC15" stroke="${INK}" stroke-width="2"/><circle cx="0" cy="-10" r="7" fill="#FACC15" stroke="${INK}" stroke-width="2"/></g>`
-          },
-          {
-            x: 245, y: 348, r: 26,
-            orig: `<g transform="translate(245,348)"><rect x="-12" y="8" width="24" height="24" rx="6" fill="#EF4444" stroke="${INK}" stroke-width="2.2"/><circle cx="0" cy="-4" r="14" fill="#FFF" stroke="${INK}" stroke-width="2.2"/><circle cx="-5" cy="-6" r="2.5" fill="${INK}"/><path d="M-16 -12 Q0 -24 16 -12 Z" fill="#FACC15" stroke="${INK}" stroke-width="2"/></g>`,
-            alt: `<g transform="translate(245,348)"><rect x="-12" y="8" width="24" height="24" rx="6" fill="#3B82F6" stroke="${INK}" stroke-width="2.2"/><circle cx="0" cy="-4" r="14" fill="#FFF" stroke="${INK}" stroke-width="2.2"/><circle cx="-5" cy="-6" r="2.5" fill="${INK}"/><path d="M-16 -12 Q0 -24 16 -12 Z" fill="#EF4444" stroke="${INK}" stroke-width="2"/></g>`
-          }
-        ]
-      },
-
-      // 6. 고양이 선장과 햄스터의 보물섬 해적선
-      {
-        title: '🏴‍☠️ 6. 고양이 선장과 햄스터의 보물섬',
-        bg: `
-          <rect width="300" height="400" fill="#BAE6FD"/>
-          ${BK.sun(248, 52)}
-          <path d="M0 245 Q75 232 150 245 T300 245 L300 400 L0 400 Z" fill="#0284C7" stroke="${INK}" stroke-width="2.3"/>
-          <path d="M188 332 Q242 302 300 332 L300 400 L180 400 Z" fill="#FDE047" stroke="${INK}" stroke-width="2.3"/>
-          <!-- 야자수 -->
-          <g transform="translate(262,285)">
-            <path d="M-4 45 Q-8 10 4 -24 L11 -22 Q-1 10 5 45 Z" fill="#92400E" stroke="${INK}" stroke-width="2.2"/>
-            <path d="M6 -23 Q-16 -34 -30 -16 Q-14 -20 6 -23 Z" fill="#22C55E" stroke="${INK}" stroke-width="2"/>
-            <path d="M6 -23 Q26 -35 38 -16 Q20 -20 6 -23 Z" fill="#4ADE80" stroke="${INK}" stroke-width="2"/>
-          </g>
-          <!-- 해적선 -->
-          <g transform="translate(115,220)">
-            <path d="M-64 10 L64 10 L44 44 L-44 44 Z" fill="#92400E" stroke="${INK}" stroke-width="2.5"/>
-            <line x1="0" y1="10" x2="0" y2="-82" stroke="${INK}" stroke-width="4.5"/>
-            <path d="M-38 -68 Q0 -74 38 -68 Q32 -28 38 -4 Q0 -11 -38 -4 Q-32 -28 -38 -68 Z" fill="#FFFFFF" stroke="${INK}" stroke-width="2.3"/>
-          </g>
-          <!-- 고양이 선장 -->
-          <g transform="translate(95,212)">
-            <circle cx="0" cy="0" r="13" fill="#FDBA74" stroke="${INK}" stroke-width="2.2"/>
-            <path d="M-16 -8 Q0 -24 16 -8 Z" fill="#1E293B" stroke="${INK}" stroke-width="2"/>
-            <circle cx="-4" cy="-1" r="2" fill="${INK}"/><circle cx="4" cy="-1" r="2" fill="${INK}"/>
-          </g>
-        `,
-        diffs: [
-          {
-            x: 115, y: 124, r: 24,
-            orig: `<polygon points="115,135 115,115 142,125" fill="#1E293B" stroke="${INK}" stroke-width="2"/>`,
-            alt: `<polygon points="115,135 115,115 142,125" fill="#EF4444" stroke="${INK}" stroke-width="2"/>`
-          },
-          {
-            x: 115, y: 182, r: 24,
-            orig: `<polygon points="115,168 119,178 129,178 121,185 124,195 115,189 106,195 109,185 101,178 111,178" fill="#EF4444" stroke="${INK}" stroke-width="2"/>`,
-            alt: `<path d="M115 193 C99 180 99 168 115 177 C131 168 131 180 115 193 Z" fill="#3B82F6" stroke="${INK}" stroke-width="2"/>`
-          },
-          {
-            x: 65, y: 315, r: 25,
-            orig: `<g transform="translate(65,315)"><ellipse cx="0" cy="0" rx="22" ry="12" fill="#94A3B8" stroke="${INK}" stroke-width="2.2"/><path d="M-18 -2 Q0 -16 18 -2" fill="none" stroke="${INK}" stroke-width="2"/></g>`,
-            alt: `<g transform="translate(65,315)"><ellipse cx="0" cy="0" rx="18" ry="10" fill="#F472B6" stroke="${INK}" stroke-width="2.2"/><path d="M-6 -10 Q0 -22 6 -10" fill="none" stroke="${INK}" stroke-width="2"/></g>`
-          },
-          {
-            x: 228, y: 356, r: 24,
-            orig: `<g transform="translate(228,356)"><rect x="-18" y="-10" width="36" height="22" rx="4" fill="#B45309" stroke="${INK}" stroke-width="2.2"/><circle cx="0" cy="0" r="4" fill="#FACC15" stroke="${INK}" stroke-width="1.5"/></g>`,
-            alt: `<g transform="translate(228,356)"><circle cx="0" cy="0" r="12" fill="#EF4444" stroke="${INK}" stroke-width="2.2"/><circle cx="-4" cy="-3" r="2" fill="#FFF"/></g>`
-          },
-          {
-            x: 75, y: 65, r: 24,
-            orig: BK.cloud(75, 65, 0.9),
-            alt: BK.bird(75, 65, '#FFFFFF')
-          }
-        ]
-      },
-
-      // 7. 아기 사자와 기린의 초원 사파리 탐험
-      {
-        title: '🦁 7. 아기 사자와 기린의 사파리 탐험',
-        bg: `
-          <rect width="300" height="400" fill="#FEF3C7"/>
-          <path d="M0 245 Q150 215 300 245 L300 400 L0 400 Z" fill="#86EFAC" stroke="${INK}" stroke-width="2.3"/>
-          <ellipse cx="205" cy="332" rx="52" ry="20" fill="#38BDF8" stroke="${INK}" stroke-width="2.3"/>
-          ${BK.bushTree(45, 195, '#22C55E')}
-          <!-- 기린 -->
-          <g transform="translate(225,180)">
-            <path d="M-8 65 L-6 -45 L8 -45 L10 65 Z" fill="#FBBF24" stroke="${INK}" stroke-width="2.3"/>
-            <ellipse cx="6" cy="62" rx="24" ry="15" fill="#FBBF24" stroke="${INK}" stroke-width="2.3"/>
-            <circle cx="0" cy="-15" r="5" fill="#B45309"/><circle cx="2" cy="12" r="6" fill="#B45309"/>
-            <ellipse cx="2" cy="-52" rx="16" ry="11" fill="#FDE047" stroke="${INK}" stroke-width="2.3"/>
-            <circle cx="8" cy="-54" r="2.2" fill="${INK}"/>
-          </g>
-          <!-- 아기 사자 -->
-          <g transform="translate(88,288)">
-            <circle r="24" fill="#EA580C" stroke="${INK}" stroke-width="2.3"/>
-            <circle r="16" fill="#FDBA74" stroke="${INK}" stroke-width="2"/>
-            <circle cx="-5" cy="-3" r="2.2" fill="${INK}"/><circle cx="5" cy="-3" r="2.2" fill="${INK}"/>
-          </g>
-        `,
-        diffs: [
-          {
-            x: 58, y: 54, r: 25,
-            orig: BK.sun(58, 54),
-            alt: `<g>${BK.sun(58, 54)}<rect x="44" y="47" width="12" height="7" rx="2" fill="#0F172A"/><rect x="60" y="47" width="12" height="7" rx="2" fill="#0F172A"/></g>`
-          },
-          {
-            x: 226, y: 108, r: 24,
-            orig: `<g stroke="${INK}" stroke-width="2.5"><line x1="220" y1="118" x2="217" y2="105"/><line x1="232" y1="118" x2="235" y2="105"/></g>`,
-            alt: `<polygon points="215,116 226,95 237,116" fill="#EF4444" stroke="${INK}" stroke-width="2"/>`
-          },
-          {
-            x: 145, y: 175, r: 24,
-            orig: BK.bird(145, 175, '#EF4444'),
-            alt: BK.bird(145, 175, '#3B82F6')
-          },
-          {
-            x: 88, y: 312, r: 22,
-            orig: `<circle cx="88" cy="310" r="5" fill="#FACC15" stroke="${INK}" stroke-width="1.8"/>`,
-            alt: `<polygon points="76,305 88,310 76,315 100,315 88,310 100,305" fill="#2563EB" stroke="${INK}" stroke-width="1.8"/>`
-          },
-          {
-            x: 205, y: 326, r: 24,
-            orig: `<g><ellipse cx="205" cy="326" rx="12" ry="8" fill="#FACC15" stroke="${INK}" stroke-width="2"/><circle cx="213" cy="319" r="5.5" fill="#FACC15" stroke="${INK}" stroke-width="2"/></g>`,
-            alt: `<g><ellipse cx="205" cy="326" rx="13" ry="8" fill="#22C55E" stroke="${INK}" stroke-width="2"/><circle cx="199" cy="318" r="4" fill="#22C55E" stroke="${INK}" stroke-width="1.8"/><circle cx="211" cy="318" r="4" fill="#22C55E" stroke="${INK}" stroke-width="1.8"/></g>`
-          }
-        ]
-      },
-
-      // 8. 문어와 거북이의 산호초 바닷속 학교
-      {
-        title: '🐠 8. 문어와 거북이의 바닷속 학교',
-        bg: `
-          <rect width="300" height="400" fill="#7DD3FC"/>
-          <path d="M0 325 Q150 300 300 325 L300 400 L0 400 Z" fill="#FDE047" stroke="${INK}" stroke-width="2.3"/>
-          <path d="M272 340 Q255 290 276 245 Q292 205 270 170" fill="none" stroke="#16A34A" stroke-width="10" stroke-linecap="round"/>
-          <path d="M26 335 Q14 285 35 255 M36 335 Q52 290 42 260" fill="none" stroke="#F43F5E" stroke-width="8" stroke-linecap="round"/>
-          <!-- 노란 잠수함 -->
-          <g transform="translate(150,122)">
-            <ellipse rx="62" ry="32" fill="#FACC15" stroke="${INK}" stroke-width="2.5"/>
-            <rect x="-16" y="-46" width="32" height="18" rx="6" fill="#FACC15" stroke="${INK}" stroke-width="2.3"/>
-            <circle cx="-26" cy="0" r="10" fill="#E0F2FE" stroke="${INK}" stroke-width="2.2"/>
-            <circle cx="0" cy="0" r="10" fill="#E0F2FE" stroke="${INK}" stroke-width="2.2"/>
-            <circle cx="26" cy="0" r="10" fill="#E0F2FE" stroke="${INK}" stroke-width="2.2"/>
-          </g>
-          <!-- 아기 문어 -->
-          <g transform="translate(84,248)">
-            <circle r="21" fill="#F472B6" stroke="${INK}" stroke-width="2.3"/>
-            <path d="M-16 14 Q-24 32 -12 34 M-5 18 Q-7 36 1 36 M7 18 Q9 36 17 34 M17 14 Q26 30 18 34" fill="none" stroke="${INK}" stroke-width="5" stroke-linecap="round"/>
-            <circle cx="-6" cy="-2" r="2.3" fill="${INK}"/><circle cx="6" cy="-2" r="2.3" fill="${INK}"/>
-          </g>
-        `,
-        diffs: [
-          {
-            x: 150, y: 64, r: 22,
-            orig: `<path d="M148 76 L148 56 L165 56" fill="none" stroke="${INK}" stroke-width="4.5" stroke-linecap="round"/>`,
-            alt: `<path d="M148 76 L148 56 L131 56" fill="none" stroke="${INK}" stroke-width="4.5" stroke-linecap="round"/>`
-          },
-          {
-            x: 242, y: 88, r: 24,
-            orig: `<g><ellipse cx="242" cy="88" rx="17" ry="10" fill="#F97316" stroke="${INK}" stroke-width="2"/><polygon points="258,88 270,78 270,98" fill="#F97316" stroke="${INK}" stroke-width="2"/></g>`,
-            alt: `<g><ellipse cx="242" cy="88" rx="17" ry="10" fill="#2563EB" stroke="${INK}" stroke-width="2"/><polygon points="258,88 270,78 270,98" fill="#FACC15" stroke="${INK}" stroke-width="2"/></g>`
-          },
-          {
-            x: 84, y: 220, r: 22,
-            orig: `<polygon points="72,226 70,213 79,220 84,210 89,220 98,213 96,226" fill="#FACC15" stroke="${INK}" stroke-width="2"/>`,
-            alt: `<polygon points="72,216 84,222 72,228 96,228 84,222 96,216" fill="#38BDF8" stroke="${INK}" stroke-width="2"/>`
-          },
-          {
-            x: 222, y: 298, r: 26,
-            orig: `<g><rect x="196" y="294" width="52" height="32" rx="5" fill="#B45309" stroke="${INK}" stroke-width="2.2"/><path d="M196 294 Q222 276 248 294 Z" fill="#D97706" stroke="${INK}" stroke-width="2.2"/></g>`,
-            alt: `<g><rect x="196" y="294" width="52" height="32" rx="5" fill="#B45309" stroke="${INK}" stroke-width="2.2"/><path d="M196 285 Q222 266 248 285 Z" fill="#D97706" stroke="${INK}" stroke-width="2.2"/><polygon points="222,278 232,288 222,298 212,288" fill="#38BDF8" stroke="${INK}" stroke-width="1.8"/></g>`
-          },
-          {
-            x: 145, y: 356, r: 24,
-            orig: `<polygon points="145,342 149,352 159,352 151,359 154,369 145,363 136,369 139,359 131,352 141,352" fill="#FB923C" stroke="${INK}" stroke-width="2"/>`,
-            alt: `<path d="M128 362 Q145 336 162 362 Z" fill="#FBCFE8" stroke="${INK}" stroke-width="2"/>`
-          }
-        ]
-      },
-
-      // 9. 토끼와 병아리의 즐거운 1학년 교실
-      {
-        title: '🏫 9. 토끼와 병아리의 즐거운 1학년 교실',
-        bg: `
-          <rect width="300" height="400" fill="#FEF9C3"/>
-          <rect y="295" width="300" height="105" fill="url(#patWoodFloor)" stroke="${INK}" stroke-width="2.3"/>
-          <rect x="42" y="88" width="216" height="135" rx="10" fill="#15803D" stroke="${INK}" stroke-width="4"/>
-          <rect x="85" y="255" width="130" height="65" rx="6" fill="#D97706" stroke="${INK}" stroke-width="2.4"/>
-        `,
-        diffs: [
-          {
-            x: 150, y: 45, r: 22,
-            orig: `<g><circle cx="150" cy="45" r="20" fill="#FFFFFF" stroke="${INK}" stroke-width="2.5"/><line x1="150" y1="45" x2="150" y2="33" stroke="#E11D48" stroke-width="3"/></g>`,
-            alt: `<g><circle cx="150" cy="45" r="20" fill="#BAE6FD" stroke="${INK}" stroke-width="2.5"/><line x1="150" y1="45" x2="160" y2="45" stroke="#E11D48" stroke-width="3"/></g>`
-          },
-          {
-            x: 105, y: 152, r: 25,
-            orig: BK.sun(105, 152),
-            alt: `<path d="M105 166 C87 151 87 137 105 148 C123 137 123 151 105 166 Z" fill="#F472B6" stroke="${INK}" stroke-width="2.2"/>`
-          },
-          {
-            x: 195, y: 155, r: 24,
-            orig: BK.flower(195, 155, '#FACC15'),
-            alt: `<polygon points="195,140 199,150 210,150 201,157 204,168 195,161 186,168 189,157 180,150 191,150" fill="#38BDF8" stroke="${INK}" stroke-width="2"/>`
-          },
-          {
-            x: 118, y: 235, r: 24,
-            orig: `<g><circle cx="118" cy="232" r="14" fill="#38BDF8" stroke="${INK}" stroke-width="2"/><rect x="112" y="246" width="12" height="6" fill="#78350F" stroke="${INK}" stroke-width="1.8"/></g>`,
-            alt: `<g><rect x="106" y="232" width="24" height="18" rx="3" fill="#EF4444" stroke="${INK}" stroke-width="2"/><rect x="106" y="224" width="24" height="8" rx="2" fill="#3B82F6" stroke="${INK}" stroke-width="2"/></g>`
-          },
-          {
-            x: 248, y: 315, r: 25,
-            orig: `<rect x="234" y="302" width="28" height="32" rx="8" fill="#FACC15" stroke="${INK}" stroke-width="2.3"/>`,
-            alt: `<rect x="234" y="302" width="28" height="32" rx="8" fill="#EC4899" stroke="${INK}" stroke-width="2.3"/>`
-          }
-        ]
-      },
-
-      // 10. 너구리와 고슴도치의 별빛 숲속 캠핑
-      {
-        title: '⛺ 10. 너구리와 고슴도치의 별빛 캠핑',
-        bg: `
-          <rect width="300" height="400" fill="#1E1B4B"/>
-          <circle cx="42" cy="35" r="2" fill="#FFF"/><circle cx="145" cy="28" r="2.5" fill="#FEF08A"/><circle cx="275" cy="42" r="2" fill="#FFF"/>
-          <path d="M0 265 Q150 240 300 265 L300 400 L0 400 Z" fill="#166534" stroke="${INK}" stroke-width="2.3"/>
-          ${BK.pine(42, 210, false)}
-          ${BK.pine(258, 215, false)}
-          <!-- 캠핑 텐트 -->
-          <g transform="translate(105,275)">
-            <path d="M-55 35 L0 -42 L55 35 Z" fill="#F97316" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
-            <path d="M-18 35 L0 -8 L18 35 Z" fill="#FEF3C7" stroke="${INK}" stroke-width="2.2"/>
-          </g>
-          <!-- 장작 -->
-          <g transform="translate(215,315)">
-            <rect x="-22" y="12" width="44" height="8" rx="4" fill="#78350F" stroke="${INK}" stroke-width="2" transform="rotate(15)"/>
-            <rect x="-22" y="12" width="44" height="8" rx="4" fill="#92400E" stroke="${INK}" stroke-width="2" transform="rotate(-15)"/>
-          </g>
-        `,
-        diffs: [
-          {
-            x: 56, y: 55, r: 24,
-            orig: `<path d="M62 35 A20 20 0 1 0 72 72 A15 15 0 1 1 62 35 Z" fill="#FEF08A" stroke="${INK}" stroke-width="2"/>`,
-            alt: `<circle cx="56" cy="55" r="19" fill="#FEF08A" stroke="${INK}" stroke-width="2"/>`
-          },
-          {
-            x: 235, y: 65, r: 22,
-            orig: `<polygon points="235,51 239,61 249,61 241,68 244,78 235,72 226,78 229,68 221,61 231,61" fill="#FEF08A" stroke="${INK}" stroke-width="2"/>`,
-            alt: `<polygon points="235,51 239,61 249,61 241,68 244,78 235,72 226,78 229,68 221,61 231,61" fill="#38BDF8" stroke="${INK}" stroke-width="2"/>`
-          },
-          {
-            x: 105, y: 222, r: 22,
-            orig: `<polygon points="105,233 105,214 124,221" fill="#FACC15" stroke="${INK}" stroke-width="2"/>`,
-            alt: `<polygon points="105,233 105,214 124,221" fill="#38BDF8" stroke="${INK}" stroke-width="2"/>`
-          },
-          {
-            x: 215, y: 305, r: 24,
-            orig: `<path d="M200 322 Q215 282 230 322 Z" fill="#EF4444" stroke="${INK}" stroke-width="2"/>`,
-            alt: `<path d="M200 322 Q215 282 230 322 Z" fill="#38BDF8" stroke="${INK}" stroke-width="2"/>`
-          },
-          {
-            x: 145, y: 358, r: 24,
-            orig: `<g transform="translate(145,358)"><circle r="13" fill="#A16207" stroke="${INK}" stroke-width="2.2"/><circle cx="-4" cy="-3" r="2.5" fill="#FEF08A"/><circle cx="4" cy="-3" r="2.5" fill="#FEF08A"/></g>`,
-            alt: `<g transform="translate(145,358)"><circle r="13" fill="#FFFFFF" stroke="${INK}" stroke-width="2.2"/><ellipse cx="-5" cy="-16" rx="3.5" ry="9" fill="#FFFFFF" stroke="${INK}" stroke-width="2"/><ellipse cx="5" cy="-16" rx="3.5" ry="9" fill="#FFFFFF" stroke="${INK}" stroke-width="2"/></g>`
-          }
-        ]
-      },
-
-      // 11. 판다와 원숭이의 대나무 공원 소풍
-      {
-        title: '🐼 11. 판다와 원숭이의 대나무 공원 소풍',
-        bg: `
-          <rect width="300" height="400" fill="#DCFCE7"/>
-          <path d="M0 275 Q150 250 300 275 L300 400 L0 400 Z" fill="#86EFAC" stroke="${INK}" stroke-width="2.3"/>
-          <g fill="#16A34A" stroke="${INK}" stroke-width="2.2">
-            <rect x="28" y="40" width="12" height="245" rx="3"/>
-            <rect x="54" y="65" width="10" height="225" rx="3"/>
-            <rect x="242" y="45" width="12" height="240" rx="3"/>
-            <rect x="266" y="75" width="10" height="215" rx="3"/>
-          </g>
-          <g transform="translate(148,265)">
-            <circle cx="0" cy="24" r="26" fill="#FFFFFF" stroke="${INK}" stroke-width="2.5"/>
-            <circle cx="0" cy="-14" r="22" fill="#FFFFFF" stroke="${INK}" stroke-width="2.5"/>
-            <circle cx="-17" cy="-30" r="8" fill="#1E293B" stroke="${INK}" stroke-width="2.2"/>
-            <circle cx="17" cy="-30" r="8" fill="#1E293B" stroke="${INK}" stroke-width="2.2"/>
-            <ellipse cx="-8" cy="-14" rx="5" ry="6" fill="#1E293B"/>
-            <ellipse cx="8" cy="-14" rx="5" ry="6" fill="#1E293B"/>
-          </g>
-        `,
-        diffs: [
-          {
-            x: 148, y: 215, r: 22,
-            orig: ``,
-            alt: `<polygon points="136,209 148,215 136,221 160,221 148,215 160,209" fill="#F43F5E" stroke="${INK}" stroke-width="2"/>`
-          },
-          {
-            x: 148, y: 288, r: 24,
-            orig: `<rect x="134" y="284" width="28" height="8" rx="4" fill="#22C55E" stroke="${INK}" stroke-width="2"/>`,
-            alt: `<circle cx="148" cy="288" r="10" fill="#EF4444" stroke="${INK}" stroke-width="2"/>`
-          },
-          {
-            x: 148, y: 95, r: 25,
-            orig: `<g><ellipse cx="148" cy="98" rx="16" ry="20" fill="#EF4444" stroke="${INK}" stroke-width="2.2"/><rect x="140" y="76" width="16" height="5" fill="#FACC15" stroke="${INK}" stroke-width="1.8"/></g>`,
-            alt: `<g><ellipse cx="148" cy="98" rx="16" ry="20" fill="#FACC15" stroke="${INK}" stroke-width="2.2"/><rect x="140" y="76" width="16" height="5" fill="#EF4444" stroke="${INK}" stroke-width="1.8"/></g>`
-          },
-          {
-            x: 65, y: 342, r: 24,
-            orig: `<g transform="translate(65,342)"><circle r="14" fill="#EA580C" stroke="${INK}" stroke-width="2.2"/><circle cx="-9" cy="-12" r="5" fill="#EA580C" stroke="${INK}" stroke-width="2"/><circle cx="9" cy="-12" r="5" fill="#EA580C" stroke="${INK}" stroke-width="2"/></g>`,
-            alt: BK.flower(65, 340, '#F43F5E')
-          },
-          {
-            x: 235, y: 342, r: 24,
-            orig: `<ellipse cx="235" cy="346" rx="20" ry="10" fill="#94A3B8" stroke="${INK}" stroke-width="2"/>`,
-            alt: `<ellipse cx="235" cy="346" rx="20" ry="10" fill="#FDE047" stroke="${INK}" stroke-width="2"/>`
-          }
-        ]
-      },
-
-      // 12. 아기 돼지와 젖소의 햇살 가득 농장
-      {
-        title: '🚜 12. 아기 돼지와 젖소의 햇살 가득 농장',
-        bg: `
-          <rect width="300" height="400" fill="#BAE6FD"/>
-          <path d="M0 255 Q150 225 300 255 L300 400 L0 400 Z" fill="#BEF264" stroke="${INK}" stroke-width="2.3"/>
-          ${BK.sun(48, 48)}
-          <!-- 풍차 -->
-          <g transform="translate(88,185)">
-            <path d="M-24 75 L-14 -15 L14 -15 L24 75 Z" fill="#EF4444" stroke="${INK}" stroke-width="2.4"/>
-            <path d="M-18 -15 Q0 -38 18 -15 Z" fill="#78350F" stroke="${INK}" stroke-width="2.3"/>
-            <line x1="-38" y1="-42" x2="38" y2="22" stroke="#FEF3C7" stroke-width="6" stroke-linecap="round"/>
-            <line x1="-38" y1="22" x2="38" y2="-42" stroke="#FEF3C7" stroke-width="6" stroke-linecap="round"/>
-            <circle cx="0" cy="-10" r="6" fill="#FACC15" stroke="${INK}" stroke-width="2"/>
-          </g>
-          <!-- 초록 트랙터 -->
-          <g transform="translate(215,275)">
-            <rect x="-32" y="-12" width="38" height="32" rx="6" fill="#16A34A" stroke="${INK}" stroke-width="2.3"/>
-            <rect x="4" y="2" width="28" height="18" rx="5" fill="#22C55E" stroke="${INK}" stroke-width="2.3"/>
-            <circle cx="-16" cy="24" r="15" fill="#1E293B" stroke="${INK}" stroke-width="2.2"/>
-            <circle cx="20" cy="28" r="10" fill="#1E293B" stroke="${INK}" stroke-width="2.2"/>
-          </g>
-        `,
-        diffs: [
-          {
-            x: 225, y: 65, r: 24,
-            orig: BK.cloud(225, 65, 0.9),
-            alt: BK.bird(225, 65, '#F97316')
-          },
-          {
-            x: 88, y: 225, r: 22,
-            orig: `<rect x="78" y="215" width="20" height="24" rx="4" fill="#FEF08A" stroke="${INK}" stroke-width="2"/>`,
-            alt: `<rect x="78" y="215" width="20" height="24" rx="4" fill="#38BDF8" stroke="${INK}" stroke-width="2"/>`
-          },
-          {
-            x: 215, y: 252, r: 22,
-            orig: `<rect x="228" y="254" width="6" height="22" fill="#1E293B" stroke="${INK}" stroke-width="1.8"/>`,
-            alt: `<rect x="228" y="254" width="6" height="22" fill="#EF4444" stroke="${INK}" stroke-width="1.8"/>`
-          },
-          {
-            x: 85, y: 345, r: 26,
-            orig: `<g><ellipse cx="85" cy="348" rx="22" ry="14" fill="#FFFFFF" stroke="${INK}" stroke-width="2.2"/><circle cx="80" cy="346" r="5" fill="#1E293B"/><circle cx="105" cy="340" r="9" fill="#FFFFFF" stroke="${INK}" stroke-width="2.2"/></g>`,
-            alt: `<g><ellipse cx="85" cy="348" rx="22" ry="14" fill="#FBCFE8" stroke="${INK}" stroke-width="2.2"/><circle cx="105" cy="340" r="9" fill="#FBCFE8" stroke="${INK}" stroke-width="2.2"/></g>`
-          },
-          {
-            x: 220, y: 356, r: 22,
-            orig: `<g><circle cx="220" cy="356" r="11" fill="#FACC15" stroke="${INK}" stroke-width="2"/><polygon points="230,356 237,354 230,359" fill="#EF4444"/></g>`,
-            alt: `<g><circle cx="220" cy="356" r="11" fill="#FFFFFF" stroke="${INK}" stroke-width="2"/><polygon points="230,356 237,354 230,359" fill="#F97316"/></g>`
-          }
-        ]
-      },
-
-      // 13. 코알라와 오리의 신나는 놀이공원
-      {
-        title: '🎡 13. 코알라와 오리의 신나는 놀이공원',
-        bg: `
-          <rect width="300" height="400" fill="#BAE6FD"/>
-          <path d="M0 290 Q150 265 300 290 L300 400 L0 400 Z" fill="#86EFAC" stroke="${INK}" stroke-width="2.3"/>
-          <path d="M0 325 Q150 305 300 325 L300 400 L0 400 Z" fill="#FDE68A" stroke="${INK}" stroke-width="2.3"/>
-          ${BK.cloud(62, 46, 0.9)}
-          <g transform="translate(155,155)">
-            <path d="M-45 135 L0 0 L45 135" fill="none" stroke="${INK}" stroke-width="7" stroke-linecap="round"/>
-            <circle r="76" fill="none" stroke="#F43F5E" stroke-width="6"/>
-            <circle r="54" fill="none" stroke="#FB7185" stroke-width="3"/>
-            <line x1="-76" y1="0" x2="76" y2="0" stroke="${INK}" stroke-width="2"/>
-            <line x1="0" y1="-76" x2="0" y2="76" stroke="${INK}" stroke-width="2"/>
-            <rect x="64" y="-9" width="24" height="18" rx="6" fill="#FACC15" stroke="${INK}" stroke-width="2"/>
-            <rect x="-88" y="-9" width="24" height="18" rx="6" fill="#10B981" stroke="${INK}" stroke-width="2"/>
-            <circle r="11" fill="#FACC15" stroke="${INK}" stroke-width="2.3"/>
-          </g>
-          <g transform="translate(65,310)">
-            <rect x="-28" y="-12" width="56" height="34" rx="8" fill="#F472B6" stroke="${INK}" stroke-width="2.3"/>
-            <circle cx="-16" cy="26" r="9" fill="#1E293B" stroke="${INK}" stroke-width="2"/>
-            <circle cx="16" cy="26" r="9" fill="#1E293B" stroke="${INK}" stroke-width="2"/>
-          </g>
-        `,
-        diffs: [
-          {
-            x: 155, y: 76, r: 22,
-            orig: `<rect x="143" y="67" width="24" height="18" rx="6" fill="#3B82F6" stroke="${INK}" stroke-width="2"/>`,
-            alt: `<rect x="143" y="67" width="24" height="18" rx="6" fill="#A855F7" stroke="${INK}" stroke-width="2"/>`
-          },
-          {
-            x: 248, y: 82, r: 25,
-            orig: `<g><line x1="248" y1="135" x2="248" y2="95" stroke="${INK}" stroke-width="2"/><circle cx="242" cy="82" r="11" fill="#EF4444" stroke="${INK}" stroke-width="2"/><circle cx="256" cy="86" r="11" fill="#3B82F6" stroke="${INK}" stroke-width="2"/></g>`,
-            alt: `<g><line x1="248" y1="135" x2="248" y2="95" stroke="${INK}" stroke-width="2"/><circle cx="242" cy="82" r="11" fill="#EF4444" stroke="${INK}" stroke-width="2"/><circle cx="256" cy="86" r="11" fill="#FACC15" stroke="${INK}" stroke-width="2"/><circle cx="248" cy="70" r="11" fill="#22C55E" stroke="${INK}" stroke-width="2"/></g>`
-          },
-          {
-            x: 65, y: 280, r: 24,
-            orig: `<circle cx="65" cy="280" r="16" fill="#FBCFE8" stroke="${INK}" stroke-width="2.2"/>`,
-            alt: `<circle cx="65" cy="280" r="16" fill="#BAE6FD" stroke="${INK}" stroke-width="2.2"/>`
-          },
-          {
-            x: 215, y: 315, r: 25,
-            orig: `<g><circle cx="215" cy="312" r="14" fill="#FDBA74" stroke="${INK}" stroke-width="2.2"/><circle cx="206" cy="300" r="5" fill="#FDBA74" stroke="${INK}" stroke-width="2"/><circle cx="224" cy="300" r="5" fill="#FDBA74" stroke="${INK}" stroke-width="2"/></g>`,
-            alt: `<g><circle cx="215" cy="312" r="14" fill="#FDBA74" stroke="${INK}" stroke-width="2.2"/><circle cx="206" cy="300" r="5" fill="#FDBA74" stroke="${INK}" stroke-width="2"/><circle cx="224" cy="300" r="5" fill="#FDBA74" stroke="${INK}" stroke-width="2"/><polygon points="204,298 215,278 226,298" fill="#3B82F6" stroke="${INK}" stroke-width="2"/></g>`
-          },
-          {
-            x: 145, y: 362, r: 24,
-            orig: BK.flower(145, 360, '#F43F5E'),
-            alt: BK.bird(145, 358, '#A855F7')
-          }
-        ]
-      },
-
-      // 14. 강아지 우주비행사의 달나라 정거장
-      {
-        title: '🚀 14. 강아지 우주비행사의 달나라 정거장',
-        bg: `
-          <rect width="300" height="400" fill="#1E1B4B"/>
-          <path d="M0 320 Q150 295 300 320 L300 400 L0 400 Z" fill="#CBD5E1" stroke="${INK}" stroke-width="2.3"/>
-          <circle cx="145" cy="355" r="14" fill="#94A3B8" stroke="${INK}" stroke-width="2"/>
-          <circle cx="235" cy="365" r="18" fill="#94A3B8" stroke="${INK}" stroke-width="2"/>
-          <g transform="translate(150,145)">
-            <path d="M0 -82 Q28 -35 28 55 L-28 55 Q-28 -35 0 -82 Z" fill="#F8FAFC" stroke="${INK}" stroke-width="2.5"/>
-            <path d="M0 -82 Q16 -55 21 -38 L-21 -38 Q-16 -55 0 -82 Z" fill="#EF4444" stroke="${INK}" stroke-width="2.2"/>
-            <path d="M-28 22 L-48 62 L-28 52 Z" fill="#EF4444" stroke="${INK}" stroke-width="2.2"/>
-            <path d="M28 22 L48 62 L28 52 Z" fill="#EF4444" stroke="${INK}" stroke-width="2.2"/>
-          </g>
-          <g transform="translate(215,285)">
-            <circle r="16" fill="#FFFFFF" stroke="${INK}" stroke-width="2.3"/>
-            <rect x="-10" y="-6" width="20" height="11" rx="5" fill="#38BDF8" stroke="${INK}" stroke-width="1.8"/>
-            <rect x="-13" y="16" width="26" height="28" rx="8" fill="#FFFFFF" stroke="${INK}" stroke-width="2.3"/>
-          </g>
-        `,
-        diffs: [
-          {
-            x: 64, y: 78, r: 26,
-            orig: `<g><circle cx="64" cy="78" r="17" fill="#FB923C" stroke="${INK}" stroke-width="2.2"/><ellipse cx="64" cy="78" rx="30" ry="7" fill="none" stroke="#FDE047" stroke-width="4" transform="rotate(-18 64 78)"/></g>`,
-            alt: `<g><circle cx="64" cy="78" r="17" fill="#FB923C" stroke="${INK}" stroke-width="2.2"/><ellipse cx="64" cy="78" rx="30" ry="7" fill="none" stroke="#F472B6" stroke-width="4" transform="rotate(-18 64 78)"/></g>`
-          },
-          {
-            x: 242, y: 88, r: 25,
-            orig: `<g><ellipse cx="242" cy="94" rx="25" ry="8" fill="#94A3B8" stroke="${INK}" stroke-width="2"/><path d="M228 90 Q242 68 256 90 Z" fill="#4ADE80" stroke="${INK}" stroke-width="2"/></g>`,
-            alt: `<g><ellipse cx="242" cy="94" rx="25" ry="8" fill="#94A3B8" stroke="${INK}" stroke-width="2"/></g>`
-          },
-          {
-            x: 150, y: 138, r: 22,
-            orig: `<circle cx="150" cy="138" r="14" fill="#38BDF8" stroke="${INK}" stroke-width="2.5"/>`,
-            alt: `<path d="M150 150 C134 137 134 125 150 134 C166 125 166 137 150 150 Z" fill="#F43F5E" stroke="${INK}" stroke-width="2.2"/>`
-          },
-          {
-            x: 150, y: 224, r: 24,
-            orig: `<path d="M135 202 Q150 250 165 202 Z" fill="#F97316" stroke="${INK}" stroke-width="2"/>`,
-            alt: `<path d="M135 202 Q150 250 165 202 Z" fill="#38BDF8" stroke="${INK}" stroke-width="2"/>`
-          },
-          {
-            x: 68, y: 310, r: 25,
-            orig: `<g><line x1="62" y1="335" x2="62" y2="288" stroke="#FFF" stroke-width="3"/><polygon points="62,288 94,298 62,308" fill="#EF4444" stroke="${INK}" stroke-width="2"/></g>`,
-            alt: `<g><line x1="62" y1="335" x2="62" y2="288" stroke="#FFF" stroke-width="3"/><polygon points="62,288 94,298 62,308" fill="#FACC15" stroke="${INK}" stroke-width="2"/></g>`
-          }
-        ]
+      let current = values[activeIndex];
+      if (current.length > 0) {
+        values[activeIndex] = current.slice(0, -1);
+        replaceOnNextDigit = false;
+      } else if (activeIndex > 0) {
+        activeIndex--;
+        values[activeIndex] = values[activeIndex].slice(0, -1);
+        replaceOnNextDigit = false;
       }
-    ];
+      renderCards();
+    }
 
-    function buildRichScene(index) {
-      const sceneData = SPOT_SCENES_14[index % SPOT_SCENES_14.length];
+    // 다음 칸 이동
+    function moveNext() {
+      if (isChecking) return;
+      hideHelper();
+      if (activeIndex < TOTAL_SLOTS - 1) {
+        activeIndex++;
+        replaceOnNextDigit = true;
+        renderCards();
+      }
+    }
+
+    // 이전 칸 이동
+    function movePrev() {
+      if (isChecking) return;
+      hideHelper();
+      if (activeIndex > 0) {
+        activeIndex--;
+        replaceOnNextDigit = true;
+        renderCards();
+      }
+    }
+
+    // 키패드 버튼 연결
+    document.querySelectorAll('.key-btn[data-num]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        inputDigit(btn.dataset.num);
+      });
+    });
+
+    document.getElementById('btnBackspace').addEventListener('click', handleBackspace);
+    document.getElementById('btnNext').addEventListener('click', moveNext);
+
+    // 키보드 입력 연결
+    document.addEventListener('keydown', (e) => {
+      if (resultModal.classList.contains('open')) {
+        if (e.key === 'Escape') closeModal();
+        return;
+      }
+      if (isChecking) return;
+
+      if (e.key >= '0' && e.key <= '9') {
+        e.preventDefault();
+        inputDigit(e.key);
+      } else if (e.key === 'Backspace' || e.key === 'Delete') {
+        e.preventDefault();
+        handleBackspace();
+      } else if (e.key === 'ArrowRight' || e.key === 'Tab') {
+        e.preventDefault();
+        moveNext();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        movePrev();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (activeIndex < TOTAL_SLOTS - 1 && values[activeIndex] !== '') {
+          moveNext();
+        }
+      }
+    });
+
+    // 모두 지우기
+    btnResetAll.addEventListener('click', () => {
+      if (isChecking) return;
+      values = Array(TOTAL_SLOTS).fill('');
+      activeIndex = 0;
+      replaceOnNextDigit = true;
+      hideHelper();
+      renderCards();
+    });
+
+    // 수 규칙 판별 함수 (6개 숫자 배열)
+    function evaluatePattern(nums) {
+      const [a0, a1, a2, a3, a4, a5] = nums;
+      const diffs = [a1 - a0, a2 - a1, a3 - a2, a4 - a3, a5 - a4];
+
+      // 1. 같은 수가 계속 반복되는 규칙 (예: 5, 5, 5, 5, 5, 5)
+      if (diffs.every(d => d === 0)) {
+        return {
+          valid: true,
+          description: `같은 수 ${a0}이(가) 계속 이어지는 규칙이에요!`
+        };
+      }
+
+      // 2. 일정한 수만큼 커지거나 작아지는 규칙 (뛰어세기 / 등차수열)
+      if (diffs.every(d => d === diffs[0])) {
+        const step = diffs[0];
+        if (step > 0) {
+          return {
+            valid: true,
+            description: `${step}씩 커지는 규칙이에요!`
+          };
+        } else {
+          return {
+            valid: true,
+            description: `${Math.abs(step)}씩 작아지는 규칙이에요!`
+          };
+        }
+      }
+
+      // 3. 2개 숫자가 반복되는 규칙 (예: 1, 2, 1, 2, 1, 2)
+      if (a0 === a2 && a2 === a4 && a1 === a3 && a3 === a5 && a0 !== a1) {
+        return {
+          valid: true,
+          description: `'${a0}, ${a1}' 두 수가 차례대로 반복되는 규칙이에요!`
+        };
+      }
+
+      // 4. 3개 숫자가 반복되는 규칙 (예: 1, 2, 3, 1, 2, 3)
+      if (a0 === a3 && a1 === a4 && a2 === a5) {
+        return {
+          valid: true,
+          description: `'${a0}, ${a1}, ${a2}' 세 수가 차례대로 반복되는 규칙이에요!`
+        };
+      }
+
+      // 5. 두 번씩 같은 수가 나오며 일정하게 커지거나 작아지는 규칙 (예: 1, 1, 2, 2, 3, 3)
+      if (a0 === a1 && a2 === a3 && a4 === a5 && (a2 - a0 === a4 - a2) && a2 !== a0) {
+        const step = a2 - a0;
+        const dir = step > 0 ? `${step}씩 커지는` : `${Math.abs(step)}씩 작아지는`;
+        return {
+          valid: true,
+          description: `같은 수가 두 번씩 나오면서 ${dir} 규칙이에요!`
+        };
+      }
+
+      // 6. 거울처럼 앞뒤가 대칭되는 규칙 (예: 1, 2, 3, 3, 2, 1)
+      if (a0 === a5 && a1 === a4 && a2 === a3) {
+        return {
+          valid: true,
+          description: `앞뒤가 거울처럼 똑같이 대칭되는 규칙이에요!`
+        };
+      }
+
+      // 7. 두 가지 변화가 번갈아 나오는 규칙 (예: +2, -1, +2, -1, +2)
+      if (diffs[0] === diffs[2] && diffs[2] === diffs[4] && diffs[1] === diffs[3]) {
+        const s1 = diffs[0] >= 0 ? `+${diffs[0]}` : `${diffs[0]}`;
+        const s2 = diffs[1] >= 0 ? `+${diffs[1]}` : `${diffs[1]}`;
+        return {
+          valid: true,
+          description: `'${s1}, ${s2}' 변화가 번갈아 나타나는 규칙이에요!`
+        };
+      }
+
+      // 8. 커지는(또는 작아지는) 폭이 일정하게 변하는 규칙 (예: +1, +2, +3, +4, +5)
+      const secondDiffs = [
+        diffs[1] - diffs[0],
+        diffs[2] - diffs[1],
+        diffs[3] - diffs[2],
+        diffs[4] - diffs[3]
+      ];
+      if (secondDiffs.every(sd => sd === secondDiffs[0]) && secondDiffs[0] !== 0) {
+        const diffLabels = diffs.map(d => (d >= 0 ? `+${d}` : `${d}`)).join(', ');
+        return {
+          valid: true,
+          description: `변하는 크기가 일정하게 달라지는 규칙이에요! (${diffLabels})`
+        };
+      }
+
+      // 9. 일정한 배로 커지는 규칙 (예: 1, 2, 4, 8, 16, 32)
+      if (a0 > 0 && a1 % a0 === 0) {
+        const ratio = a1 / a0;
+        if (
+          ratio > 1 &&
+          a2 === a1 * ratio &&
+          a3 === a2 * ratio &&
+          a4 === a3 * ratio &&
+          a5 === a4 * ratio
+        ) {
+          return {
+            valid: true,
+            description: `${ratio}배씩 커지는 규칙이에요!`
+          };
+        }
+      }
+
+      // 10. 앞의 두 수를 더해서 다음 수가 되는 규칙 (예: 1, 1, 2, 3, 5, 8)
+      if (
+        a2 === a0 + a1 &&
+        a3 === a1 + a2 &&
+        a4 === a2 + a3 &&
+        a5 === a3 + a4
+      ) {
+        return {
+          valid: true,
+          description: `앞의 두 수를 더해서 다음 수가 되는 규칙이에요!`
+        };
+      }
+
+      // 11. 홀수 번째 자리와 짝수 번째 자리가 각각 규칙을 이루는 경우 (예: 1, 10, 2, 20, 3, 30)
+      if ((a2 - a0 === a4 - a2) && (a3 - a1 === a5 - a3)) {
+        return {
+          valid: true,
+          description: `홀수 번째 자리와 짝수 번째 자리가 각각 일정한 규칙으로 변해요!`
+        };
+      }
+
       return {
-        title: sceneData.title,
-        baseSvg: sceneData.bg,
-        diffs: sceneData.diffs.map((d, idx) => ({
-          id: idx,
-          x: d.x,
-          y: d.y,
-          r: d.r,
-          orig: d.orig,
-          alt: d.alt
-        }))
+        valid: false,
+        description: `6개의 숫자가 하나의 규칙으로 이어지는지 다시 한 번 살펴보세요!`
       };
     }
 
-    const spotState = {
-      orderQueue: [],
-      cursor: 0,
-      currentScene: null,
-      foundIds: new Set(),
-      foundByTeam: {}
-    };
-
-    function refillSpotQueue() {
-      // 첫 판은 첨부 이미지 스타일의 1번 장면부터 시작, 이후 랜덤 순환
-      const rest = shuffle(Array.from({ length: SPOT_SCENES_14.length - 1 }, (_, i) => i + 1));
-      spotState.orderQueue = [0, ...rest];
-      spotState.cursor = 0;
-    }
-
-    function initSpotGame() {
-      if (spotState.orderQueue.length === 0 || spotState.cursor >= spotState.orderQueue.length) {
-        refillSpotQueue();
-      }
-      loadNextSpotScene();
-    }
-
-    function loadNextSpotScene() {
-      if (spotState.cursor >= spotState.orderQueue.length) {
-        const all = Array.from({ length: SPOT_SCENES_14.length }, (_, i) => i);
-        spotState.orderQueue = shuffle(all);
-        spotState.cursor = 0;
-      }
-      const nextIdx = spotState.orderQueue[spotState.cursor++];
-      const scene = buildRichScene(nextIdx);
-      spotState.currentScene = scene;
-      spotState.foundIds = new Set();
-      spotState.foundByTeam = {};
-
-      document.getElementById('spot-theme-title').textContent = scene.title;
-      updateSpotProgress();
-
-      renderSpotBoard('spot-board-center', scene, false, null);
-      renderSpotBoard('spot-board-t1', scene, true, 't1');
-      renderSpotBoard('spot-board-t2', scene, true, 't2');
-    }
-
-    function updateSpotProgress() {
-      const count = spotState.foundIds.size;
-      document.getElementById('spot-found-text').textContent = `${count}/5`;
-
-      const dotsWrap = document.getElementById('spot-dots');
-      dotsWrap.innerHTML = '';
-      for (let i = 0; i < 5; i++) {
-        const dot = document.createElement('span');
-        dot.className = i < count
-          ? 'w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-emerald-500 border-2 border-emerald-700 inline-block animate-pop'
-          : 'w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-slate-200 border-2 border-slate-300 inline-block';
-        dotsWrap.appendChild(dot);
+    // 폭죽 효과
+    function launchConfetti() {
+      const colors = ['#f59e0b', '#10b981', '#3b82f6', '#ef4444', '#8b5cf6', '#ec4899'];
+      for (let i = 0; i < 55; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.left = Math.random() * 100 + 'vw';
+        piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.animationDuration = (Math.random() * 1.6 + 1.4) + 's';
+        piece.style.animationDelay = (Math.random() * 0.3) + 's';
+        document.body.appendChild(piece);
+        setTimeout(() => piece.remove(), 3300);
       }
     }
 
-    function renderSpotBoard(containerId, scene, isModified, teamKey) {
-      const wrap = document.getElementById(containerId);
-      const diffsSvg = scene.diffs.map((d) => isModified ? d.alt : d.orig).join('');
-
-      const foundCirclesSvg = isModified
-        ? Array.from(spotState.foundIds).map((fid) => {
-            const d = scene.diffs.find((item) => item.id === fid);
-            const finder = spotState.foundByTeam[fid];
-            const ringColor = finder === 't1' ? '#2563EB' : '#E11D48';
-            return `
-              <g class="animate-pop">
-                <circle cx="${d.x}" cy="${d.y}" r="${d.r}" fill="none" stroke="#FFFFFF" stroke-width="8" />
-                <circle cx="${d.x}" cy="${d.y}" r="${d.r}" fill="none" stroke="${ringColor}" stroke-width="5" />
-              </g>
-            `;
-          }).join('')
-        : '';
-
-      wrap.innerHTML = `
-        <svg viewBox="0 0 300 400" preserveAspectRatio="xMidYMid meet" shape-rendering="geometricPrecision" class="w-full h-full block">
-          ${BOOK_DEFS}
-          ${scene.baseSvg}
-          ${diffsSvg}
-          ${foundCirclesSvg}
-        </svg>
-      `;
-
-      if (!isModified) return;
-
-      const svgEl = wrap.querySelector('svg');
-      svgEl.addEventListener('pointerdown', (e) => {
-        e.preventDefault();
-        if (!appState.isRunning || appState.isManualPaused) return;
-
-        const pt = svgEl.createSVGPoint();
-        pt.x = e.clientX;
-        pt.y = e.clientY;
-        const ctm = svgEl.getScreenCTM();
-        if (!ctm) return;
-        const svgPt = pt.matrixTransform(ctm.inverse());
-
-        let matchedDiff = null;
-        for (const d of scene.diffs) {
-          if (spotState.foundIds.has(d.id)) continue;
-          const dist = Math.hypot(svgPt.x - d.x, svgPt.y - d.y);
-          if (dist <= d.r + 14) {
-            matchedDiff = d;
-            break;
-          }
-        }
-
-        if (matchedDiff) {
-          spotState.foundIds.add(matchedDiff.id);
-          spotState.foundByTeam[matchedDiff.id] = teamKey;
-          addTeamScore(teamKey, 10);
-          updateSpotProgress();
-
-          renderSpotBoard('spot-board-t1', scene, true, 't1');
-          renderSpotBoard('spot-board-t2', scene, true, 't2');
-
-          if (spotState.foundIds.size >= 5) {
-            setTimeout(() => {
-              if (appState.isRunning && appState.currentGame === 'spot') {
-                loadNextSpotScene();
-              }
-            }, 900);
-          }
-        } else {
-          wrap.classList.remove('animate-shake');
-          void wrap.offsetWidth;
-          wrap.classList.add('animate-shake');
-        }
+    // 결과 모달 열기
+    function openResultModal(nums, result) {
+      resultNumbers.innerHTML = '';
+      nums.forEach(n => {
+        const badge = document.createElement('span');
+        badge.className = 'mini-num';
+        badge.textContent = n;
+        resultNumbers.appendChild(badge);
       });
-    }
 
-    // =========================================================================
-    // [게임 2] 다음 그림 맞히기 (확장된 12종 패턴 구조 + 양 팀 독립 진행)
-    // =========================================================================
-    const PATTERN_ITEMS = [
-      { id: 'stone', emoji: '🪨', name: '돌맹이' },
-      { id: 'wave', emoji: '🌊', name: '파도' },
-      { id: 'shell', emoji: '🐚', name: '조개' },
-      { id: 'star', emoji: '⭐', name: '별' },
-      { id: 'apple', emoji: '🍎', name: '사과' },
-      { id: 'banana', emoji: '🍌', name: '바나나' },
-      { id: 'grape', emoji: '🍇', name: '포도' },
-      { id: 'tree', emoji: '🌲', name: '나무' },
-      { id: 'flower', emoji: '🌻', name: '해바라기' },
-      { id: 'cloud', emoji: '☁️', name: '구름' },
-      { id: 'heart', emoji: '💖', name: '하트' },
-      { id: 'chick', emoji: '🐥', name: '병아리' }
-    ];
+      modalBox.classList.remove('success', 'retry');
+      modalActions.innerHTML = '';
 
-    const PATTERN_STRUCTURES = [
-      'ABABAB',
-      'ABABABA',
-      'AABAABA',
-      'AABAABAA',
-      'ABBABBA',
-      'ABBABBAB',
-      'AABBAABB',
-      'ABCABCA',
-      'ABCABCAB',
-      'ABACABAC',
-      'AABCAABC',
-      'ABBCABBC'
-    ];
+      if (result.valid) {
+        modalBox.classList.add('success');
+        resultIcon.textContent = '🎉';
+        resultTitle.textContent = '성공! 멋진 규칙이에요!';
+        resultDesc.textContent = result.description;
 
-    const patternState = {
-      t1: { sequence: [], answer: null, choices: [], locked: false, lastSig: '' },
-      t2: { sequence: [], answer: null, choices: [], locked: false, lastSig: '' }
-    };
-
-    function initPatternGame() {
-      generateRandomPatternForTeam('t1', true);
-      generateRandomPatternForTeam('t2', false);
-    }
-
-    function generateRandomPatternForTeam(teamKey, preferStoneWave = false) {
-      const team = patternState[teamKey];
-      let tries = 0;
-      while (tries < 25) {
-        tries++;
-        const code = preferStoneWave && team.lastSig === ''
-          ? 'ABABAB'
-          : PATTERN_STRUCTURES[randInt(0, PATTERN_STRUCTURES.length - 1)];
-
-        let fourItems;
-        if (preferStoneWave && team.lastSig === '') {
-          const extras = shuffle(PATTERN_ITEMS.slice(2)).slice(0, 2);
-          fourItems = [PATTERN_ITEMS[0], PATTERN_ITEMS[1], extras[0], extras[1]];
-        } else {
-          fourItems = shuffle(PATTERN_ITEMS).slice(0, 4);
-        }
-
-        const map = { A: fourItems[0], B: fourItems[1], C: fourItems[2] };
-        const fullSeq = code.split('').map((ch) => map[ch]);
-        const visibleSeq = fullSeq.slice(0, fullSeq.length - 1);
-        const answerItem = fullSeq[fullSeq.length - 1];
-        const sig = visibleSeq.map((i) => i.id).join(',');
-
-        if (sig !== team.lastSig) {
-          team.lastSig = sig;
-          team.sequence = visibleSeq;
-          team.answer = answerItem;
-          team.choices = shuffle(fourItems);
-          team.locked = false;
-          document.getElementById(`pat-msg-${teamKey}`).textContent = '빈칸(□)에 알맞은 그림을 아래에서 고르세요!';
-          renderPatternTeam(teamKey);
-          return;
-        }
-      }
-    }
-
-    function renderPatternTeam(teamKey) {
-      const data = patternState[teamKey];
-      const seqWrap = document.getElementById(`pat-seq-${teamKey}`);
-      const isBlue = teamKey === 't1';
-      const totalLen = data.sequence.length + 1;
-      const cardMaxW = totalLen >= 8 ? 'max-w-[64px]' : totalLen >= 7 ? 'max-w-[72px]' : 'max-w-[84px]';
-
-      const cardsHtml = data.sequence.map((item) => `
-        <div class="flex-1 min-w-0 ${cardMaxW} aspect-square rounded-2xl bg-white border-4 ${isBlue ? 'border-blue-200' : 'border-rose-200'} flex flex-col items-center justify-center shadow-md animate-pop">
-          <span class="text-xl sm:text-3xl leading-none">${item.emoji}</span>
-          <span class="text-[10px] sm:text-xs text-slate-600 mt-0.5 truncate max-w-full px-0.5">${item.name}</span>
-        </div>
-      `).join('');
-
-      const blankHtml = `
-        <div class="flex-1 min-w-0 ${cardMaxW} aspect-square rounded-2xl ${isBlue ? 'bg-blue-100 border-blue-500 text-blue-600' : 'bg-rose-100 border-rose-500 text-rose-600'} border-4 border-dashed flex flex-col items-center justify-center shadow-inner animate-pop">
-          <span class="text-xl sm:text-3xl font-black">□</span>
-          <span class="text-[10px] sm:text-xs font-bold mt-0.5">다음은?</span>
-        </div>
-      `;
-
-      seqWrap.innerHTML = cardsHtml + blankHtml;
-
-      const choicesWrap = document.getElementById(`pat-choices-${teamKey}`);
-      choicesWrap.innerHTML = '';
-
-      data.choices.forEach((choice) => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = `touch-btn py-3 sm:py-4 px-1 rounded-2xl border-b-4 ${
-          isBlue
-            ? 'bg-blue-50 hover:bg-blue-100 border-blue-300 text-blue-950'
-            : 'bg-rose-50 hover:bg-rose-100 border-rose-300 text-rose-950'
-        } flex flex-col items-center justify-center shadow cursor-pointer`;
-        btn.innerHTML = `
-          <span class="text-3xl sm:text-5xl mb-1">${choice.emoji}</span>
-          <span class="text-xs sm:text-base font-bold">${choice.name}</span>
-        `;
-
-        btn.addEventListener('pointerdown', (e) => {
-          e.preventDefault();
-          if (!appState.isRunning || appState.isManualPaused || data.locked) return;
-
-          if (choice.id === data.answer.id) {
-            data.locked = true;
-            addTeamScore(teamKey, 10);
-            document.getElementById(`pat-msg-${teamKey}`).textContent = `⭕ 정답! [${choice.name}]이에요! +10점!`;
-
-            const blankEl = seqWrap.lastElementChild;
-            if (blankEl) {
-              blankEl.className = `flex-1 min-w-0 ${cardMaxW} aspect-square rounded-2xl bg-emerald-100 border-4 border-emerald-500 flex flex-col items-center justify-center shadow-md animate-pop`;
-              blankEl.innerHTML = `
-                <span class="text-xl sm:text-3xl leading-none">${choice.emoji}</span>
-                <span class="text-[10px] sm:text-xs text-emerald-800 font-bold mt-0.5 truncate max-w-full px-0.5">${choice.name}</span>
-              `;
-            }
-
-            setTimeout(() => {
-              if (appState.isRunning && appState.currentGame === 'pattern') {
-                generateRandomPatternForTeam(teamKey, false);
-              }
-            }, 650);
-          } else {
-            btn.classList.remove('animate-shake');
-            void btn.offsetWidth;
-            btn.classList.add('animate-shake', 'bg-red-100', 'border-red-400');
-            document.getElementById(`pat-msg-${teamKey}`).textContent = '❌ 아쉬워요! 반복되는 규칙을 다시 보세요!';
-          }
+        const btnNew = document.createElement('button');
+        btnNew.className = 'modal-btn primary-success';
+        btnNew.textContent = '새 규칙 만들기';
+        btnNew.addEventListener('click', () => {
+          closeModal();
+          values = Array(TOTAL_SLOTS).fill('');
+          activeIndex = 0;
+          replaceOnNextDigit = true;
+          renderCards();
         });
 
-        choicesWrap.appendChild(btn);
-      });
-    }
+        const btnStay = document.createElement('button');
+        btnStay.className = 'modal-btn secondary';
+        btnStay.textContent = '화면 계속 보기';
+        btnStay.addEventListener('click', closeModal);
 
-    // =========================================================================
-    // [게임 3] 몇 시 몇 분? (N시 / N시 30분 전용)
-    // =========================================================================
-    function initClockGame() {
-      clockState.lastKey = '';
-      nextClockProblem();
-    }
+        modalActions.appendChild(btnNew);
+        modalActions.appendChild(btnStay);
+        launchConfetti();
+      } else {
+        modalBox.classList.add('retry');
+        resultIcon.textContent = '💡';
+        resultTitle.textContent = '아쉬워요! 다시 도전!';
+        resultDesc.textContent = result.description;
 
-    function formatClockKorean(h, m) {
-      return m === 0 ? `${h}시` : `${h}시 30분`;
-    }
+        const btnRetry = document.createElement('button');
+        btnRetry.className = 'modal-btn primary-retry';
+        btnRetry.textContent = '숫자 고치러 가기';
+        btnRetry.addEventListener('click', closeModal);
 
-    function createAnalogClockSvg(hour, minute) {
-      const minuteAngle = minute * 6;
-      const hourAngle = ((hour % 12) + minute / 60) * 30;
-
-      let ticksHtml = '';
-      for (let i = 0; i < 60; i++) {
-        const angle = i * 6;
-        const isHourMark = i % 5 === 0;
-        const y1 = isHourMark ? 14 : 16;
-        const y2 = isHourMark ? 25 : 21;
-        const strokeW = isHourMark ? 3.2 : 1.3;
-        const color = isHourMark ? '#1E293B' : '#94A3B8';
-        ticksHtml += `<line x1="100" y1="${y1}" x2="100" y2="${y2}" stroke="${color}" stroke-width="${strokeW}" stroke-linecap="round" transform="rotate(${angle} 100 100)"/>`;
+        modalActions.appendChild(btnRetry);
       }
 
-      let numsHtml = '';
-      for (let n = 1; n <= 12; n++) {
-        const rad = ((n * 30 - 90) * Math.PI) / 180;
-        const x = 100 + 62 * Math.cos(rad);
-        const y = 100 + 62 * Math.sin(rad);
-        numsHtml += `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" font-size="16" font-weight="900" fill="#1E293B">${n}</text>`;
-      }
-
-      return `
-        <svg viewBox="0 0 200 200" class="w-full h-full drop-shadow-md animate-pop">
-          <circle cx="100" cy="100" r="92" fill="#FFFFFF" stroke="#F59E0B" stroke-width="8"/>
-          <circle cx="100" cy="100" r="86" fill="none" stroke="#FEF3C7" stroke-width="3"/>
-          ${ticksHtml}
-          ${numsHtml}
-          <line x1="100" y1="100" x2="100" y2="54" stroke="#E11D48" stroke-width="6.5" stroke-linecap="round" transform="rotate(${hourAngle} 100 100)"/>
-          <line x1="100" y1="100" x2="100" y2="30" stroke="#2563EB" stroke-width="4.5" stroke-linecap="round" transform="rotate(${minuteAngle} 100 100)"/>
-          <circle cx="100" cy="100" r="6" fill="#1E293B"/>
-        </svg>
-      `;
+      resultModal.classList.add('open');
     }
 
-    function nextClockProblem() {
-      clearTimeout(clockState.waitTimer);
-      appState.isTimerPaused = false;
-      updateTimerUI();
-      document.getElementById('clock-wait-overlay').classList.add('hidden');
-
-      let hour = 12;
-      let minute = 0;
-      let key = '';
-      let tries = 0;
-      while (tries < 20) {
-        tries++;
-        hour = randInt(1, 12);
-        minute = Math.random() < 0.5 ? 0 : 30;
-        key = `${hour}:${minute}`;
-        if (key !== clockState.lastKey) break;
-      }
-
-      clockState.lastKey = key;
-      clockState.hour = hour;
-      clockState.minute = minute;
-      clockState.locked = false;
-
-      const correctText = formatClockKorean(hour, minute);
-
-      const distractors = new Set();
-      while (distractors.size < 3) {
-        const wh = randInt(1, 12);
-        const wm = Math.random() < 0.5 ? 0 : 30;
-        const candidate = formatClockKorean(wh, wm);
-        if (candidate !== correctText) {
-          distractors.add(candidate);
-        }
-      }
-
-      const choices = shuffle([correctText, ...Array.from(distractors)]);
-
-      const svgMarkup = createAnalogClockSvg(hour, minute);
-      document.getElementById('clock-face-t1').innerHTML = svgMarkup;
-      document.getElementById('clock-face-t2').innerHTML = svgMarkup;
-      document.getElementById('clock-msg-t1').textContent = '알맞은 시각 버튼을 먼저 누르세요!';
-      document.getElementById('clock-msg-t2').textContent = '알맞은 시각 버튼을 먼저 누르세요!';
-
-      renderClockChoices('t1', choices, correctText);
-      renderClockChoices('t2', choices, correctText);
+    function closeModal() {
+      resultModal.classList.remove('open');
     }
 
-    function renderClockChoices(teamKey, choices, correctText) {
-      const wrap = document.getElementById(`clock-choices-${teamKey}`);
-      const isBlue = teamKey === 't1';
-      wrap.innerHTML = '';
+    // [규칙 완성!] 버튼 클릭 시에만 판정 실행
+    btnComplete.addEventListener('click', () => {
+      if (isChecking) return;
 
-      choices.forEach((label) => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = `touch-btn py-3.5 sm:py-5 px-2 rounded-2xl border-b-4 ${
-          isBlue
-            ? 'bg-blue-50 hover:bg-blue-100 border-blue-300 text-blue-950'
-            : 'bg-rose-50 hover:bg-rose-100 border-rose-300 text-rose-950'
-        } text-xl sm:text-3xl font-bold shadow cursor-pointer`;
-        btn.textContent = label;
+      const emptyIndex = values.findIndex(v => v === '');
+      if (emptyIndex !== -1) {
+        activeIndex = emptyIndex;
+        replaceOnNextDigit = true;
+        renderCards();
+        showHelper(`${emptyIndex + 1}번째 칸이 비어 있어요! 숫자 6개를 모두 채워 주세요.`);
+        return;
+      }
 
-        btn.addEventListener('pointerdown', (e) => {
-          e.preventDefault();
-          if (!appState.isRunning || appState.isManualPaused || clockState.locked) return;
+      hideHelper();
+      isChecking = true;
+      btnComplete.disabled = true;
+      btnComplete.textContent = '규칙 확인 중...';
 
-          if (label === correctText) {
-            clockState.locked = true;
-            appState.isTimerPaused = true;
-            updateTimerUI();
-
-            addTeamScore(teamKey, 10);
-
-            const banner = document.getElementById('clock-winner-banner');
-            if (teamKey === 't1') {
-              banner.textContent = `⭕ 1팀 먼저 정답! (${correctText}) +10점!`;
-              banner.className = 'bg-blue-600 text-white px-6 sm:px-8 py-4 rounded-3xl border-4 border-white shadow-2xl text-2xl sm:text-4xl mb-4 animate-pop';
-            } else {
-              banner.textContent = `⭕ 2팀 먼저 정답! (${correctText}) +10점!`;
-              banner.className = 'bg-rose-600 text-white px-6 sm:px-8 py-4 rounded-3xl border-4 border-white shadow-2xl text-2xl sm:text-4xl mb-4 animate-pop';
-            }
-
-            const overlay = document.getElementById('clock-wait-overlay');
-            const numEl = document.getElementById('clock-countdown-num');
-            overlay.classList.remove('hidden');
-
-            numEl.textContent = '2';
-            clockState.waitTimer = setTimeout(() => {
-              if (!appState.isRunning) return;
-              numEl.textContent = '1';
-              clockState.waitTimer = setTimeout(() => {
-                if (!appState.isRunning) return;
-                numEl.textContent = '시작!';
-                clockState.waitTimer = setTimeout(() => {
-                  if (appState.isRunning && appState.currentGame === 'clock') {
-                    nextClockProblem();
-                  }
-                }, 450);
-              }, 850);
-            }, 850);
-          } else {
-            btn.classList.remove('animate-shake');
-            void btn.offsetWidth;
-            btn.classList.add('animate-shake', 'bg-red-100', 'border-red-400', 'text-red-800');
-            document.getElementById(`clock-msg-${teamKey}`).textContent = '❌ 짧은바늘과 긴바늘을 다시 보세요!';
-          }
-        });
-
-        wrap.appendChild(btn);
-      });
-    }
-
-    // =========================================================================
-    // 이벤트 초기화
-    // =========================================================================
-    window.addEventListener('DOMContentLoaded', () => {
-      document.querySelectorAll('.game-tab-btn').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          appState.currentGame = btn.dataset.game;
-          startMatch();
-        });
+      const cards = document.querySelectorAll('.num-card');
+      cards.forEach((card, idx) => {
+        setTimeout(() => {
+          card.classList.add('checking');
+        }, idx * 70);
       });
 
-      document.querySelectorAll('.modal-game-btn').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          switchStageView(btn.dataset.game);
-        });
-      });
+      setTimeout(() => {
+        cards.forEach(card => card.classList.remove('checking'));
+        const nums = values.map(v => parseInt(v, 10));
+        const result = evaluatePattern(nums);
 
-      document.querySelectorAll('.modal-time-btn').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          appState.durationSec = Number(btn.dataset.sec);
-          document.querySelectorAll('.modal-time-btn').forEach((b) => {
-            b.className = 'modal-time-btn py-2.5 rounded-xl border-2 border-slate-300 bg-white text-slate-700 text-lg sm:text-xl cursor-pointer';
-          });
-          btn.className = 'modal-time-btn py-2.5 rounded-xl border-4 border-blue-500 bg-blue-100 text-blue-950 text-lg sm:text-xl font-bold cursor-pointer';
-        });
-      });
+        isChecking = false;
+        btnComplete.disabled = false;
+        btnComplete.textContent = '규칙 완성!';
 
-      document.getElementById('spot-skip-btn').addEventListener('click', () => {
-        if (!appState.isRunning || appState.isManualPaused) return;
-        loadNextSpotScene();
-      });
-
-      document.getElementById('pat-pass-t1').addEventListener('pointerdown', (e) => {
-        e.preventDefault();
-        if (!appState.isRunning || appState.isManualPaused || patternState.t1.locked) return;
-        generateRandomPatternForTeam('t1', false);
-      });
-
-      document.getElementById('pat-pass-t2').addEventListener('pointerdown', (e) => {
-        e.preventDefault();
-        if (!appState.isRunning || appState.isManualPaused || patternState.t2.locked) return;
-        generateRandomPatternForTeam('t2', false);
-      });
-
-      document.getElementById('pause-btn').addEventListener('click', () => {
-        if (!appState.isRunning) return;
-        appState.isManualPaused = true;
-        updateTimerUI();
-        document.getElementById('pause-overlay').classList.remove('hidden');
-      });
-
-      document.getElementById('resume-btn').addEventListener('click', () => {
-        appState.isManualPaused = false;
-        updateTimerUI();
-        document.getElementById('pause-overlay').classList.add('hidden');
-      });
-
-      document.getElementById('start-match-btn').addEventListener('click', startMatch);
-      document.getElementById('replay-same-btn').addEventListener('click', startMatch);
-
-      document.getElementById('choose-other-btn').addEventListener('click', () => {
-        document.getElementById('result-overlay').classList.add('hidden');
-        document.getElementById('setup-overlay').classList.remove('hidden');
-      });
-
-      document.getElementById('open-setup-btn').addEventListener('click', () => {
-        clearInterval(appState.timerId);
-        clearTimeout(clockState.waitTimer);
-        appState.isRunning = false;
-        appState.isManualPaused = false;
-        appState.isTimerPaused = false;
-        document.getElementById('pause-overlay').classList.add('hidden');
-        document.getElementById('clock-wait-overlay').classList.add('hidden');
-        document.getElementById('setup-overlay').classList.remove('hidden');
-      });
-
-      initSpotGame();
+        openResultModal(nums, result);
+      }, 650);
     });
+
+    // 초기 렌더링
+    renderCards();
   </script>
 </body>
 </html>
